@@ -3,21 +3,24 @@ import {linearTiming, TransitionSeries} from '@remotion/transitions';
 import {Fragment} from 'react';
 import {AbsoluteFill, Audio, Img, interpolate, OffthreadVideo, Sequence, staticFile, useCurrentFrame} from 'remotion';
 import {zoomBlur} from './zoomBlur';
-import {brand, FPS, LOGO, type Overlay, type Shot, shotFrames, timeline, TRANSITION} from './config';
-import {Counter, LowerThird, Outro, Question, Title} from './Overlays';
+import {brand, FPS, INTRO_LOCKUP_FRAMES, LOGO, type Overlay, type Shot, shotFrames, timeline, TRANSITION} from './config';
+import {musicVolume} from './music';
+import {IntroLockup, LowerThird, Outro, Question, Title} from './Overlays';
 
 const OverlayView: React.FC<{o: Overlay; frames: number}> = ({o, frames}) => {
   switch (o.kind) {
-    case 'counter':
-      return <Sequence durationInFrames={Math.min(frames, Math.round(3.6 * FPS))}><Counter to={o.to} caption={o.caption} /></Sequence>;
     case 'title':
       return <Sequence from={6}><Title text={o.text} sub={o.sub} /></Sequence>;
     case 'question':
-      return <Sequence><Question text={o.text} label={o.label} docked={o.docked} /></Sequence>;
+      return (
+        <Sequence from={Math.round((o.at ?? 0) * FPS)}>
+          <Question text={o.text} label={o.label} mode={o.mode} y={o.y} scale={o.scale} />
+        </Sequence>
+      );
     case 'lowerThird':
       return (
         <Sequence from={Math.round(o.at * FPS)} durationInFrames={Math.round(o.dur * FPS)}>
-          <LowerThird name={o.name} role={o.role} />
+          <LowerThird name={o.name} role={o.role} bottom={o.bottom} />
         </Sequence>
       );
     case 'outro':
@@ -69,6 +72,11 @@ export const Reel: React.FC = () => {
           </Fragment>
         ))}
       </TransitionSeries>
+      <Sequence durationInFrames={INTRO_LOCKUP_FRAMES}>
+        <IntroLockup title="المؤتمر التربوي" to={46} />
+      </Sequence>
+      {/* موسيقى خلفية: عالية في الانترو والأوترو، وتنخفض تحت كلام المقابلات */}
+      <Audio src={staticFile('music/background.wav')} volume={(f) => musicVolume(f)} />
       {/* الشعار فوق يمين طول الفيديو، بدون كتابة */}
       <Img src={staticFile(LOGO)} style={{position: 'absolute', top: 110, right: 50, width: 96, opacity: interpolate(frame, [outroStart - 10, outroStart], [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'})}} />
       {/* مؤثر whoosh مع كل انتقال رسمي */}

@@ -1,6 +1,6 @@
 import {AbsoluteFill, Audio, Easing, Img, interpolate, Sequence, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {brand, FPS} from './config';
-import {fontFamily} from './font';
+import {fontFamily, numberFamily} from './font';
 
 const clamp = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
 const ease = Easing.bezier(0.65, 0, 0.35, 1);
@@ -79,33 +79,55 @@ const ChatIcon = () => (
 
 const sfx = (name: string, volume = 0.6) => <Audio src={staticFile(`sfx/${name}.wav`)} volume={volume} />;
 
-export const Counter: React.FC<{to: number; caption: string}> = ({to, caption}) => {
+// الانترو: «المؤتمر التربوي» يطلع أول، بعدين يرتفع ويطلع تحته عداد بالأرقام الإنجليزية لين 46
+export const IntroLockup: React.FC<{to: number; title: string}> = ({to, title}) => {
   const frame = useCurrentFrame();
-  const {fps} = useVideoConfig();
-  const countEnd = Math.round(1.4 * fps);
-  const n = Math.round(interpolate(frame, [4, countEnd], [1, to], {...clamp, easing: Easing.out(Easing.cubic)}));
-  const pop = spring({frame: frame - countEnd, fps, config: {damping: 10, stiffness: 180}});
-  const out = interpolate(frame, [3.1 * fps, 3.5 * fps], [1, 0], clamp);
+  const {fps, durationInFrames} = useVideoConfig();
+  const countFrom = Math.round(2.9 * fps);
+  const countEnd = Math.round(6 * fps);
+  const lift = interpolate(frame, [Math.round(2.6 * fps), countFrom + 6], [0, 1], {...clamp, easing: ease});
+  const numIn = interpolate(frame, [countFrom, countFrom + 10], [0, 1], clamp);
+  const n = Math.round(interpolate(frame, [countFrom, countEnd], [1, to], {...clamp, easing: Easing.out(Easing.cubic)}));
+  const pop = spring({frame: frame - countEnd, fps, config: {damping: 9, stiffness: 200}});
+  const hit = frame >= countEnd ? 1 + 0.07 * Math.sin(Math.min(1, pop) * Math.PI) : 1;
+  const out = interpolate(frame, [durationInFrames - 16, durationInFrames], [0, 1], clamp);
   return (
-    <AbsoluteFill style={{fontFamily, direction: 'rtl', alignItems: 'center', justifyContent: 'center', opacity: out}}>
+    <AbsoluteFill
+      style={{
+        fontFamily,
+        direction: 'rtl',
+        alignItems: 'center',
+        justifyContent: 'center',
+        opacity: 1 - out,
+        filter: `blur(${out * 16}px)`,
+      }}
+    >
+      <div style={{transform: `translateY(${-200 * lift}px) scale(${1 - 0.25 * lift})`, fontSize: 118, fontWeight: 900, color: brand.text, textShadow: shadow}}>
+        <BlurWords text={title} delay={8} stagger={6} />
+      </div>
       <div
         style={{
-          fontSize: 300,
+          position: 'absolute',
+          top: '50%',
+          marginTop: -10,
+          fontFamily: numberFamily,
+          fontSize: 340,
           fontWeight: 900,
           color: brand.text,
           lineHeight: 1,
           textShadow: shadow,
-          transform: `scale(${1 + pop * 0.08 - (frame > countEnd ? 0.08 : 0)})`,
-          fontVariantNumeric: 'tabular-nums',
+          opacity: numIn,
+          filter: `blur(${(1 - numIn) * 14}px)`,
+          transform: `scale(${hit})`,
+          fontVariantNumeric: 'lining-nums tabular-nums',
+          direction: 'ltr',
         }}
       >
         {n}
       </div>
-      <div style={{marginTop: 20, opacity: interpolate(frame, [countEnd - 6, countEnd + 6], [0, 1], clamp)}}>
-        <Pill style={{fontSize: 56, fontWeight: 800}}>{caption}</Pill>
-      </div>
-      <Sequence from={0} durationInFrames={45}>{sfx('riser', 0.35)}</Sequence>
-      <Sequence from={countEnd}>{sfx('impact', 0.8)}</Sequence>
+      <Sequence from={8}>{sfx('whoosh', 0.4)}</Sequence>
+      <Sequence from={countFrom} durationInFrames={countEnd - countFrom + 4}>{sfx('cinematic-riser', 0.35)}</Sequence>
+      <Sequence from={countEnd}>{sfx('cinematic-boom', 0.7)}</Sequence>
     </AbsoluteFill>
   );
 };
@@ -131,16 +153,26 @@ export const Title: React.FC<{text: string; sub?: string}> = ({text, sub}) => {
   );
 };
 
-// السؤال يطلع كبير وسط الشاشة، بعدين يستقر فوق طول مدة الإجابة
-export const Question: React.FC<{text: string; label: string; docked?: boolean}> = ({text, label, docked}) => {
+// السؤال: full يطلع كبير في النص ثم يستقر عند (y, scale)،
+// docked ثابت عند (y, scale)، inline يطلع بموشن عند (y, scale) ويبقى
+export const Question: React.FC<{text: string; label: string; mode: 'full' | 'docked' | 'inline'; y: number; scale: number}> = ({
+  text,
+  label,
+  mode,
+  y: targetY,
+  scale: targetScale,
+}) => {
   const frame = useCurrentFrame();
-  const {fps} = useVideoConfig();
+  const {fps, height} = useVideoConfig();
   const hold = Math.round(3.6 * fps);
   const icon = spring({frame, fps, config: {damping: 12, stiffness: 160}});
-  // docked: السؤال يبقى صغير فوق من أول الشوت (للإجابات اللي بعد أول إجابة)
-  const dock = docked ? 1 : interpolate(frame, [hold, hold + 20], [0, 1], {...clamp, easing: ease});
-  const y = interpolate(dock, [0, 1], [0, -660]);
-  const scale = interpolate(dock, [0, 1], [1, 0.58]);
+  const dock =
+    mode === 'docked' ? 1 : mode === 'inline' ? 0 : interpolate(frame, [hold, hold + 20], [0, 1], {...clamp, easing: ease});
+  const startY = mode === 'inline' ? targetY : height / 2;
+  const startScale = mode === 'inline' ? targetScale : 1;
+  const y = interpolate(dock, [0, 1], [startY, targetY]) - height / 2;
+  const scale = interpolate(dock, [0, 1], [startScale, targetScale]);
+  const animated = mode !== 'docked';
 
   return (
     <AbsoluteFill style={{fontFamily, direction: 'rtl'}}>
@@ -154,22 +186,22 @@ export const Question: React.FC<{text: string; label: string; docked?: boolean}>
           <Pill style={{padding: '28px 48px', borderRadius: 40}}>
             <div style={{fontSize: 40, fontWeight: 800, color: brand.gold, marginBottom: 6}}>{label}</div>
             <div style={{fontSize: 66, fontWeight: 800, lineHeight: 1.4}}>
-              {docked ? text : <BlurWords text={text} delay={8} />}
+              {animated ? <BlurWords text={text} delay={8} /> : text}
             </div>
           </Pill>
         </div>
       </AbsoluteFill>
-      {docked ? null : (
+      {animated ? (
         <>
           {sfx('pop', 0.5)}
-          <Sequence from={hold}>{sfx('whoosh', 0.25)}</Sequence>
+          {mode === 'full' ? <Sequence from={hold}>{sfx('whoosh', 0.25)}</Sequence> : null}
         </>
-      )}
+      ) : null}
     </AbsoluteFill>
   );
 };
 
-export const LowerThird: React.FC<{name: string; role?: string}> = ({name, role}) => {
+export const LowerThird: React.FC<{name: string; role?: string; bottom: number}> = ({name, role, bottom}) => {
   const frame = useCurrentFrame();
   const {fps, durationInFrames} = useVideoConfig();
   const inP = spring({frame, fps, config: {damping: 200}, durationInFrames: 18});
@@ -177,7 +209,7 @@ export const LowerThird: React.FC<{name: string; role?: string}> = ({name, role}
   const p = inP * (1 - outP);
   return (
     <AbsoluteFill style={{fontFamily, direction: 'rtl'}}>
-      <div style={{position: 'absolute', right: 60, bottom: 520, display: 'flex', alignItems: 'stretch', opacity: p}}>
+      <div style={{position: 'absolute', right: 60, bottom, display: 'flex', alignItems: 'stretch', opacity: p}}>
         <div style={{width: 10, background: brand.goldDeep, borderRadius: 5, transform: `scaleY(${p})`, marginLeft: 14}} />
         <Pill style={{clipPath: `inset(0 0 0 ${(1 - p) * 100}%)`, padding: '16px 40px', borderRadius: 24}}>
           <div style={{fontSize: 46, fontWeight: 800}}>{name}</div>
