@@ -50,7 +50,7 @@ export const HEIGHT = 1920;
 export const TRANSITION = {fade: 12, wipe: 16} as const;
 export const LOGO = 'brand/kts-logo.png';
 
-const B = 0.25; // صوت لقطات الأجواء
+const B = 0; // لقطات الأجواء بدون صوتها — الموسيقى بس (بدون ضجة الخلفية)
 const V = 1; // صوت المقابلات
 
 const Q1 = 'لو قلت لك مستقبل التعليم في الكويت، عطنا كلمة وحدة بس';
