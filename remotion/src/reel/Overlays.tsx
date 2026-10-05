@@ -1,4 +1,4 @@
-import {AbsoluteFill, Audio, Easing, interpolate, Sequence, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, Audio, Easing, Img, interpolate, Sequence, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {brand, FPS} from './config';
 import {fontFamily} from './font';
 
@@ -139,8 +139,8 @@ export const Question: React.FC<{text: string; label: string; docked?: boolean}>
   const icon = spring({frame, fps, config: {damping: 12, stiffness: 160}});
   // docked: السؤال يبقى صغير فوق من أول الشوت (للإجابات اللي بعد أول إجابة)
   const dock = docked ? 1 : interpolate(frame, [hold, hold + 20], [0, 1], {...clamp, easing: ease});
-  const y = interpolate(dock, [0, 1], [0, -560]);
-  const scale = interpolate(dock, [0, 1], [1, 0.62]);
+  const y = interpolate(dock, [0, 1], [0, -660]);
+  const scale = interpolate(dock, [0, 1], [1, 0.58]);
 
   return (
     <AbsoluteFill style={{fontFamily, direction: 'rtl'}}>
@@ -188,10 +188,22 @@ export const LowerThird: React.FC<{name: string; role?: string}> = ({name, role}
   );
 };
 
-// الأوترو: آخر لقطة تخفت للأسود، والشعار ثابت فوق يمين
-export const Outro: React.FC = () => {
+// الأوترو: لقطة المبنى والشعار يطلع فوق يمين، بعدين كل شي يخفت للأسود
+export const Outro: React.FC<{logo?: string}> = ({logo}) => {
   const frame = useCurrentFrame();
-  const {durationInFrames} = useVideoConfig();
-  const black = interpolate(frame, [durationInFrames - 1.6 * FPS, durationInFrames], [0, 1], clamp);
-  return <AbsoluteFill style={{background: 'black', opacity: black}} />;
+  const {fps, durationInFrames} = useVideoConfig();
+  const logoP = spring({frame: frame - 10, fps, config: {damping: 14}});
+  const black = interpolate(frame, [durationInFrames - 1.2 * FPS, durationInFrames], [0, 1], clamp);
+  return (
+    <AbsoluteFill>
+      {logo ? (
+        <Img
+          src={staticFile(logo)}
+          style={{position: 'absolute', top: 110, right: 60, width: 170, opacity: logoP, transform: `scale(${0.85 + 0.15 * logoP})`}}
+        />
+      ) : null}
+      {logo ? <Sequence from={10}>{sfx('impact', 0.45)}</Sequence> : null}
+      <AbsoluteFill style={{background: 'black', opacity: black}} />
+    </AbsoluteFill>
+  );
 };

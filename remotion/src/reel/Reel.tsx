@@ -21,7 +21,7 @@ const OverlayView: React.FC<{o: Overlay; frames: number}> = ({o, frames}) => {
         </Sequence>
       );
     case 'outro':
-      return <Sequence><Outro /></Sequence>;
+      return <Sequence><Outro logo={o.logo} /></Sequence>;
   }
 };
 

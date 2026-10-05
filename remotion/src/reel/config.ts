@@ -27,7 +27,7 @@ export type Overlay =
   | {kind: 'title'; text: string; sub?: string}
   | {kind: 'question'; text: string; label: string; docked?: boolean}
   | {kind: 'lowerThird'; name: string; role?: string; at: number; dur: number}
-  | {kind: 'outro'};
+  | {kind: 'outro'; logo?: string};
 
 export type Shot = {
   src: string;
@@ -62,7 +62,7 @@ export const shots: Shot[] = [
   {src: 'footage/q2-glasses.mp4', from: 0, to: 49, volume: V, enter: 'wipe',
     overlays: [
       {kind: 'question', label: 'السؤال', text: Q2, docked: true},
-      {kind: 'lowerThird', name: 'رئيس جمعية المعلمين الكويتية', at: 9.5, dur: 5},
+      {kind: 'lowerThird', name: 'أ. حمد الهولي', role: 'رئيس جمعية المعلمين الكويتية', at: 9.5, dur: 6},
     ]},
 
   // ── ٣) اللوبي + مستقبل التعليم بكلمة ──
