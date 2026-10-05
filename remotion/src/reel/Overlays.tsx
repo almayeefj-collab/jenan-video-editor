@@ -212,27 +212,14 @@ const FitLine: React.FC<{children: React.ReactNode; maxWidth: number; fontSize: 
 
 const BAR_WIDTH = 1010;
 
-// شريط السؤال: مستطيل عريض والسؤال بسطر واحد، وعنوانه في تبويب ذهبي فوقه
+// شريط السؤال: مستطيل عريض والسؤال بسطر واحد، وعنوانه في كبسولة صغيرة منفصلة فوقه
+// (بمسافة واضحة عشان ما يكونون راكبين على بعض)
 const QuestionBar: React.FC<{text: string; label: string; typing: boolean}> = ({text, label, typing}) => (
-  <div style={{width: BAR_WIDTH, position: 'relative'}}>
-    <div
-      style={{
-        position: 'absolute',
-        top: -44,
-        right: 26,
-        padding: '4px 22px 6px',
-        borderRadius: '14px 14px 0 0',
-        background: brand.navy,
-        border: `2px solid ${brand.goldDeep}aa`,
-        borderBottom: 'none',
-        color: brand.gold,
-        fontSize: 26,
-        fontWeight: 800,
-      }}
-    >
+  <div style={{width: BAR_WIDTH, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 14}}>
+    <Pill style={{borderRadius: 999, padding: '6px 26px', fontSize: 28, fontWeight: 800, color: brand.gold, marginRight: 12}}>
       {label}
-    </div>
-    <Pill style={{borderRadius: 22, padding: '20px 30px', display: 'flex', justifyContent: 'center'}}>
+    </Pill>
+    <Pill style={{borderRadius: 22, padding: '20px 30px', display: 'flex', justifyContent: 'center', alignSelf: 'stretch'}}>
       <div style={{fontWeight: 800, lineHeight: 1.3}}>
         <FitLine maxWidth={BAR_WIDTH - 64} fontSize={50}>
           {typing ? <BlurWords text={text} delay={8} /> : text}
@@ -258,8 +245,12 @@ export const Question: React.FC<{
   const icon = spring({frame, fps, config: {damping: 12, stiffness: 160}});
   const move = (from: number) => interpolate(frame, [from, from + 16], [0, 1], {...clamp, easing: ease});
 
-  // full: الكرت الكبير ينزل ويختفي والشريط يطلع مكانه
-  const toBar = mode === 'full' ? move(hold) : 1;
+  // full: الكرت الكبير ينزل ويختفي أول، وبعد ما يختفي يدخل الشريط — ما يتداخلون
+  // لو الخروج قبل ما يمديه يتحول لشريط: الكرت الكبير يبقى لين وقت الخروج ويطلع بدون شريط
+  const exitEarly = mode === 'full' && exitAt !== undefined && exitAt * fps < hold + 40;
+  const cardOutAt = exitEarly ? Math.round((exitAt as number) * fps) : hold;
+  const cardOut = mode === 'full' ? interpolate(frame, [cardOutAt, cardOutAt + 10], [0, 1], {...clamp, easing: ease}) : 1;
+  const toBar = exitEarly ? 0 : mode === 'full' ? interpolate(frame, [hold + 10, hold + 24], [0, 1], {...clamp, easing: ease}) : 1;
   const rise = mode === 'inline' ? 1 - interpolate(frame, [0, 18], [0, 1], {...clamp, easing: Easing.out(Easing.cubic)}) : 0;
   const hideF = hide ? hide.map((t) => Math.round(t * fps)) : null;
   const exitF = exitAt !== undefined ? Math.round(exitAt * fps) : null;
@@ -272,11 +263,11 @@ export const Question: React.FC<{
 
   return (
     <AbsoluteFill style={{fontFamily, direction: 'rtl'}}>
-      {mode === 'full' && toBar < 1 ? (
-        <AbsoluteFill style={{alignItems: 'center', justifyContent: 'center', opacity: 1 - toBar}}>
+      {mode === 'full' && cardOut < 1 ? (
+        <AbsoluteFill style={{alignItems: 'center', justifyContent: 'center', opacity: 1 - cardOut}}>
           <div
             style={{
-              transform: `translateY(${toBar * (barY - height / 2)}px) scale(${1 - 0.35 * toBar})`,
+              transform: `translateY(${cardOut * 160}px) scale(${1 - 0.15 * cardOut})`,
               width: 960,
               textAlign: 'center',
             }}
@@ -297,7 +288,7 @@ export const Question: React.FC<{
         style={{
           position: 'absolute',
           left: (1080 - BAR_WIDTH) / 2,
-          top: barY - 50,
+          top: barY - 110,
           transform: `translateY(${barOffset}px)`,
           opacity: toBar * (1 - down),
         }}
@@ -306,11 +297,11 @@ export const Question: React.FC<{
       </div>
       {mode !== 'docked' ? <Typing from={8} frames={text.split(' ').length * 3 + 10} /> : null}
       {mode === 'full' ? sfx('pop', 0.5) : null}
-      {mode === 'full' ? <Sequence from={hold - 2}>{sfx('swoosh-down', 0.55)}</Sequence> : null}
+      {mode === 'full' && !exitEarly ? <Sequence from={hold - 2}>{sfx('swoosh-down', 0.55)}</Sequence> : null}
       {mode === 'inline' ? sfx('swoosh-up', 0.55) : null}
       {hideF ? <Sequence from={hideF[0] - 2}>{sfx('swoosh-down', 0.5)}</Sequence> : null}
       {hideF ? <Sequence from={hideF[1] - 2}>{sfx('swoosh-up', 0.5)}</Sequence> : null}
-      {exitF !== null ? <Sequence from={exitF - 2}>{sfx('swoosh-down', 0.5)}</Sequence> : null}
+      {exitF !== null ? <Sequence from={exitF - 2}>{sfx('swoosh-down', exitEarly ? 0.55 : 0.5)}</Sequence> : null}
     </AbsoluteFill>
   );
 };

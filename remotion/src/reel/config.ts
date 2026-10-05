@@ -71,12 +71,11 @@ export const shots: Shot[] = [
   {src: 'footage/lobby-entrance-ghost.mp4', from: 0, to: 2.2, volume: 0, enter: 'cut'},
   {src: 'footage/lobby-walkway-ghost.mp4', from: 0.5, to: 2.3, volume: 0, enter: 'cut'},
   {src: 'footage/lobby-overhead.mp4', from: 0, to: 8, volume: 0, enter: 'cut',
-    overlays: [{kind: 'question', label: 'السؤال', text: Q2, mode: 'full', ...LOW, at: 2.3}]},
+    overlays: [{kind: 'question', label: 'السؤال', text: Q2, mode: 'full', ...LOW, at: 2.25, exitAt: 4.9}]},
 
-  // ── ٢) رئيس الجمعية ──
+  // ── ٢) رئيس الجمعية (بدون السؤال على الشاشة طول كلمته) ──
   {src: 'footage/q2-president-full.mp4', from: 0, to: 84.8, volume: V, enter: 'wipe',
     overlays: [
-      {kind: 'question', label: 'السؤال', text: Q2, mode: 'docked', ...LOW, hide: [9.2, 15.8], exitAt: 84.2},
       {kind: 'lowerThird', name: 'أ. حمد الهولي', role: 'رئيس جمعية المعلمين الكويتية', at: 9.5, dur: 6, bottom: LT_BOTTOM},
     ]},
 
