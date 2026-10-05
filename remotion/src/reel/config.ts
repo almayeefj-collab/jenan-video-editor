@@ -50,43 +50,36 @@ const V = 1; // صوت المقابلات
 
 const Q1 = 'لو قلت لك مستقبل التعليم في الكويت، عطنا كلمة وحدة بس';
 const Q2 = 'شنو المختلف هالسنة عن النسخ السابقة؟';
+const Q1_TITLE = 'مستقبل التعليم بكلمة';
+const Q3_TITLE = 'رسالة للمعلمين';
 const Q3 = 'إذا عندك رسالة مباشرة للمعلمين والمعلمات بالكويت، شتقول لهم؟';
 
 export const shots: Shot[] = [
-  // ── الانترو: المبنى ← اللوبي ──
-  {src: 'footage/exterior.mp4', from: 0, to: 3.6, volume: B,
-    overlays: [{kind: 'counter', to: 46, caption: 'المؤتمر التربوي'}]},
-  {src: 'footage/lobby-entrance.mp4', from: 0, to: 2.2, volume: B, enter: 'fade'},
-  {src: 'footage/lobby-walkway.mp4', from: 0.5, to: 2.6, volume: B, enter: 'cut'},
-  {src: 'footage/lobby-crowd.mp4', from: 2, to: 6, volume: B, enter: 'cut',
-    overlays: [{kind: 'title', text: 'مستقبل التعليم بكلمة', sub: 'سألنا المعلمين…'}]},
-
-  // ── رئيس الجمعية ──
+  // ── ١) المبنى من فوق + سؤال الرئيس ──
+  {src: 'footage/lobby-crowd.mp4', from: 1, to: 5.6, volume: B,
+    overlays: [{kind: 'question', label: 'السؤال', text: Q2}]},
+  // ── ٢) رئيس الجمعية ──
   {src: 'footage/q2-glasses.mp4', from: 0, to: 49, volume: V, enter: 'wipe',
     overlays: [
-      {kind: 'question', label: 'السؤال', text: Q2},
+      {kind: 'question', label: 'السؤال', text: Q2, docked: true},
       {kind: 'lowerThird', name: 'رئيس جمعية المعلمين الكويتية', at: 9.5, dur: 5},
     ]},
 
-  // ── مستقبل التعليم بكلمة ──
+  // ── ٣) اللوبي + مستقبل التعليم بكلمة ──
   {src: 'footage/lobby-hospitality.mp4', from: 0, to: 4.4, volume: B, enter: 'wipe',
-    overlays: [{kind: 'question', label: 'السؤال', text: Q1}]},
+    overlays: [{kind: 'question', label: Q1_TITLE, text: Q1}]},
   {src: 'footage/q1-pink.mp4', from: 0, to: 3.4, volume: V, enter: 'cut',
-    overlays: [{kind: 'question', label: 'السؤال', text: Q1, docked: true}]},
+    overlays: [{kind: 'question', label: Q1_TITLE, text: Q1, docked: true}]},
   {src: 'footage/q1-ghutra.mp4', from: 0.8, to: 8.4, volume: V, enter: 'cut',
-    overlays: [{kind: 'question', label: 'السؤال', text: Q1, docked: true}]},
+    overlays: [{kind: 'question', label: Q1_TITLE, text: Q1, docked: true}]},
 
-  // ── رسالة للمعلمين ──
+  // ── ٤) رسالة للمعلمين (آخر الفيديو) ──
   {src: 'footage/presenter.mp4', from: 0, to: 6.5, volume: V, enter: 'wipe',
-    overlays: [{kind: 'question', label: 'السؤال', text: Q3}]},
+    overlays: [{kind: 'question', label: Q3_TITLE, text: Q3}]},
   {src: 'footage/q3-brown-a.mp4', from: 0.5, to: 15.5, volume: V, enter: 'cut',
-    overlays: [{kind: 'question', label: 'السؤال', text: Q3, docked: true}]},
+    overlays: [{kind: 'question', label: Q3_TITLE, text: Q3, docked: true}]},
   {src: 'footage/q3-brown-b.mp4', from: 0, to: 12.4, volume: V, enter: 'cut',
-    overlays: [{kind: 'question', label: 'السؤال', text: Q3, docked: true}]},
-
-  // ── الأوترو ──
-  {src: 'footage/hall.mp4', from: 2, to: 7.5, volume: B, enter: 'wipe',
-    overlays: [{kind: 'outro'}]},
+    overlays: [{kind: 'question', label: Q3_TITLE, text: Q3, docked: true}, {kind: 'outro'}]},
 ];
 
 export const shotFrames = (s: Shot) => Math.round((s.to - s.from) * FPS);

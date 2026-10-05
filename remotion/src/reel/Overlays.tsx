@@ -152,7 +152,7 @@ export const Question: React.FC<{text: string; label: string; docked?: boolean}>
             </IconBox>
           </div>
           <Pill style={{padding: '28px 48px', borderRadius: 40}}>
-            <div style={{fontSize: 34, fontWeight: 700, color: brand.goldDeep, marginBottom: 4, opacity: 1 - dock * 0.2}}>{label}</div>
+            <div style={{fontSize: 40, fontWeight: 800, color: brand.gold, marginBottom: 6}}>{label}</div>
             <div style={{fontSize: 66, fontWeight: 800, lineHeight: 1.4}}>
               {docked ? text : <BlurWords text={text} delay={8} />}
             </div>
@@ -188,9 +188,10 @@ export const LowerThird: React.FC<{name: string; role?: string}> = ({name, role}
   );
 };
 
-// الأوترو: اللقطة الأخيرة تخفت للأسود، والشعار ثابت فوق يمين
+// الأوترو: آخر لقطة تخفت للأسود، والشعار ثابت فوق يمين
 export const Outro: React.FC = () => {
   const frame = useCurrentFrame();
-  const black = interpolate(frame, [3.6 * FPS, 5.4 * FPS], [0, 1], clamp);
+  const {durationInFrames} = useVideoConfig();
+  const black = interpolate(frame, [durationInFrames - 1.6 * FPS, durationInFrames], [0, 1], clamp);
   return <AbsoluteFill style={{background: 'black', opacity: black}} />;
 };
