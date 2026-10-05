@@ -70,7 +70,7 @@ export const shots: Shot[] = [
   {src: 'footage/exterior-ghost.mp4', from: 0.2, to: 2.6, volume: 0},
   {src: 'footage/lobby-entrance-ghost.mp4', from: 0, to: 2.2, volume: 0, enter: 'cut'},
   {src: 'footage/lobby-walkway-ghost.mp4', from: 0.5, to: 2.3, volume: 0, enter: 'cut'},
-  {src: 'footage/lobby-crowd-ghost.mp4', from: 1, to: 8.2, volume: 0, enter: 'cut',
+  {src: 'footage/lobby-overhead.mp4', from: 0, to: 8, volume: 0, enter: 'cut',
     overlays: [{kind: 'question', label: 'السؤال', text: Q2, mode: 'full', ...LOW, at: 2.3}]},
 
   // ── ٢) رئيس الجمعية ──
