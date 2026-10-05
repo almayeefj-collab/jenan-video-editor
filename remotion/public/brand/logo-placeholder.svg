@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
+  <circle cx="200" cy="200" r="190" fill="none" stroke="#ffffff" stroke-width="12" stroke-dasharray="24 14"/>
+  <text x="200" y="185" font-family="sans-serif" font-size="60" fill="#ffffff" text-anchor="middle">LOGO</text>
+  <text x="200" y="250" font-family="sans-serif" font-size="30" fill="#ffffff" text-anchor="middle">placeholder</text>
+</svg>

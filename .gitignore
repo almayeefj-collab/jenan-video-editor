@@ -6,3 +6,5 @@ __pycache__/
 *.mov
 *.webm
 !remotion/public/**
+# لقطات المقابلات ومقاطع الاختبار ما ترفع للمستودع
+remotion/public/footage/
