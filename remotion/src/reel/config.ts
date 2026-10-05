@@ -74,9 +74,9 @@ export const shots: Shot[] = [
     overlays: [{kind: 'question', label: 'السؤال', text: Q2, mode: 'full', ...LOW, at: 2.3}]},
 
   // ── ٢) رئيس الجمعية ──
-  {src: 'footage/q2-glasses.mp4', from: 0, to: 49.2, volume: V, enter: 'wipe',
+  {src: 'footage/q2-president-full.mp4', from: 0, to: 84.8, volume: V, enter: 'wipe',
     overlays: [
-      {kind: 'question', label: 'السؤال', text: Q2, mode: 'docked', ...LOW, hide: [9.2, 15.8], exitAt: 48.5},
+      {kind: 'question', label: 'السؤال', text: Q2, mode: 'docked', ...LOW, hide: [9.2, 15.8], exitAt: 84.2},
       {kind: 'lowerThird', name: 'أ. حمد الهولي', role: 'رئيس جمعية المعلمين الكويتية', at: 9.5, dur: 6, bottom: LT_BOTTOM},
     ]},
 
