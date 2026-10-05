@@ -1,9 +1,13 @@
 import {Composition} from 'remotion';
 import {HelloJenan, helloJenanSchema} from './HelloJenan';
+import {FPS, HEIGHT, totalFrames, WIDTH} from './reel/config';
+import {Reel} from './reel/Reel';
 
 export const RemotionRoot: React.FC = () => {
   return (
     <>
+      {/* ريل مستقبل التعليم بكلمة — جمعية المعلمين الكويتية */}
+      <Composition id="TeachersReel" component={Reel} durationInFrames={totalFrames()} fps={FPS} width={WIDTH} height={HEIGHT} />
       {/* أفقي 16:9 */}
       <Composition
         id="HelloJenan"
