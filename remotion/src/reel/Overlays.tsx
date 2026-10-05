@@ -79,6 +79,18 @@ const ChatIcon = () => (
 
 const sfx = (name: string, volume = 0.6) => <Audio src={staticFile(`sfx/${name}.wav`)} volume={volume} />;
 
+// الفريمات اللي يتغير فيها رقم العداد — صوت تك مع كل رقم
+const tickFrames = (from: number, end: number, to: number) => {
+  const out: number[] = [];
+  let last = 1;
+  for (let f = from; f <= end; f++) {
+    const n = Math.round(interpolate(f, [from, end], [1, to], {...clamp, easing: Easing.out(Easing.cubic)}));
+    if (n !== last) out.push(f);
+    last = n;
+  }
+  return out;
+};
+
 // الانترو: «المؤتمر التربوي» يطلع أول، بعدين يرتفع ويطلع تحته عداد بالأرقام الإنجليزية لين 46
 export const IntroLockup: React.FC<{to: number; title: string}> = ({to, title}) => {
   const frame = useCurrentFrame();
@@ -126,7 +138,12 @@ export const IntroLockup: React.FC<{to: number; title: string}> = ({to, title}) 
         {n}
       </div>
       <Sequence from={8}>{sfx('whoosh', 0.4)}</Sequence>
-      <Sequence from={countFrom} durationInFrames={countEnd - countFrom + 4}>{sfx('cinematic-riser', 0.35)}</Sequence>
+      <Sequence from={countFrom} durationInFrames={countEnd - countFrom + 4}>{sfx('cinematic-riser', 0.25)}</Sequence>
+      {tickFrames(countFrom, countEnd, to).map((f) => (
+        <Sequence key={f} from={f} durationInFrames={4}>
+          {sfx('tick', 0.55)}
+        </Sequence>
+      ))}
       <Sequence from={countEnd}>{sfx('cinematic-boom', 0.7)}</Sequence>
     </AbsoluteFill>
   );
@@ -153,29 +170,45 @@ export const Title: React.FC<{text: string; sub?: string}> = ({text, sub}) => {
   );
 };
 
-// السؤال: full يطلع كبير في النص ثم يستقر عند (y, scale)،
-// docked ثابت عند (y, scale)، inline يطلع بموشن عند (y, scale) ويبقى
-export const Question: React.FC<{text: string; label: string; mode: 'full' | 'docked' | 'inline'; y: number; scale: number}> = ({
-  text,
-  label,
-  mode,
-  y: targetY,
-  scale: targetScale,
-}) => {
+// السؤال: full يطلع كبير في النص ثم ينتقل لمكانه (y, scale)، docked ثابت في مكانه،
+// inline يطلع بموشن من تحت لمكانه. كل حركة لفوق لها صوت صاعد، ولتحت صوت نازل.
+export const Question: React.FC<{
+  text: string;
+  label: string;
+  mode: 'full' | 'docked' | 'inline';
+  y: number;
+  scale: number;
+  hide?: [number, number];
+  exitAt?: number;
+}> = ({text, label, mode, y: targetY, scale: targetScale, hide, exitAt}) => {
   const frame = useCurrentFrame();
   const {fps, height} = useVideoConfig();
   const hold = Math.round(3.6 * fps);
   const icon = spring({frame, fps, config: {damping: 12, stiffness: 160}});
-  const dock =
-    mode === 'docked' ? 1 : mode === 'inline' ? 0 : interpolate(frame, [hold, hold + 20], [0, 1], {...clamp, easing: ease});
+  const move = (from: number) => interpolate(frame, [from, from + 16], [0, 1], {...clamp, easing: ease});
+
+  // الحركة من النص لمكان الكرت (full)
+  const dock = mode === 'docked' ? 1 : mode === 'inline' ? 0 : move(hold);
   const startY = mode === 'inline' ? targetY : height / 2;
   const startScale = mode === 'inline' ? targetScale : 1;
-  const y = interpolate(dock, [0, 1], [startY, targetY]) - height / 2;
+  // inline يطلع من تحت
+  const rise = mode === 'inline' ? 1 - interpolate(frame, [0, 18], [0, 1], {...clamp, easing: Easing.out(Easing.cubic)}) : 0;
+  // ينزل ويختفي وقت اسم المتحدث، وعند الخروج
+  const hideF = hide ? hide.map((t) => Math.round(t * fps)) : null;
+  const exitF = exitAt !== undefined ? Math.round(exitAt * fps) : null;
+  const down = Math.max(
+    hideF ? move(hideF[0]) * (1 - move(hideF[1])) : 0,
+    exitF !== null ? move(exitF) : 0,
+    rise,
+  );
+
+  const y = interpolate(dock, [0, 1], [startY, targetY]) - height / 2 + down * 260;
   const scale = interpolate(dock, [0, 1], [startScale, targetScale]);
   const animated = mode !== 'docked';
+  const dockDir = targetY > height / 2 ? 'down' : 'up';
 
   return (
-    <AbsoluteFill style={{fontFamily, direction: 'rtl'}}>
+    <AbsoluteFill style={{fontFamily, direction: 'rtl', opacity: 1 - down}}>
       <AbsoluteFill style={{alignItems: 'center', justifyContent: 'center'}}>
         <div style={{transform: `translateY(${y}px) scale(${scale})`, width: 960, textAlign: 'center'}}>
           <div style={{opacity: 1 - dock, height: (1 - dock) * 118, overflow: 'visible'}}>
@@ -191,12 +224,12 @@ export const Question: React.FC<{text: string; label: string; mode: 'full' | 'do
           </Pill>
         </div>
       </AbsoluteFill>
-      {animated ? (
-        <>
-          {sfx('pop', 0.5)}
-          {mode === 'full' ? <Sequence from={hold}>{sfx('whoosh', 0.25)}</Sequence> : null}
-        </>
-      ) : null}
+      {mode === 'full' ? sfx('pop', 0.5) : null}
+      {mode === 'full' ? <Sequence from={hold - 2}>{sfx(`swoosh-${dockDir}`, 0.55)}</Sequence> : null}
+      {mode === 'inline' ? sfx('swoosh-up', 0.55) : null}
+      {hideF ? <Sequence from={hideF[0] - 2}>{sfx('swoosh-down', 0.5)}</Sequence> : null}
+      {hideF ? <Sequence from={hideF[1] - 2}>{sfx('swoosh-up', 0.5)}</Sequence> : null}
+      {exitF !== null ? <Sequence from={exitF - 2}>{sfx('swoosh-down', 0.5)}</Sequence> : null}
     </AbsoluteFill>
   );
 };

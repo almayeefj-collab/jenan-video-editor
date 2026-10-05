@@ -14,7 +14,7 @@ const OverlayView: React.FC<{o: Overlay; frames: number}> = ({o, frames}) => {
     case 'question':
       return (
         <Sequence from={Math.round((o.at ?? 0) * FPS)}>
-          <Question text={o.text} label={o.label} mode={o.mode} y={o.y} scale={o.scale} />
+          <Question text={o.text} label={o.label} mode={o.mode} y={o.y} scale={o.scale} hide={o.hide} exitAt={o.exitAt} />
         </Sequence>
       );
     case 'lowerThird':

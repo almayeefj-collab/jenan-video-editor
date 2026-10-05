@@ -26,7 +26,9 @@ export type Overlay =
   | {kind: 'title'; text: string; sub?: string}
   // full: يطلع كبير في النص ثم يستقر عند (y, scale) — docked: ثابت عند (y, scale)
   // inline: يطلع بموشن عند (y, scale) ويبقى مكانه. y = مركز الكرت بالبكسل
-  | {kind: 'question'; text: string; label: string; mode: 'full' | 'docked' | 'inline'; y: number; scale: number; at?: number}
+  // hide: [من، إلى] بالثواني — الكرت ينزل ويختفي (عشان يطلع اسم المتحدث بنفس المكان) ثم يرجع
+  // exitAt: ثانية خروج الكرت (ينزل ويختفي) في آخر لقطة من مجموعة السؤال
+  | {kind: 'question'; text: string; label: string; mode: 'full' | 'docked' | 'inline'; y: number; scale: number; at?: number; hide?: [number, number]; exitAt?: number}
   | {kind: 'lowerThird'; name: string; role?: string; at: number; dur: number; bottom: number}
   | {kind: 'outro'; logo?: string};
 
@@ -57,8 +59,11 @@ const Q1_TITLE = 'مستقبل التعليم بكلمة';
 const Q3_TITLE = 'رسالة للمعلمين';
 const Q3 = 'إذا عندك رسالة مباشرة للمعلمين والمعلمات بالكويت، شتقول لهم؟';
 
-// أماكن الكروت مختارة لكل لقطة عشان ما تغطي وجه ولا يد ولا صورة سمو الأمير
-const TOP = {y: 165, scale: 0.5}; // شريط أعلى الشاشة فوق الرؤوس
+// أماكن الكروت مختارة عشان ما تغطي وجه ولا يد ولا صورة سمو الأمير.
+// المقابلات تنعرض بطولها الكامل بدون قص.
+// منطقة الكروت: تحت الأيادي وفوق منطقة كابشن إنستغرام — ما تغطي وجه ولا يد
+const LOW = {y: 1590, scale: 0.52};
+const LT_BOTTOM = 255; // اسم المتحدث بنفس المنطقة، والسؤال ينزل يفسح له المكان
 
 export const shots: Shot[] = [
   // ── ١) الانترو: مقتطفات الناس يمشون (ghosting) ثم اللقطة من فوق + سؤال الرئيس ──
@@ -66,30 +71,30 @@ export const shots: Shot[] = [
   {src: 'footage/lobby-entrance-ghost.mp4', from: 0, to: 2.2, volume: 0, enter: 'cut'},
   {src: 'footage/lobby-walkway-ghost.mp4', from: 0.5, to: 2.3, volume: 0, enter: 'cut'},
   {src: 'footage/lobby-crowd-ghost.mp4', from: 1, to: 8.2, volume: 0, enter: 'cut',
-    overlays: [{kind: 'question', label: 'السؤال', text: Q2, mode: 'full', ...TOP, at: 2.3}]},
+    overlays: [{kind: 'question', label: 'السؤال', text: Q2, mode: 'full', ...LOW, at: 2.3}]},
 
   // ── ٢) رئيس الجمعية ──
-  {src: 'footage/q2-glasses.mp4', from: 0, to: 49, volume: V, enter: 'wipe',
+  {src: 'footage/q2-glasses.mp4', from: 0, to: 49.2, volume: V, enter: 'wipe',
     overlays: [
-      {kind: 'question', label: 'السؤال', text: Q2, mode: 'docked', ...TOP},
-      {kind: 'lowerThird', name: 'أ. حمد الهولي', role: 'رئيس جمعية المعلمين الكويتية', at: 9.5, dur: 6, bottom: 550},
+      {kind: 'question', label: 'السؤال', text: Q2, mode: 'docked', ...LOW, hide: [9.2, 15.8], exitAt: 48.5},
+      {kind: 'lowerThird', name: 'أ. حمد الهولي', role: 'رئيس جمعية المعلمين الكويتية', at: 9.5, dur: 6, bottom: LT_BOTTOM},
     ]},
 
   // ── ٣) اللوبي + مستقبل التعليم بكلمة ──
   {src: 'footage/lobby-hospitality.mp4', from: 0.6, to: 5, volume: B, enter: 'wipe',
-    overlays: [{kind: 'question', label: Q1_TITLE, text: Q1, mode: 'full', ...TOP}]},
+    overlays: [{kind: 'question', label: Q1_TITLE, text: Q1, mode: 'full', ...LOW}]},
   {src: 'footage/q1-pink.mp4', from: 0, to: 3.4, volume: V, enter: 'cut',
-    overlays: [{kind: 'question', label: Q1_TITLE, text: Q1, mode: 'docked', ...TOP}]},
-  {src: 'footage/q1-ghutra.mp4', from: 0.8, to: 8.4, volume: V, enter: 'cut',
-    overlays: [{kind: 'question', label: Q1_TITLE, text: Q1, mode: 'docked', ...TOP}]},
+    overlays: [{kind: 'question', label: Q1_TITLE, text: Q1, mode: 'docked', ...LOW}]},
+  {src: 'footage/q1-ghutra.mp4', from: 0, to: 9, volume: V, enter: 'cut',
+    overlays: [{kind: 'question', label: Q1_TITLE, text: Q1, mode: 'docked', ...LOW, exitAt: 8.4}]},
 
   // ── ٤) رسالة للمعلمين: المذيعة تسأل (صورة سمو الأمير فوق، فالكرت تحت وجهها) ثم المعلمة ──
   {src: 'footage/presenter.mp4', from: 0, to: 6.5, volume: V, enter: 'wipe',
-    overlays: [{kind: 'question', label: Q3_TITLE, text: Q3, mode: 'inline', y: 1130, scale: 0.78}]},
-  {src: 'footage/q3-brown-b.mp4', from: 0, to: 12.4, volume: V, enter: 'cut',
+    overlays: [{kind: 'question', label: Q3_TITLE, text: Q3, mode: 'inline', y: 1580, scale: 0.6}]},
+  {src: 'footage/q3-brown-b.mp4', from: 0, to: 13.5, volume: V, enter: 'cut',
     overlays: [
-      {kind: 'question', label: Q3_TITLE, text: Q3, mode: 'docked', ...TOP},
-      {kind: 'lowerThird', name: 'أ. غدير الناشي', role: 'عضو مجلس إدارة جمعية المعلمين الكويتية', at: 1, dur: 6, bottom: 300},
+      {kind: 'question', label: Q3_TITLE, text: Q3, mode: 'docked', y: 1580, scale: 0.6, hide: [0.6, 7.4], exitAt: 12.8},
+      {kind: 'lowerThird', name: 'أ. غدير الناشي', role: 'عضو مجلس إدارة جمعية المعلمين الكويتية', at: 1, dur: 6, bottom: LT_BOTTOM},
     ]},
 
   // ── ٥) الأوترو: المبنى بالدرون (بدون صوته) والشعار في النص ──
