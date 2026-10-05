@@ -50,6 +50,24 @@ const BlurWords: React.FC<{text: string; delay?: number; stagger?: number}> = ({
   );
 };
 
+// صوت كتابة كيبورد: ضغطات بإيقاع غير منتظم شوي عشان تطلع طبيعية
+const Typing: React.FC<{from: number; frames: number}> = ({from, frames}) => {
+  const hits: number[] = [];
+  for (let f = 0, i = 0; f < frames; i++) {
+    hits.push(from + f);
+    f += 2 + ((i * 7) % 3 === 0 ? 1 : 0);
+  }
+  return (
+    <>
+      {hits.map((f, i) => (
+        <Sequence key={f} from={f} durationInFrames={4}>
+          <Audio src={staticFile(`sfx/key${(i * 5 + 3) % 4}.wav`)} volume={0.32 + ((i * 3) % 4) * 0.05} />
+        </Sequence>
+      ))}
+    </>
+  );
+};
+
 const IconBox: React.FC<{children: React.ReactNode; scale: number}> = ({children, scale}) => (
   <div
     style={{
@@ -227,6 +245,7 @@ export const Question: React.FC<{
         </div>
       </AbsoluteFill>
       {mode === 'full' ? sfx('pop', 0.5) : null}
+      {animated ? <Typing from={8} frames={text.split(' ').length * 3 + 10} /> : null}
       {mode === 'full' ? <Sequence from={hold - 2}>{sfx(`swoosh-${dockDir}`, 0.55)}</Sequence> : null}
       {mode === 'inline' ? sfx('swoosh-up', 0.55) : null}
       {hideF ? <Sequence from={hideF[0] - 2}>{sfx('swoosh-down', 0.5)}</Sequence> : null}
