@@ -1,0 +1,8 @@
+node_modules/
+.venv/
+out/
+__pycache__/
+*.mp4
+*.mov
+*.webm
+!remotion/public/**

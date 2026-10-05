@@ -1,0 +1,23 @@
+{
+  "name": "jenan-remotion",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "studio": "remotion studio",
+    "render": "remotion render",
+    "build": "remotion render src/index.ts HelloJenan out/hello.mp4"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.533",
+    "@remotion/fonts": "^4.0.533",
+    "@remotion/media-utils": "^4.0.533",
+    "@remotion/transitions": "^4.0.533",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "remotion": "^4.0.533"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "typescript": "^7.0.2"
+  }
+}

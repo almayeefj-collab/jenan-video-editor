@@ -1,0 +1,13 @@
+# توليد فيديو وصور بالذكاء الاصطناعي (يحتاج HF_KEY من cloud.higgsfield.ai)
+higgsfield-client
+# مونتاج بالكود في بايثون
+moviepy
+# قص الصمت والأجزاء الميتة تلقائياً
+auto-editor
+# اكتشاف تغيّر المشاهد
+scenedetect
+opencv-python-headless
+# تفريغ الكلام لترجمة/نص (يدعم العربي)
+faster-whisper
+# تعديل الصور والصور المصغّرة
+pillow
