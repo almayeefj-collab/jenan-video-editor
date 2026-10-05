@@ -37,6 +37,8 @@ export type Shot = {
   overlays?: Overlay[];
   // الانتقال قبل هالشوت (من الشوت اللي قبله)
   enter?: 'cut' | 'fade' | 'wipe';
+  // تدرج لوني سينمائي + zoom بطيء
+  grade?: boolean;
 };
 
 export const FPS = 30;
@@ -77,9 +79,16 @@ export const shots: Shot[] = [
   {src: 'footage/presenter.mp4', from: 0, to: 6.5, volume: V, enter: 'wipe',
     overlays: [{kind: 'question', label: Q3_TITLE, text: Q3}]},
   {src: 'footage/q3-brown-a.mp4', from: 0.5, to: 15.5, volume: V, enter: 'cut',
-    overlays: [{kind: 'question', label: Q3_TITLE, text: Q3, docked: true}]},
+    overlays: [
+      {kind: 'question', label: Q3_TITLE, text: Q3, docked: true},
+      {kind: 'lowerThird', name: 'أ. غدير الناشي', role: 'عضو مجلس إدارة جمعية المعلمين الكويتية', at: 2.5, dur: 6},
+    ]},
   {src: 'footage/q3-brown-b.mp4', from: 0, to: 12.4, volume: V, enter: 'cut',
-    overlays: [{kind: 'question', label: Q3_TITLE, text: Q3, docked: true}, {kind: 'outro'}]},
+    overlays: [{kind: 'question', label: Q3_TITLE, text: Q3, docked: true}]},
+
+  // ── ٥) الأوترو: المبنى بالدرون والشعار في النص ──
+  {src: 'footage/building-drone.mp4', from: 0, to: 9, volume: 0.5, enter: 'wipe', grade: true,
+    overlays: [{kind: 'outro', logo: LOGO}]},
 ];
 
 export const shotFrames = (s: Shot) => Math.round((s.to - s.from) * FPS);

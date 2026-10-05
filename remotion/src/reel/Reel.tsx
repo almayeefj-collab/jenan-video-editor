@@ -1,7 +1,7 @@
 import {fade} from '@remotion/transitions/fade';
 import {linearTiming, TransitionSeries} from '@remotion/transitions';
 import {Fragment} from 'react';
-import {AbsoluteFill, Audio, Img, OffthreadVideo, Sequence, staticFile} from 'remotion';
+import {AbsoluteFill, Audio, Img, interpolate, OffthreadVideo, Sequence, staticFile, useCurrentFrame} from 'remotion';
 import {zoomBlur} from './zoomBlur';
 import {brand, FPS, LOGO, type Overlay, type Shot, shotFrames, timeline, TRANSITION} from './config';
 import {Counter, LowerThird, Outro, Question, Title} from './Overlays';
@@ -27,13 +27,21 @@ const OverlayView: React.FC<{o: Overlay; frames: number}> = ({o, frames}) => {
 
 const ShotView: React.FC<{shot: Shot}> = ({shot}) => {
   const frames = shotFrames(shot);
+  const frame = useCurrentFrame();
+  const push = shot.grade ? interpolate(frame, [0, frames], [1, 1.12]) : 1;
   return (
     <AbsoluteFill style={{background: 'black'}}>
       <OffthreadVideo
         src={staticFile(shot.src)}
         trimBefore={Math.round(shot.from * FPS)}
         volume={shot.volume}
-        style={{width: '100%', height: '100%', objectFit: 'cover'}}
+        style={{
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          transform: `scale(${push})`,
+          filter: shot.grade ? 'contrast(1.12) saturate(1.15) brightness(0.95) sepia(0.12)' : undefined,
+        }}
       />
       {shot.overlays?.map((o, i) => <OverlayView key={i} o={o} frames={frames} />)}
     </AbsoluteFill>
@@ -42,6 +50,8 @@ const ShotView: React.FC<{shot: Shot}> = ({shot}) => {
 
 export const Reel: React.FC = () => {
   const tl = timeline();
+  const outroStart = tl[tl.length - 1].start;
+  const frame = useCurrentFrame();
   return (
     <AbsoluteFill style={{background: brand.navyDark}}>
       <TransitionSeries>
@@ -60,7 +70,7 @@ export const Reel: React.FC = () => {
         ))}
       </TransitionSeries>
       {/* الشعار فوق يمين طول الفيديو، بدون كتابة */}
-      <Img src={staticFile(LOGO)} style={{position: 'absolute', top: 110, right: 50, width: 96}} />
+      <Img src={staticFile(LOGO)} style={{position: 'absolute', top: 110, right: 50, width: 96, opacity: interpolate(frame, [outroStart - 10, outroStart], [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'})}} />
       {/* مؤثر whoosh مع كل انتقال رسمي */}
       {tl.map(({shot, start}, i) =>
         shot.enter === 'wipe' ? (

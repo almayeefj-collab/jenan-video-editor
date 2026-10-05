@@ -188,21 +188,67 @@ export const LowerThird: React.FC<{name: string; role?: string}> = ({name, role}
   );
 };
 
-// الأوترو: لقطة المبنى والشعار يطلع فوق يمين، بعدين كل شي يخفت للأسود
+// الأوترو السينمائي: الدرون يقرب ببطء مع تدرج لوني وتعتيم أطراف،
+// بعدين الخلفية تضبب وتغمق والشعار يدخل في نص الشاشة بتلاشي ولمعة
 export const Outro: React.FC<{logo?: string}> = ({logo}) => {
   const frame = useCurrentFrame();
   const {fps, durationInFrames} = useVideoConfig();
-  const logoP = spring({frame: frame - 10, fps, config: {damping: 14}});
+  const logoAt = Math.round(3 * fps);
+  const t = frame - logoAt;
+  const logoIn = interpolate(t, [0, 36], [0, 1], {...clamp, easing: Easing.out(Easing.cubic)});
+  const depth = interpolate(t, [-10, 30], [0, 1], {...clamp, easing: ease});
+  const shine = interpolate(t, [34, 64], [-60, 160], clamp);
+  const glow = interpolate(t, [10, 50], [0, 1], clamp);
   const black = interpolate(frame, [durationInFrames - 1.2 * FPS, durationInFrames], [0, 1], clamp);
   return (
     <AbsoluteFill>
+      {/* تعتيم الأطراف + تغميق الخلفية لما يدخل الشعار */}
+      <AbsoluteFill style={{background: 'radial-gradient(ellipse at center, rgba(0,0,0,0) 35%, rgba(0,0,0,0.65) 100%)'}} />
+      <AbsoluteFill style={{background: 'rgba(5,12,25,1)', opacity: depth * 0.45}} />
       {logo ? (
-        <Img
-          src={staticFile(logo)}
-          style={{position: 'absolute', top: 110, right: 60, width: 170, opacity: logoP, transform: `scale(${0.85 + 0.15 * logoP})`}}
-        />
+        <AbsoluteFill style={{alignItems: 'center', justifyContent: 'center'}}>
+          <div
+            style={{
+              position: 'absolute',
+              width: 700,
+              height: 700,
+              borderRadius: '50%',
+              background: `radial-gradient(circle, ${brand.goldDeep}55 0%, ${brand.goldDeep}00 65%)`,
+              opacity: glow,
+            }}
+          />
+          <div
+            style={{
+              position: 'relative',
+              width: 360,
+              opacity: logoIn,
+              filter: `blur(${(1 - logoIn) * 18}px) drop-shadow(0 10px 40px rgba(0,0,0,0.6))`,
+              transform: `scale(${1.18 - 0.18 * logoIn})`,
+              WebkitMaskImage: 'linear-gradient(#000, #000)',
+            }}
+          >
+            <Img src={staticFile(logo)} style={{width: '100%', display: 'block'}} />
+            {/* لمعة تمر على الشعار */}
+            <div
+              style={{
+                position: 'absolute',
+                inset: 0,
+                background: `linear-gradient(105deg, transparent ${shine - 20}%, rgba(255,255,255,0.55) ${shine}%, transparent ${shine + 20}%)`,
+                mixBlendMode: 'overlay',
+                WebkitMaskImage: `url(${staticFile(logo)})`,
+                WebkitMaskSize: '100% 100%',
+              }}
+            />
+          </div>
+        </AbsoluteFill>
       ) : null}
-      {logo ? <Sequence from={10}>{sfx('impact', 0.45)}</Sequence> : null}
+      {logo ? (
+        <>
+          <Sequence from={logoAt - 66} durationInFrames={70}>{sfx('cinematic-riser', 0.45)}</Sequence>
+          <Sequence from={logoAt}>{sfx('cinematic-boom', 0.9)}</Sequence>
+          <Sequence from={logoAt + 34}>{sfx('shimmer', 0.35)}</Sequence>
+        </>
+      ) : null}
       <AbsoluteFill style={{background: 'black', opacity: black}} />
     </AbsoluteFill>
   );
