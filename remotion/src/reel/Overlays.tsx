@@ -1,6 +1,5 @@
-import {AbsoluteFill, Audio, Easing, Img, interpolate, Sequence, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, Audio, Easing, interpolate, Sequence, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {brand, FPS} from './config';
-import {Waves} from './Waves';
 import {fontFamily} from './font';
 
 const clamp = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
@@ -118,7 +117,6 @@ export const Title: React.FC<{text: string; sub?: string}> = ({text, sub}) => {
   const bar = interpolate(frame, [10, 30], [0, 1], {...clamp, easing: ease});
   return (
     <AbsoluteFill style={{fontFamily, direction: 'rtl', alignItems: 'center', justifyContent: 'center', opacity: out}}>
-      <AbsoluteFill style={{background: 'radial-gradient(circle, rgba(10,20,35,0.55) 0%, rgba(10,20,35,0.15) 70%)'}} />
       {sub ? (
         <div style={{fontSize: 48, fontWeight: 700, color: brand.gold, marginBottom: 10, textShadow: shadow}}>
           <BlurWords text={sub} />
@@ -141,13 +139,11 @@ export const Question: React.FC<{text: string; label: string; docked?: boolean}>
   const icon = spring({frame, fps, config: {damping: 12, stiffness: 160}});
   // docked: السؤال يبقى صغير فوق من أول الشوت (للإجابات اللي بعد أول إجابة)
   const dock = docked ? 1 : interpolate(frame, [hold, hold + 20], [0, 1], {...clamp, easing: ease});
-  const dim = interpolate(frame, [0, 10], [0, 1], clamp) * (1 - dock);
   const y = interpolate(dock, [0, 1], [0, -560]);
   const scale = interpolate(dock, [0, 1], [1, 0.62]);
 
   return (
     <AbsoluteFill style={{fontFamily, direction: 'rtl'}}>
-      <AbsoluteFill style={{background: `linear-gradient(180deg, ${brand.navyDark}aa, ${brand.navyDark}66)`, opacity: dim}} />
       <AbsoluteFill style={{alignItems: 'center', justifyContent: 'center'}}>
         <div style={{transform: `translateY(${y}px) scale(${scale})`, width: 960, textAlign: 'center'}}>
           <div style={{opacity: 1 - dock, height: (1 - dock) * 118, overflow: 'visible'}}>
@@ -192,34 +188,9 @@ export const LowerThird: React.FC<{name: string; role?: string}> = ({name, role}
   );
 };
 
-// الأوترو: خلفية الهوية، الشعار فوق يمين، واسم الجمعية بالعربي والإنجليزي
-export const Outro: React.FC<{text: string; logo: string}> = ({text, logo}) => {
+// الأوترو: اللقطة الأخيرة تخفت للأسود، والشعار ثابت فوق يمين
+export const Outro: React.FC = () => {
   const frame = useCurrentFrame();
-  const {fps} = useVideoConfig();
-  const dim = interpolate(frame, [0, 20], [0, 1], clamp);
-  const logoP = spring({frame: frame - 8, fps, config: {damping: 14}});
-  const fadeOut = interpolate(frame, [4.8 * FPS, 5.5 * FPS], [1, 0], clamp);
-  const sub = interpolate(frame, [40, 55], [0, 1], clamp);
-  return (
-    <AbsoluteFill style={{fontFamily, direction: 'rtl', opacity: fadeOut}}>
-      <AbsoluteFill style={{background: `linear-gradient(180deg, ${brand.navy}ee, ${brand.navyDark}f5)`, opacity: dim}}>
-        <Waves />
-      </AbsoluteFill>
-      <Img
-        src={staticFile(logo)}
-        style={{position: 'absolute', top: 130, right: 70, width: 150, opacity: logoP, transform: `scale(${0.8 + 0.2 * logoP})`}}
-      />
-      <AbsoluteFill style={{alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '0 70px'}}>
-        <div style={{fontSize: 84, fontWeight: 900, color: brand.gold, lineHeight: 1.35}}>
-          <BlurWords text={text} delay={14} stagger={4} />
-        </div>
-        <div style={{height: 6, width: 320 * dim, background: brand.bar, borderRadius: 3, marginTop: 30}} />
-        <div style={{marginTop: 34, fontSize: 58, fontWeight: 800, color: brand.text, opacity: sub}}>جمعية المعلمين الكويتية</div>
-        <div style={{marginTop: 8, fontSize: 30, fontWeight: 700, letterSpacing: 9, color: brand.skyText, opacity: sub, direction: 'ltr'}}>
-          KUWAIT TEACHERS SOCIETY
-        </div>
-      </AbsoluteFill>
-      <Sequence from={8}>{sfx('impact', 0.5)}</Sequence>
-    </AbsoluteFill>
-  );
+  const black = interpolate(frame, [3.6 * FPS, 5.4 * FPS], [0, 1], clamp);
+  return <AbsoluteFill style={{background: 'black', opacity: black}} />;
 };

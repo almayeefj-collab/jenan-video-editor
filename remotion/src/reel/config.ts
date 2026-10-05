@@ -27,7 +27,7 @@ export type Overlay =
   | {kind: 'title'; text: string; sub?: string}
   | {kind: 'question'; text: string; label: string; docked?: boolean}
   | {kind: 'lowerThird'; name: string; role?: string; at: number; dur: number}
-  | {kind: 'outro'; text: string; logo: string};
+  | {kind: 'outro'};
 
 export type Shot = {
   src: string;
@@ -42,7 +42,7 @@ export type Shot = {
 export const FPS = 30;
 export const WIDTH = 1080;
 export const HEIGHT = 1920;
-export const TRANSITION = {fade: 12, wipe: 26} as const;
+export const TRANSITION = {fade: 12, wipe: 16} as const;
 export const LOGO = 'brand/kts-logo.png';
 
 const B = 0.25; // صوت لقطات الأجواء
@@ -86,7 +86,7 @@ export const shots: Shot[] = [
 
   // ── الأوترو ──
   {src: 'footage/hall.mp4', from: 2, to: 7.5, volume: B, enter: 'wipe',
-    overlays: [{kind: 'outro', text: 'المؤتمر التربوي السادس والأربعون', logo: LOGO}]},
+    overlays: [{kind: 'outro'}]},
 ];
 
 export const shotFrames = (s: Shot) => Math.round((s.to - s.from) * FPS);

@@ -1,9 +1,9 @@
 import {fade} from '@remotion/transitions/fade';
 import {linearTiming, TransitionSeries} from '@remotion/transitions';
 import {Fragment} from 'react';
-import {AbsoluteFill, Audio, OffthreadVideo, Sequence, staticFile} from 'remotion';
-import {brandWipe} from './brandWipe';
-import {brand, FPS, type Overlay, type Shot, shotFrames, timeline, TRANSITION} from './config';
+import {AbsoluteFill, Audio, Img, OffthreadVideo, Sequence, staticFile} from 'remotion';
+import {zoomBlur} from './zoomBlur';
+import {brand, FPS, LOGO, type Overlay, type Shot, shotFrames, timeline, TRANSITION} from './config';
 import {Counter, LowerThird, Outro, Question, Title} from './Overlays';
 
 const OverlayView: React.FC<{o: Overlay; frames: number}> = ({o, frames}) => {
@@ -21,7 +21,7 @@ const OverlayView: React.FC<{o: Overlay; frames: number}> = ({o, frames}) => {
         </Sequence>
       );
     case 'outro':
-      return <Sequence><Outro text={o.text} logo={o.logo} /></Sequence>;
+      return <Sequence><Outro /></Sequence>;
   }
 };
 
@@ -51,7 +51,7 @@ export const Reel: React.FC = () => {
               <TransitionSeries.Transition presentation={fade()} timing={linearTiming({durationInFrames: TRANSITION.fade})} />
             ) : null}
             {i > 0 && shot.enter === 'wipe' ? (
-              <TransitionSeries.Transition presentation={brandWipe({brand})} timing={linearTiming({durationInFrames: TRANSITION.wipe})} />
+              <TransitionSeries.Transition presentation={zoomBlur()} timing={linearTiming({durationInFrames: TRANSITION.wipe})} />
             ) : null}
             <TransitionSeries.Sequence durationInFrames={frames}>
               <ShotView shot={shot} />
@@ -59,7 +59,8 @@ export const Reel: React.FC = () => {
           </Fragment>
         ))}
       </TransitionSeries>
-      <div style={{position: 'absolute', left: 0, right: 0, bottom: 0, height: 12, background: brand.bar}} />
+      {/* الشعار فوق يمين طول الفيديو، بدون كتابة */}
+      <Img src={staticFile(LOGO)} style={{position: 'absolute', top: 110, right: 50, width: 96}} />
       {/* مؤثر whoosh مع كل انتقال رسمي */}
       {tl.map(({shot, start}, i) =>
         shot.enter === 'wipe' ? (
