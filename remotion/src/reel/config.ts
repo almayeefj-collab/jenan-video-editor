@@ -24,11 +24,11 @@ export const brand: Brand = {
 
 export type Overlay =
   | {kind: 'title'; text: string; sub?: string}
-  // full: يطلع كبير في النص ثم يستقر عند (y, scale) — docked: ثابت عند (y, scale)
-  // inline: يطلع بموشن عند (y, scale) ويبقى مكانه. y = مركز الكرت بالبكسل
+  // full: يطلع كبير في النص ثم يتحول لشريط سطر واحد عند y — docked: شريط ثابت عند y
+  // inline: الشريط يطلع بموشن من تحت لمكانه. y = مركز الشريط بالبكسل
   // hide: [من، إلى] بالثواني — الكرت ينزل ويختفي (عشان يطلع اسم المتحدث بنفس المكان) ثم يرجع
   // exitAt: ثانية خروج الكرت (ينزل ويختفي) في آخر لقطة من مجموعة السؤال
-  | {kind: 'question'; text: string; label: string; mode: 'full' | 'docked' | 'inline'; y: number; scale: number; at?: number; hide?: [number, number]; exitAt?: number}
+  | {kind: 'question'; text: string; label: string; mode: 'full' | 'docked' | 'inline'; y: number; at?: number; hide?: [number, number]; exitAt?: number}
   | {kind: 'lowerThird'; name: string; role?: string; at: number; dur: number; bottom: number}
   | {kind: 'outro'; logo?: string};
 
@@ -62,7 +62,7 @@ const Q3 = 'إذا عندك رسالة مباشرة للمعلمين والمع�
 // أماكن الكروت مختارة عشان ما تغطي وجه ولا يد ولا صورة سمو الأمير.
 // المقابلات تنعرض بطولها الكامل بدون قص.
 // منطقة الكروت: تحت الأيادي وفوق منطقة كابشن إنستغرام — ما تغطي وجه ولا يد
-const LOW = {y: 1600, scale: 0.63};
+const LOW = {y: 1600};
 const LT_BOTTOM = 255; // اسم المتحدث بنفس المنطقة، والسؤال ينزل يفسح له المكان
 
 export const shots: Shot[] = [
@@ -90,11 +90,11 @@ export const shots: Shot[] = [
 
   // ── ٤) رسالة للمعلمين: المذيعة تسأل (صورة سمو الأمير فوق، فالكرت تحت وجهها) ثم المعلمة ──
   {src: 'footage/presenter.mp4', from: 0, to: 6.5, volume: V, enter: 'wipe',
-    overlays: [{kind: 'question', label: Q3_TITLE, text: Q3, mode: 'inline', y: 1650, scale: 0.68}]},
+    overlays: [{kind: 'question', label: Q3_TITLE, text: Q3, mode: 'inline', y: 1640}]},
   {src: 'footage/q3-brown-b.mp4', from: 0, to: 13.5, volume: V, enter: 'cut',
     overlays: [
-      {kind: 'question', label: Q3_TITLE, text: Q3, mode: 'docked', y: 1600, scale: 0.68, hide: [0.6, 7.4], exitAt: 12.8},
-      {kind: 'lowerThird', name: 'أ. غدير الناشي', role: 'عضو مجلس إدارة جمعية المعلمين الكويتية', at: 1, dur: 6, bottom: LT_BOTTOM},
+      {kind: 'question', label: Q3_TITLE, text: Q3, mode: 'docked', y: 1600, hide: [0.6, 7.4], exitAt: 12.8},
+      {kind: 'lowerThird', name: 'أ. غدير الناشي', role: 'مديرة إدارة التدريب والتطوير', at: 1, dur: 6, bottom: LT_BOTTOM},
     ]},
 
   // ── ٥) الأوترو: المبنى بالدرون (بدون صوته) والشعار في النص ──

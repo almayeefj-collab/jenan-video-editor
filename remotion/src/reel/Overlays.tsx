@@ -1,4 +1,5 @@
-import {AbsoluteFill, Audio, Easing, Img, interpolate, Sequence, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import {useLayoutEffect, useRef, useState} from 'react';
+import {AbsoluteFill, Audio, continueRender, delayRender, Easing, Img, interpolate, Sequence, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {brand, FPS} from './config';
 import {fontFamily, numberFamily} from './font';
 
@@ -188,30 +189,78 @@ export const Title: React.FC<{text: string; sub?: string}> = ({text, sub}) => {
   );
 };
 
-// السؤال: full يطلع كبير في النص ثم ينتقل لمكانه (y, scale)، docked ثابت في مكانه،
-// inline يطلع بموشن من تحت لمكانه. كل حركة لفوق لها صوت صاعد، ولتحت صوت نازل.
+// نص بسطر واحد يصغر تلقائياً لين يدخل في العرض المتاح (يقيس بعد ما يتحمل الخط)
+const FitLine: React.FC<{children: React.ReactNode; maxWidth: number; fontSize: number}> = ({children, maxWidth, fontSize}) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+  const [handle] = useState(() => delayRender('fit-line'));
+  useLayoutEffect(() => {
+    document.fonts.ready.then(() => {
+      const w = ref.current?.scrollWidth ?? maxWidth;
+      setScale(Math.min(1, maxWidth / w));
+      continueRender(handle);
+    });
+  }, [handle, maxWidth]);
+  return (
+    <div style={{width: maxWidth, display: 'flex', justifyContent: 'center'}}>
+      <div ref={ref} style={{whiteSpace: 'nowrap', fontSize, transform: `scale(${scale})`, transformOrigin: 'center'}}>
+        {children}
+      </div>
+    </div>
+  );
+};
+
+const BAR_WIDTH = 1010;
+
+// شريط السؤال: مستطيل عريض والسؤال بسطر واحد، وعنوانه في تبويب ذهبي فوقه
+const QuestionBar: React.FC<{text: string; label: string; typing: boolean}> = ({text, label, typing}) => (
+  <div style={{width: BAR_WIDTH, position: 'relative'}}>
+    <div
+      style={{
+        position: 'absolute',
+        top: -44,
+        right: 26,
+        padding: '4px 22px 6px',
+        borderRadius: '14px 14px 0 0',
+        background: brand.navy,
+        border: `2px solid ${brand.goldDeep}aa`,
+        borderBottom: 'none',
+        color: brand.gold,
+        fontSize: 26,
+        fontWeight: 800,
+      }}
+    >
+      {label}
+    </div>
+    <Pill style={{borderRadius: 22, padding: '20px 30px', display: 'flex', justifyContent: 'center'}}>
+      <div style={{fontWeight: 800, lineHeight: 1.3}}>
+        <FitLine maxWidth={BAR_WIDTH - 64} fontSize={50}>
+          {typing ? <BlurWords text={text} delay={8} /> : text}
+        </FitLine>
+      </div>
+    </Pill>
+  </div>
+);
+
+// السؤال: full يطلع كبير في النص ثم ينزل ويتحول لشريط سطر واحد،
+// docked شريط ثابت، inline الشريط يطلع من تحت. كل حركة لفوق لها صوت صاعد، ولتحت صوت نازل.
 export const Question: React.FC<{
   text: string;
   label: string;
   mode: 'full' | 'docked' | 'inline';
   y: number;
-  scale: number;
   hide?: [number, number];
   exitAt?: number;
-}> = ({text, label, mode, y: targetY, scale: targetScale, hide, exitAt}) => {
+}> = ({text, label, mode, y: barY, hide, exitAt}) => {
   const frame = useCurrentFrame();
   const {fps, height} = useVideoConfig();
   const hold = Math.round(3.6 * fps);
   const icon = spring({frame, fps, config: {damping: 12, stiffness: 160}});
   const move = (from: number) => interpolate(frame, [from, from + 16], [0, 1], {...clamp, easing: ease});
 
-  // الحركة من النص لمكان الكرت (full)
-  const dock = mode === 'docked' ? 1 : mode === 'inline' ? 0 : move(hold);
-  const startY = mode === 'inline' ? targetY : height / 2;
-  const startScale = mode === 'inline' ? targetScale : 1;
-  // inline يطلع من تحت
+  // full: الكرت الكبير ينزل ويختفي والشريط يطلع مكانه
+  const toBar = mode === 'full' ? move(hold) : 1;
   const rise = mode === 'inline' ? 1 - interpolate(frame, [0, 18], [0, 1], {...clamp, easing: Easing.out(Easing.cubic)}) : 0;
-  // ينزل ويختفي وقت اسم المتحدث، وعند الخروج
   const hideF = hide ? hide.map((t) => Math.round(t * fps)) : null;
   const exitF = exitAt !== undefined ? Math.round(exitAt * fps) : null;
   const down = Math.max(
@@ -219,34 +268,45 @@ export const Question: React.FC<{
     exitF !== null ? move(exitF) : 0,
     rise,
   );
-
-  const y = interpolate(dock, [0, 1], [startY, targetY]) - height / 2 + down * 260;
-  const scale = interpolate(dock, [0, 1], [startScale, targetScale]);
-  const animated = mode !== 'docked';
-  // الأيقونة بس مع السؤال الكبير اللي في النص — في inline ممكن تلمس يد المتحدث
-  const iconShow = mode === 'full' ? 1 - dock : 0;
-  const dockDir = targetY > height / 2 ? 'down' : 'up';
+  const barOffset = (1 - toBar) * 120 + down * 260;
 
   return (
-    <AbsoluteFill style={{fontFamily, direction: 'rtl', opacity: 1 - down}}>
-      <AbsoluteFill style={{alignItems: 'center', justifyContent: 'center'}}>
-        <div style={{transform: `translateY(${y}px) scale(${scale})`, width: 960, textAlign: 'center'}}>
-          <div style={{opacity: iconShow, height: iconShow * 118, overflow: 'visible'}}>
+    <AbsoluteFill style={{fontFamily, direction: 'rtl'}}>
+      {mode === 'full' && toBar < 1 ? (
+        <AbsoluteFill style={{alignItems: 'center', justifyContent: 'center', opacity: 1 - toBar}}>
+          <div
+            style={{
+              transform: `translateY(${toBar * (barY - height / 2)}px) scale(${1 - 0.35 * toBar})`,
+              width: 960,
+              textAlign: 'center',
+            }}
+          >
             <IconBox scale={icon}>
               <ChatIcon />
             </IconBox>
+            <Pill style={{padding: '28px 48px', borderRadius: 40}}>
+              <div style={{fontSize: 40, fontWeight: 800, color: brand.gold, marginBottom: 6}}>{label}</div>
+              <div style={{fontSize: 66, fontWeight: 800, lineHeight: 1.4}}>
+                <BlurWords text={text} delay={8} />
+              </div>
+            </Pill>
           </div>
-          <Pill style={{padding: '28px 48px', borderRadius: 40}}>
-            <div style={{fontSize: 40, fontWeight: 800, color: brand.gold, marginBottom: 6}}>{label}</div>
-            <div style={{fontSize: 66, fontWeight: 800, lineHeight: 1.4}}>
-              {animated ? <BlurWords text={text} delay={8} /> : text}
-            </div>
-          </Pill>
-        </div>
-      </AbsoluteFill>
+        </AbsoluteFill>
+      ) : null}
+      <div
+        style={{
+          position: 'absolute',
+          left: (1080 - BAR_WIDTH) / 2,
+          top: barY - 50,
+          transform: `translateY(${barOffset}px)`,
+          opacity: toBar * (1 - down),
+        }}
+      >
+        <QuestionBar text={text} label={label} typing={mode === 'inline'} />
+      </div>
+      {mode !== 'docked' ? <Typing from={8} frames={text.split(' ').length * 3 + 10} /> : null}
       {mode === 'full' ? sfx('pop', 0.5) : null}
-      {animated ? <Typing from={8} frames={text.split(' ').length * 3 + 10} /> : null}
-      {mode === 'full' ? <Sequence from={hold - 2}>{sfx(`swoosh-${dockDir}`, 0.55)}</Sequence> : null}
+      {mode === 'full' ? <Sequence from={hold - 2}>{sfx('swoosh-down', 0.55)}</Sequence> : null}
       {mode === 'inline' ? sfx('swoosh-up', 0.55) : null}
       {hideF ? <Sequence from={hideF[0] - 2}>{sfx('swoosh-down', 0.5)}</Sequence> : null}
       {hideF ? <Sequence from={hideF[1] - 2}>{sfx('swoosh-up', 0.5)}</Sequence> : null}
@@ -331,6 +391,7 @@ export const Outro: React.FC<{logo?: string}> = ({logo}) => {
       {logo ? (
         <>
           <Sequence from={logoAt - 66} durationInFrames={70}>{sfx('cinematic-riser', 0.45)}</Sequence>
+          <Sequence from={logoAt - 8}>{sfx('whoosh', 0.7)}</Sequence>
           <Sequence from={logoAt}>{sfx('cinematic-boom', 0.9)}</Sequence>
           <Sequence from={logoAt + 34}>{sfx('shimmer', 0.35)}</Sequence>
         </>

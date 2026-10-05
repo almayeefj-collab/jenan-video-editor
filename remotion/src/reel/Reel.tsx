@@ -1,7 +1,7 @@
 import {fade} from '@remotion/transitions/fade';
 import {linearTiming, TransitionSeries} from '@remotion/transitions';
 import {Fragment} from 'react';
-import {AbsoluteFill, Audio, Img, interpolate, OffthreadVideo, Sequence, staticFile, useCurrentFrame} from 'remotion';
+import {AbsoluteFill, Audio, Easing, Img, interpolate, OffthreadVideo, Sequence, staticFile, useCurrentFrame} from 'remotion';
 import {zoomBlur} from './zoomBlur';
 import {brand, FPS, INTRO_LOCKUP_FRAMES, LOGO, type Overlay, type Shot, shotFrames, timeline, TRANSITION} from './config';
 import {musicVolume} from './music';
@@ -14,7 +14,7 @@ const OverlayView: React.FC<{o: Overlay; frames: number}> = ({o, frames}) => {
     case 'question':
       return (
         <Sequence from={Math.round((o.at ?? 0) * FPS)}>
-          <Question text={o.text} label={o.label} mode={o.mode} y={o.y} scale={o.scale} hide={o.hide} exitAt={o.exitAt} />
+          <Question text={o.text} label={o.label} mode={o.mode} y={o.y} hide={o.hide} exitAt={o.exitAt} />
         </Sequence>
       );
     case 'lowerThird':
@@ -78,7 +78,22 @@ export const Reel: React.FC = () => {
       {/* موسيقى خلفية: عالية في الانترو والأوترو، وتنخفض تحت كلام المقابلات */}
       <Audio src={staticFile('music/background.wav')} volume={(f) => musicVolume(f)} />
       {/* الشعار فوق يمين طول الفيديو، بدون كتابة */}
-      <Img src={staticFile(LOGO)} style={{position: 'absolute', top: 110, right: 50, width: 96, opacity: interpolate(frame, [outroStart - 10, outroStart], [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'})}} />
+      <Img
+        src={staticFile(LOGO)}
+        style={{
+          position: 'absolute',
+          top: 100,
+          right: 44,
+          width: 150,
+          opacity:
+            interpolate(frame, [4, 16], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'}) *
+            interpolate(frame, [outroStart - 10, outroStart], [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'}),
+          transform: `translateX(${interpolate(frame, [4, 18], [60, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.out(Easing.cubic)})}px)`,
+        }}
+      />
+      <Sequence from={2} durationInFrames={30}>
+        <Audio src={staticFile('sfx/whoosh.wav')} volume={0.6} />
+      </Sequence>
       {/* مؤثر whoosh مع كل انتقال رسمي */}
       {tl.map(({shot, start}, i) =>
         shot.enter === 'wipe' ? (
