@@ -2,20 +2,24 @@
 // كل الأوقات بالثواني، والمسارات نسبة لمجلد public/
 
 export type Brand = {
-  primary: string;
-  primaryDark: string;
-  light: string;
-  accent: string;
+  navy: string; // أعلى التدرج الكحلي
+  navyDark: string; // أسفل التدرج الكحلي
+  gold: string; // النصوص الذهبية
+  goldDeep: string; // الذهبي الغامق (حدود وتفاصيل)
+  skyText: string; // النص الإنجليزي الأزرق الفاتح
   text: string;
+  bar: string; // الشريط المتدرج أسفل التصاميم
 };
 
-// ⚠️ ألوان مأخوذة مؤقتاً من ملف خطة المحتوى — تتبدل بالهوية البصرية المعتمدة
+// الهوية البصرية لحساب جمعية المعلمين الكويتية (مأخوذة من بوستات الحساب)
 export const brand: Brand = {
-  primary: '#2E5E8E',
-  primaryDark: '#1B3A5C',
-  light: '#E7EFF8',
-  accent: '#C08A4A',
+  navy: '#133E75',
+  navyDark: '#091C3A',
+  gold: '#E9C893',
+  goldDeep: '#E0A851',
+  skyText: '#9FBDE3',
   text: '#FFFFFF',
+  bar: 'linear-gradient(90deg, #E0A851 0%, #2C8AD0 55%, #205E97 100%)',
 };
 
 export type Overlay =
@@ -39,7 +43,7 @@ export const FPS = 30;
 export const WIDTH = 1080;
 export const HEIGHT = 1920;
 export const TRANSITION = {fade: 12, wipe: 26} as const;
-export const LOGO = 'brand/logo-placeholder.svg';
+export const LOGO = 'brand/kts-logo.png';
 
 const B = 0.25; // صوت لقطات الأجواء
 const V = 1; // صوت المقابلات

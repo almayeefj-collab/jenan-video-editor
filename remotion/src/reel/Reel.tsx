@@ -43,7 +43,7 @@ const ShotView: React.FC<{shot: Shot}> = ({shot}) => {
 export const Reel: React.FC = () => {
   const tl = timeline();
   return (
-    <AbsoluteFill style={{background: brand.primaryDark}}>
+    <AbsoluteFill style={{background: brand.navyDark}}>
       <TransitionSeries>
         {tl.map(({shot, frames}, i) => (
           <Fragment key={i}>
@@ -59,6 +59,7 @@ export const Reel: React.FC = () => {
           </Fragment>
         ))}
       </TransitionSeries>
+      <div style={{position: 'absolute', left: 0, right: 0, bottom: 0, height: 12, background: brand.bar}} />
       {/* مؤثر whoosh مع كل انتقال رسمي */}
       {tl.map(({shot, start}, i) =>
         shot.enter === 'wipe' ? (
