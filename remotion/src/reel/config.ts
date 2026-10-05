@@ -62,7 +62,7 @@ const Q3 = 'إذا عندك رسالة مباشرة للمعلمين والمع�
 // أماكن الكروت مختارة عشان ما تغطي وجه ولا يد ولا صورة سمو الأمير.
 // المقابلات تنعرض بطولها الكامل بدون قص.
 // منطقة الكروت: تحت الأيادي وفوق منطقة كابشن إنستغرام — ما تغطي وجه ولا يد
-const LOW = {y: 1590, scale: 0.52};
+const LOW = {y: 1600, scale: 0.63};
 const LT_BOTTOM = 255; // اسم المتحدث بنفس المنطقة، والسؤال ينزل يفسح له المكان
 
 export const shots: Shot[] = [
@@ -90,10 +90,10 @@ export const shots: Shot[] = [
 
   // ── ٤) رسالة للمعلمين: المذيعة تسأل (صورة سمو الأمير فوق، فالكرت تحت وجهها) ثم المعلمة ──
   {src: 'footage/presenter.mp4', from: 0, to: 6.5, volume: V, enter: 'wipe',
-    overlays: [{kind: 'question', label: Q3_TITLE, text: Q3, mode: 'inline', y: 1580, scale: 0.6}]},
+    overlays: [{kind: 'question', label: Q3_TITLE, text: Q3, mode: 'inline', y: 1650, scale: 0.68}]},
   {src: 'footage/q3-brown-b.mp4', from: 0, to: 13.5, volume: V, enter: 'cut',
     overlays: [
-      {kind: 'question', label: Q3_TITLE, text: Q3, mode: 'docked', y: 1580, scale: 0.6, hide: [0.6, 7.4], exitAt: 12.8},
+      {kind: 'question', label: Q3_TITLE, text: Q3, mode: 'docked', y: 1600, scale: 0.68, hide: [0.6, 7.4], exitAt: 12.8},
       {kind: 'lowerThird', name: 'أ. غدير الناشي', role: 'عضو مجلس إدارة جمعية المعلمين الكويتية', at: 1, dur: 6, bottom: LT_BOTTOM},
     ]},
 

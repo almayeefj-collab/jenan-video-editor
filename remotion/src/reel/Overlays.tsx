@@ -205,13 +205,15 @@ export const Question: React.FC<{
   const y = interpolate(dock, [0, 1], [startY, targetY]) - height / 2 + down * 260;
   const scale = interpolate(dock, [0, 1], [startScale, targetScale]);
   const animated = mode !== 'docked';
+  // الأيقونة بس مع السؤال الكبير اللي في النص — في inline ممكن تلمس يد المتحدث
+  const iconShow = mode === 'full' ? 1 - dock : 0;
   const dockDir = targetY > height / 2 ? 'down' : 'up';
 
   return (
     <AbsoluteFill style={{fontFamily, direction: 'rtl', opacity: 1 - down}}>
       <AbsoluteFill style={{alignItems: 'center', justifyContent: 'center'}}>
         <div style={{transform: `translateY(${y}px) scale(${scale})`, width: 960, textAlign: 'center'}}>
-          <div style={{opacity: 1 - dock, height: (1 - dock) * 118, overflow: 'visible'}}>
+          <div style={{opacity: iconShow, height: iconShow * 118, overflow: 'visible'}}>
             <IconBox scale={icon}>
               <ChatIcon />
             </IconBox>
