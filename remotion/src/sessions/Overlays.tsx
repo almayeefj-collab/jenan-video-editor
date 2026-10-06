@@ -21,24 +21,64 @@ const Scrim: React.FC<{opacity: number; from?: 'bottom' | 'center'}> = ({opacity
   />
 );
 
-// العنوان الرئيسي: يُكتب كلمة كلمة بالنص مع صوت كيبورد وخط ذهبي يمتد تحته
-export const MainTitle: React.FC<{text: string}> = ({text}) => {
+// الانترو: «الورش التدريبية في المؤتمر التربوي» يُكتب كلمة كلمة مع صوت كيبورد،
+// بعدين يرتفع ويطلع تحته عداد لين 46 مع تك على كل رقم وboom في الآخر
+export const Intro: React.FC<{title: string; to: number}> = ({title, to}) => {
   const frame = useCurrentFrame();
-  const {durationInFrames} = useVideoConfig();
-  const inP = interpolate(frame, [0, 14], [0, 1], clamp);
-  const out = interpolate(frame, [durationInFrames - 12, durationInFrames], [0, 1], clamp);
-  const bar = interpolate(frame, [typingFrames(text), typingFrames(text) + 18], [0, 1], {...clamp, easing: ease});
+  const {fps, durationInFrames} = useVideoConfig();
+  const words = title.split(' ');
+  // السطر الأول أول كلمتين، والباقي سطر ذهبي تحته
+  const line1 = words.slice(0, 2).join(' ');
+  const line2 = words.slice(2).join(' ');
+  const liftAt = Math.round(2.5 * fps);
+  const countFrom = Math.round(3.0 * fps);
+  const countEnd = Math.round(5.8 * fps);
+  const lift = interpolate(frame, [liftAt, countFrom + 6], [0, 1], {...clamp, easing: ease});
+  const numIn = interpolate(frame, [countFrom, countFrom + 10], [0, 1], clamp);
+  const n = Math.round(interpolate(frame, [countFrom, countEnd], [1, to], {...clamp, easing: Easing.out(Easing.cubic)}));
+  const pop = spring({frame: frame - countEnd, fps, config: {damping: 9, stiffness: 200}});
+  const hit = frame >= countEnd ? 1 + 0.07 * Math.sin(Math.min(1, pop) * Math.PI) : 1;
+  const out = interpolate(frame, [durationInFrames - 16, durationInFrames], [0, 1], clamp);
+  const typeFrames = words.length * 4 + 12;
   return (
-    <AbsoluteFill style={{fontFamily, direction: 'rtl', alignItems: 'center', justifyContent: 'center'}}>
-      <Scrim opacity={inP * (1 - out)} from="center" />
-      <div style={{opacity: 1 - out, filter: `blur(${out * 12}px)`, transform: `scale(${1 + out * 0.06})`, textAlign: 'center'}}>
-        <div style={{fontSize: 108, fontWeight: 900, color: brand.text, lineHeight: 1.25, padding: '0 70px', textShadow: shadow}}>
-          <BlurWords text={text} delay={6} stagger={4} />
+    <AbsoluteFill style={{fontFamily, direction: 'rtl', alignItems: 'center', justifyContent: 'center', opacity: 1 - out, filter: `blur(${out * 16}px)`}}>
+      <div style={{textAlign: 'center', transform: `translateY(${-330 * lift}px) scale(${1 - 0.22 * lift})`, textShadow: shadow}}>
+        <div style={{fontSize: 120, fontWeight: 900, color: brand.text, lineHeight: 1.2}}>
+          <BlurWords text={line1} delay={6} stagger={4} />
         </div>
-        <div style={{height: 8, width: 420 * bar, background: brand.bar, borderRadius: 4, margin: '28px auto 0'}} />
+        <div style={{fontSize: 84, fontWeight: 800, color: brand.gold, lineHeight: 1.3}}>
+          <BlurWords text={line2} delay={6 + 2 * 4} stagger={4} />
+        </div>
       </div>
-      <Typing from={6} frames={typingFrames(text)} />
-      {sfx('shimmer', 0.25)}
+      <div
+        style={{
+          position: 'absolute',
+          top: '50%',
+          marginTop: -90,
+          fontFamily: numberFamily,
+          fontSize: 360,
+          fontWeight: 900,
+          color: brand.text,
+          lineHeight: 1,
+          textShadow: shadow,
+          opacity: numIn,
+          filter: `blur(${(1 - numIn) * 14}px)`,
+          transform: `scale(${hit})`,
+          fontVariantNumeric: 'lining-nums tabular-nums',
+          direction: 'ltr',
+        }}
+      >
+        {n}
+      </div>
+      <Typing from={6} frames={typeFrames} />
+      <Sequence from={liftAt - 4}>{sfx('swoosh-up', 0.35)}</Sequence>
+      <Sequence from={countFrom} durationInFrames={countEnd - countFrom + 4}>{sfx('cinematic-riser', 0.25)}</Sequence>
+      {tickFrames(countFrom, countEnd, to).map((f) => (
+        <Sequence key={f} from={f} durationInFrames={4}>
+          {sfx('tick', 0.55)}
+        </Sequence>
+      ))}
+      <Sequence from={countEnd}>{sfx('cinematic-boom', 0.6)}</Sequence>
     </AbsoluteFill>
   );
 };
@@ -116,90 +156,103 @@ export const Caption: React.FC<{text: string}> = ({text}) => {
   );
 };
 
-// انفوجرافيك: كروت أرقام تطلع وحدة ورا الثانية، والعداد يعد مع صوت تك
-export const Stats: React.FC<{items: {value: number; prefix?: string; unit: string; label: string}[]}> = ({items}) => {
+// مربع اليوم: «اليوم الأول» + اسم اليوم + التاريخ بعداد داخل حلقة تمتلي + نقاط الأيام الثلاثة
+export const DayCard: React.FC<{index: number; label: string; weekday: string; date: number; month: string; total: number}> = ({
+  index,
+  label,
+  weekday,
+  date,
+  month,
+  total,
+}) => {
   const frame = useCurrentFrame();
   const {fps, durationInFrames} = useVideoConfig();
+  const p = spring({frame, fps, config: {damping: 14, stiffness: 140}});
   const out = interpolate(frame, [durationInFrames - 12, durationInFrames], [0, 1], {...clamp, easing: ease});
-  const STAGGER = 14;
-  const COUNT = 30;
+  const COUNT_FROM = 10;
+  const COUNT = 22;
+  const n = Math.round(interpolate(frame, [COUNT_FROM, COUNT_FROM + COUNT], [1, date], {...clamp, easing: Easing.out(Easing.cubic)}));
+  const ring = interpolate(frame, [COUNT_FROM, COUNT_FROM + COUNT + 8], [0, 1], {...clamp, easing: Easing.out(Easing.cubic)});
+  const R = 130;
   return (
     <AbsoluteFill style={{fontFamily, direction: 'rtl', alignItems: 'center', justifyContent: 'center'}}>
-      <Scrim opacity={interpolate(frame, [0, 12], [0, 1], clamp) * (1 - out)} from="center" />
-      <div style={{display: 'flex', gap: 36, opacity: 1 - out, transform: `translateY(${out * 50}px)`}}>
-        {items.map((it, i) => {
-          const at = i * STAGGER;
-          const p = spring({frame: frame - at, fps, config: {damping: 14, stiffness: 140}});
-          const n = Math.round(interpolate(frame, [at + 6, at + 6 + COUNT], [0, it.value], {...clamp, easing: Easing.out(Easing.cubic)}));
-          const ring = interpolate(frame, [at + 6, at + 6 + COUNT], [0, 1], {...clamp, easing: Easing.out(Easing.cubic)});
-          return (
+      <Scrim opacity={interpolate(frame, [0, 10], [0, 1], clamp) * (1 - out)} from="center" />
+      <div
+        style={{
+          width: 680,
+          padding: '40px 30px 36px',
+          borderRadius: 44,
+          background: 'linear-gradient(180deg, rgba(19,62,117,0.82), rgba(9,28,58,0.9))',
+          border: `2px solid ${brand.goldDeep}aa`,
+          boxShadow: shadow,
+          textAlign: 'center',
+          opacity: Math.min(1, p) * (1 - out),
+          transform: `translateY(${(1 - p) * 140 + out * 60}px) scale(${0.85 + 0.15 * Math.min(1, p)})`,
+        }}
+      >
+        <Pill style={{display: 'inline-block', padding: '6px 34px', fontSize: 38, fontWeight: 800, color: brand.navyDark, background: brand.gold, border: 'none'}}>
+          {label}
+        </Pill>
+        <div style={{fontSize: 104, fontWeight: 900, color: brand.text, lineHeight: 1.25, marginTop: 10}}>
+          <BlurWords text={weekday} delay={6} />
+        </div>
+        <div style={{position: 'relative', width: 2 * R + 30, height: 2 * R + 30, margin: '10px auto 8px'}}>
+          <svg width={2 * R + 30} height={2 * R + 30} style={{position: 'absolute', inset: 0, transform: 'rotate(-90deg)'}}>
+            <circle cx={R + 15} cy={R + 15} r={R} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="12" />
+            <circle
+              cx={R + 15}
+              cy={R + 15}
+              r={R}
+              fill="none"
+              stroke={brand.goldDeep}
+              strokeWidth="12"
+              strokeLinecap="round"
+              strokeDasharray={2 * Math.PI * R}
+              strokeDashoffset={(1 - ring) * 2 * Math.PI * R}
+            />
+          </svg>
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontFamily: numberFamily,
+              fontSize: 170,
+              fontWeight: 900,
+              color: brand.text,
+              direction: 'ltr',
+              fontVariantNumeric: 'lining-nums tabular-nums',
+            }}
+          >
+            {n}
+          </div>
+        </div>
+        <div style={{fontSize: 56, fontWeight: 800, color: brand.gold}}>{month}</div>
+        {/* نقاط الأيام: اليوم الحالي ذهبي وأعرض */}
+        <div style={{display: 'flex', justifyContent: 'center', gap: 14, marginTop: 22}}>
+          {Array.from({length: total}, (_, i) => (
             <div
               key={i}
               style={{
-                width: 430,
-                padding: '34px 20px 30px',
-                borderRadius: 36,
-                background: 'linear-gradient(180deg, rgba(19,62,117,0.78), rgba(9,28,58,0.88))',
-                border: `2px solid ${brand.goldDeep}aa`,
-                boxShadow: shadow,
-                textAlign: 'center',
-                opacity: Math.min(1, p),
-                transform: `translateY(${(1 - p) * 120}px) scale(${0.85 + 0.15 * Math.min(1, p)})`,
+                width: i === index ? 54 : 16,
+                height: 16,
+                borderRadius: 8,
+                background: i === index ? brand.goldDeep : 'rgba(255,255,255,0.35)',
               }}
-            >
-              {/* حلقة تقدم تمتلي مع العداد */}
-              <div style={{position: 'relative', width: 230, height: 230, margin: '0 auto 18px'}}>
-                <svg width="230" height="230" viewBox="0 0 230 230" style={{position: 'absolute', inset: 0, transform: 'rotate(-90deg)'}}>
-                  <circle cx="115" cy="115" r="100" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="10" />
-                  <circle
-                    cx="115"
-                    cy="115"
-                    r="100"
-                    fill="none"
-                    stroke={brand.goldDeep}
-                    strokeWidth="10"
-                    strokeLinecap="round"
-                    strokeDasharray={2 * Math.PI * 100}
-                    strokeDashoffset={(1 - ring) * 2 * Math.PI * 100}
-                  />
-                </svg>
-                <div
-                  style={{
-                    position: 'absolute',
-                    inset: 0,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontFamily: numberFamily,
-                    fontSize: 120,
-                    fontWeight: 900,
-                    color: brand.text,
-                    direction: 'ltr',
-                    fontVariantNumeric: 'lining-nums tabular-nums',
-                  }}
-                >
-                  {it.prefix ?? ''}
-                  {n}
-                </div>
-              </div>
-              {it.unit ? <div style={{fontSize: 48, fontWeight: 900, color: brand.gold, lineHeight: 1.2}}>{it.unit}</div> : null}
-              <div style={{fontSize: 30, fontWeight: 700, color: brand.text, opacity: 0.9, marginTop: 6}}>{it.label}</div>
-            </div>
-          );
-        })}
+            />
+          ))}
+        </div>
       </div>
-      {items.map((it, i) => (
-        <Sequence key={`pop${i}`} from={i * STAGGER}>
-          {sfx('pop', 0.35)}
+      {sfx('whoosh', 0.3)}
+      <Sequence from={4}>{sfx('pop', 0.4)}</Sequence>
+      {tickFrames(COUNT_FROM, COUNT_FROM + COUNT, date).map((f) => (
+        <Sequence key={f} from={f} durationInFrames={4}>
+          {sfx('tick', 0.45)}
         </Sequence>
       ))}
-      {items.map((it, i) =>
-        tickFrames(i * STAGGER + 6, i * STAGGER + 6 + COUNT, it.value).map((f) => (
-          <Sequence key={`t${i}-${f}`} from={f} durationInFrames={4}>
-            {sfx('tick', 0.35)}
-          </Sequence>
-        )),
-      )}
+      <Sequence from={COUNT_FROM + COUNT + 2}>{sfx('shimmer', 0.3)}</Sequence>
       <Sequence from={durationInFrames - 14}>{sfx('swoosh-down', 0.3)}</Sequence>
     </AbsoluteFill>
   );

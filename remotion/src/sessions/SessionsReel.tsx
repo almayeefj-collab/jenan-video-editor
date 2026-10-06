@@ -4,9 +4,9 @@ import {Fragment} from 'react';
 import {AbsoluteFill, Audio, Easing, Img, interpolate, OffthreadVideo, Sequence, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {z} from 'zod';
 import {brand} from '../reel/config';
-import {IntroLockup, Outro} from '../reel/Overlays';
-import {FPS, INTRO_LOCKUP_FRAMES, LOGO, MUSIC, type Overlay, type Shot, shotFrames, timeline, totalFrames, TRANSITION} from './config';
-import {Caption, MainTitle, SessionTag, Stats} from './Overlays';
+import {Outro} from '../reel/Overlays';
+import {days, FPS, INTRO_LOCKUP_FRAMES, LOGO, MUSIC, type Overlay, type Shot, shotFrames, timeline, totalFrames, TRANSITION} from './config';
+import {Caption, DayCard, Intro, SessionTag} from './Overlays';
 
 export const sessionsReelSchema = z.object({title: z.string()});
 
@@ -27,8 +27,12 @@ const soft = (): TransitionPresentation<Record<string, never>> => ({component: S
 const OverlayView: React.FC<{o: Overlay; frames: number; title: string}> = ({o, frames, title}) => {
   const from = Math.round((('at' in o && o.at) || 0) * FPS);
   switch (o.kind) {
-    case 'mainTitle':
-      return <Sequence from={from} durationInFrames={frames - from}><MainTitle text={title} /></Sequence>;
+    case 'day':
+      return (
+        <Sequence from={from} durationInFrames={frames - from}>
+          <DayCard index={o.index} label={o.label} weekday={o.weekday} date={o.date} month={o.month} total={days.length} />
+        </Sequence>
+      );
     case 'session':
       return (
         <Sequence from={from} durationInFrames={o.dur ? Math.round(o.dur * FPS) : frames - from + 4}>
@@ -37,8 +41,6 @@ const OverlayView: React.FC<{o: Overlay; frames: number; title: string}> = ({o, 
       );
     case 'caption':
       return <Sequence from={from} durationInFrames={frames - from}><Caption text={o.text} /></Sequence>;
-    case 'stats':
-      return <Sequence from={from} durationInFrames={frames - from}><Stats items={o.items} /></Sequence>;
     case 'outro':
       return <Sequence durationInFrames={frames}><Outro logo={LOGO} /></Sequence>;
   }
@@ -139,7 +141,7 @@ export const SessionsReel: React.FC<z.infer<typeof sessionsReelSchema>> = ({titl
         )),
       )}
 
-      {/* الانترو: تعتيم + «المؤتمر التربوي» وعداد لين 46 */}
+      {/* الانترو: تعتيم + العنوان يُكتب ثم عداد لين 46 */}
       <Sequence durationInFrames={INTRO_LOCKUP_FRAMES}>
         <AbsoluteFill
           style={{
@@ -147,7 +149,7 @@ export const SessionsReel: React.FC<z.infer<typeof sessionsReelSchema>> = ({titl
             opacity: interpolate(frame, [0, 8, INTRO_LOCKUP_FRAMES - 16, INTRO_LOCKUP_FRAMES], [0, 1, 1, 0], clamp),
           }}
         />
-        <IntroLockup title="المؤتمر التربوي" to={46} />
+        <Intro title={title} to={46} />
       </Sequence>
 
       <Audio src={staticFile(MUSIC)} volume={(f) => musicVolume(f, levels, total)} />
