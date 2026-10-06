@@ -4,6 +4,7 @@
     .venv/bin/python tools/compose_music.py --seconds 107 --drums 0:13.1 --drums 97.5:107 \
         -o remotion/public/music/background.wav
 
+--bpm / --offset: سرعة الإيقاع وثانية أول ضربة (عشان الضربات تطيح على قطعات المونتاج).
 --drums: فترات (بالثواني) فيها الإيقاع والحماس كامل؛ باقي الوقت strings وبيانو هادي.
 """
 import argparse
@@ -15,6 +16,7 @@ SR = 44100
 BPM = 88
 BEAT = 60 / BPM
 BAR = 4 * BEAT
+OFFSET = 0.0
 rng = np.random.default_rng(11)
 
 NOTE = {'C': 0, 'C#': 1, 'D': 2, 'Eb': 3, 'E': 4, 'F': 5, 'F#': 6, 'G': 7, 'Ab': 8, 'A': 9, 'Bb': 10, 'B': 11}
@@ -51,6 +53,8 @@ def place(buf, sig, at):
     i = int(at * SR)
     if i >= len(buf) or i + len(sig) <= 0:
         return
+    if i < 0:  # بداية الصوت قبل بداية المقطع: ناخذ ذيله بس
+        sig, i = sig[-i:], 0
     j = min(len(buf), i + len(sig))
     buf[i:j] += sig[: j - i]
 
@@ -120,9 +124,13 @@ def compose(seconds, drum_ranges):
     keys = np.zeros(n)
     perc = np.zeros(n)
 
+    # الشبكة تبدأ من OFFSET (عشان الضربات تطيح على القطعات)، ونكمّل بارات قبلها لين بداية المقطع
+    first = -int(np.ceil(OFFSET / BAR))
     bars = int(np.ceil(seconds / BAR)) + 1
-    for b in range(bars):
-        t0 = b * BAR
+    for b in range(first, bars):
+        t0 = OFFSET + b * BAR
+        if t0 + BAR + 1.2 < 0:
+            continue
         root, chord = PROG[b % 4]
         hot = in_ranges(t0 + 0.1, drum_ranges)
         # strings pad: voicing واسع
@@ -181,8 +189,14 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--seconds', type=float, required=True)
     ap.add_argument('--drums', action='append', default=[], help='start:end بالثواني')
+    ap.add_argument('--bpm', type=float, default=88)
+    ap.add_argument('--offset', type=float, default=0, help='ثانية أول ضربة في الشبكة')
     ap.add_argument('-o', '--out', required=True)
     args = ap.parse_args()
+    global BPM, BEAT, BAR, OFFSET
+    BPM, OFFSET = args.bpm, args.offset
+    BEAT = 60 / BPM
+    BAR = 4 * BEAT
     ranges = [tuple(map(float, r.split(':'))) for r in args.drums]
     music = compose(args.seconds, ranges)
     stereo = np.stack([music, np.roll(music, int(0.015 * SR))], axis=1)
