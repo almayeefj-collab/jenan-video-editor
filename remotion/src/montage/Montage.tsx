@@ -105,7 +105,7 @@ const musicVolume = (f: number) => {
   const drop = beatStart();
   const honor = honorStart();
   const total = totalFrames();
-  const speech = 0.14;
+  const speech = 0.1;
   const v =
     f < drop - 12
       ? speech

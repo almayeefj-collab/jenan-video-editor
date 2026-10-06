@@ -35,9 +35,9 @@ export type Shot = {
 const F = 'footage/montage/';
 
 export const shots: Shot[] = [
-  // ── ١) المذيعة تتكلم للكاميرا برا المبنى، ثم وهي نازلة بالسلم المتحرك (صوتها منظف من الهوا) ──
-  {src: F + 'm0102-clean.mp4', from: 0.35, to: 4.9, volume: 1},
-  {src: F + 'm0105-clean.mp4', from: 0.25, to: 3.9, volume: 1, enter: 'zoom'},
+  // ── ١) المذيعة تتكلم للكاميرا برا المبنى، ثم وهي نازلة بالسلم المتحرك (صوتها الأصلي كامل بدون قص ولا فلترة) ──
+  {src: F + 'm0102-voice.mp4', from: 0, to: 5.2, volume: 1},
+  {src: F + 'm0105-voice.mp4', from: 0, to: 4.1, volume: 1, enter: 'zoom'},
 
   // ── ٢) العنوان فوق لقطة البهو من السلم ثم مقتطفات الشغل على الإيقاع ──
   {src: F + 'm0107.mp4', from: 0.2, beats: 6, enter: 'flash', grade: true,
