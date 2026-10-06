@@ -8,7 +8,7 @@ const ease = Easing.bezier(0.65, 0, 0.35, 1);
 const shadow = '0 4px 24px rgba(0,0,0,0.45)';
 
 // كبسولة نص شبه شفافة غامقة — نفس أسلوب الفيديو المرجعي
-const Pill: React.FC<{children: React.ReactNode; style?: React.CSSProperties}> = ({children, style}) => (
+export const Pill: React.FC<{children: React.ReactNode; style?: React.CSSProperties}> = ({children, style}) => (
   <div
     style={{
       background: 'linear-gradient(180deg, rgba(19,62,117,0.72), rgba(9,28,58,0.82))',
@@ -26,7 +26,7 @@ const Pill: React.FC<{children: React.ReactNode; style?: React.CSSProperties}> =
 );
 
 // الكلمات تطلع وحدة وحدة مع blur
-const BlurWords: React.FC<{text: string; delay?: number; stagger?: number}> = ({text, delay = 0, stagger = 3}) => {
+export const BlurWords: React.FC<{text: string; delay?: number; stagger?: number}> = ({text, delay = 0, stagger = 3}) => {
   const frame = useCurrentFrame();
   return (
     <>
@@ -52,7 +52,7 @@ const BlurWords: React.FC<{text: string; delay?: number; stagger?: number}> = ({
 };
 
 // صوت كتابة كيبورد: ضغطات بإيقاع غير منتظم شوي عشان تطلع طبيعية
-const Typing: React.FC<{from: number; frames: number}> = ({from, frames}) => {
+export const Typing: React.FC<{from: number; frames: number}> = ({from, frames}) => {
   const hits: number[] = [];
   for (let f = 0, i = 0; f < frames; i++) {
     hits.push(from + f);
@@ -96,10 +96,10 @@ const ChatIcon = () => (
   </svg>
 );
 
-const sfx = (name: string, volume = 0.6) => <Audio src={staticFile(`sfx/${name}.wav`)} volume={volume} />;
+export const sfx = (name: string, volume = 0.6) => <Audio src={staticFile(`sfx/${name}.wav`)} volume={volume} />;
 
 // الفريمات اللي يتغير فيها رقم العداد — صوت تك مع كل رقم
-const tickFrames = (from: number, end: number, to: number) => {
+export const tickFrames = (from: number, end: number, to: number) => {
   const out: number[] = [];
   let last = 1;
   for (let f = from; f <= end; f++) {
