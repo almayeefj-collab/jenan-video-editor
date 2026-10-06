@@ -41,7 +41,7 @@ export const shots: Shot[] = [
 
   // ── ٢) العنوان فوق لقطة البهو من السلم ثم مقتطفات الشغل على الإيقاع ──
   {src: F + 'm0107.mp4', from: 0.2, beats: 6, enter: 'flash', grade: true,
-    overlays: [{kind: 'title', text: 'جهود اللجنة المنظمة', sub: 'المؤتمر التربوي السادس والأربعون', at: 0.3, dur: 3.5}]},
+    overlays: [{kind: 'title', text: 'جهود اللجنة المنظمة', sub: 'المؤتمر التربوي السادس والأربعون', at: 0.3, dur: 3.9}]},
   {src: F + 'm0092.mp4', from: 0, beats: 2, enter: 'whip'},
   {src: F + 'm0078.mp4', from: 0.2, beats: 2},
   {src: F + 'm0044.mp4', from: 0, beats: 2, enter: 'flash'},

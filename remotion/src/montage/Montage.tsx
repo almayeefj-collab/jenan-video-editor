@@ -12,13 +12,65 @@ const clamp = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
 const ease = Easing.bezier(0.65, 0, 0.35, 1);
 const shadow = '0 6px 30px rgba(0,0,0,0.55)';
 
-// عنوان كبير: سطر ذهبي صغير فوق، العنوان يطلع حرف بحرف مع blur، وتحته الشريط المتدرج
+// سطر يتكتب حرف حرف من اليمين (مثل الكتابة على الكيبورد) مع مؤشر يرمش.
+// النص الكامل مخفي تحت عشان المكان ثابت وما يتحرك السطر وهو ينكتب.
+const TypeLine: React.FC<{text: string; start: number; fpc: number; cursor: 'typing' | 'blink' | 'off'; style: React.CSSProperties}> = ({
+  text,
+  start,
+  fpc,
+  cursor,
+  style,
+}) => {
+  const frame = useCurrentFrame();
+  const chars = Array.from(text);
+  const n = Math.max(0, Math.min(chars.length, Math.floor((frame - start) / fpc) + 1));
+  const typing = frame >= start && n < chars.length;
+  const showCursor = cursor !== 'off' && frame >= start - 6 && (typing || Math.floor(frame / 12) % 2 === 0);
+  return (
+    <div style={{position: 'relative', display: 'inline-block', whiteSpace: 'nowrap', ...style}}>
+      <span style={{visibility: 'hidden'}}>{text}</span>
+      <span style={{position: 'absolute', right: 0, top: 0}}>
+        {frame >= start ? chars.slice(0, n).join('') : ''}
+        <span
+          style={{
+            display: 'inline-block',
+            width: '0.07em',
+            height: '0.95em',
+            marginRight: '0.06em',
+            verticalAlign: '-0.12em',
+            background: brand.gold,
+            borderRadius: 3,
+            opacity: showCursor ? 1 : 0,
+          }}
+        />
+      </span>
+    </div>
+  );
+};
+
+// صوت كيبورد: ضغطة مع كل حرف، والمسافة ضغطة أقوى شوي
+const KeySounds: React.FC<{text: string; start: number; fpc: number}> = ({text, start, fpc}) => (
+  <>
+    {Array.from(text).map((c, i) => (
+      <Sequence key={i} from={start + Math.round(i * fpc)} durationInFrames={5}>
+        <Audio src={staticFile(`sfx/key${c === ' ' ? 0 : (i * 5 + 3) % 4}.wav`)} volume={c === ' ' ? 0.6 : 0.4 + ((i * 3) % 4) * 0.05} />
+      </Sequence>
+    ))}
+  </>
+);
+
+// العنوان: ينكتب كأن أحد قاعد يكتبه — العنوان الكبير أول، بعدين السطر الذهبي تحته
+const MAIN_FPC = 2;
+const SUB_FPC = 1.3;
 const TitleCard: React.FC<{text: string; sub?: string; dur: number}> = ({text, sub, dur}) => {
   const frame = useCurrentFrame();
-  const words = text.split(' ');
+  const mainStart = 6;
+  const mainEnd = mainStart + Math.round(Array.from(text).length * MAIN_FPC);
+  const subStart = mainEnd + 6;
+  const subEnd = sub ? subStart + Math.round(Array.from(sub).length * SUB_FPC) : mainEnd;
   const out = interpolate(frame, [dur - 12, dur], [0, 1], clamp);
-  const bar = interpolate(frame, [14, 34], [0, 1], {...clamp, easing: ease});
-  const subIn = interpolate(frame, [0, 14], [0, 1], {...clamp, easing: ease});
+  const bar = interpolate(frame, [mainEnd, mainEnd + 18], [0, 1], {...clamp, easing: ease});
+  const bgIn = interpolate(frame, [0, 10], [0, 1], clamp);
   return (
     <AbsoluteFill
       style={{
@@ -29,25 +81,28 @@ const TitleCard: React.FC<{text: string; sub?: string; dur: number}> = ({text, s
         opacity: 1 - out,
         filter: `blur(${out * 14}px)`,
         transform: `scale(${1 + 0.06 * out})`,
-        background: `radial-gradient(ellipse at center, rgba(9,28,58,0.55) 0%, rgba(9,28,58,0) 70%)`,
       }}
     >
+      <AbsoluteFill style={{background: 'radial-gradient(ellipse at center, rgba(9,28,58,0.6) 0%, rgba(9,28,58,0) 70%)', opacity: bgIn}} />
+      <TypeLine
+        text={text}
+        start={mainStart}
+        fpc={MAIN_FPC}
+        cursor={frame < subStart || !sub ? (frame < mainEnd ? 'typing' : 'blink') : 'off'}
+        style={{fontSize: 104, fontWeight: 900, color: brand.text, textShadow: shadow, lineHeight: 1.35}}
+      />
+      <div style={{height: 8, width: 420 * bar, background: brand.bar, borderRadius: 4, margin: '14px 0 18px'}} />
       {sub ? (
-        <div style={{fontSize: 44, fontWeight: 800, color: brand.gold, textShadow: shadow, opacity: subIn, transform: `translateY(${(1 - subIn) * 20}px)`, marginBottom: 6}}>
-          {sub}
-        </div>
+        <TypeLine
+          text={sub}
+          start={subStart}
+          fpc={SUB_FPC}
+          cursor={frame >= subStart ? (frame < subEnd ? 'typing' : 'blink') : 'off'}
+          style={{fontSize: 46, fontWeight: 800, color: brand.gold, textShadow: shadow, lineHeight: 1.4}}
+        />
       ) : null}
-      <div style={{fontSize: 120, fontWeight: 900, color: brand.text, textShadow: shadow, textAlign: 'center', lineHeight: 1.2, padding: '0 50px'}}>
-        {words.map((w, i) => {
-          const p = interpolate(frame - 6 - i * 5, [0, 12], [0, 1], {...clamp, easing: ease});
-          return (
-            <span key={i} style={{display: 'inline-block', opacity: p, filter: `blur(${(1 - p) * 14}px)`, transform: `translateY(${(1 - p) * 30}px) scale(${1.2 - 0.2 * p})`, marginLeft: '0.25em'}}>
-              {w}
-            </span>
-          );
-        })}
-      </div>
-      <div style={{height: 8, width: 420 * bar, background: brand.bar, borderRadius: 4, marginTop: 26}} />
+      <KeySounds text={text} start={mainStart} fpc={MAIN_FPC} />
+      {sub ? <KeySounds text={sub} start={subStart} fpc={SUB_FPC} /> : null}
     </AbsoluteFill>
   );
 };
