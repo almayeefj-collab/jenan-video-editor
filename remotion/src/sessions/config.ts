@@ -58,12 +58,17 @@ export const days: Day[] = [
     backdrop: {src: F + 'day1-wide.mp4', from: 0, to: 2.8, rate: 0.45, zoom: [1.0, 1.1], origin: '50% 45%',
       overlays: [{kind: 'session', label: 'حلقة نقاشية', title: 'رؤى ابتكارية لمستقبل تعليمي مستدام', sub: 'رئيس الجلسة: أ. ضاري البليهيس', at: 3.0}]},
     sessions: [
-      {src: F + 'day1-speaker.mp4', from: 0, to: 6.6, volume: SPEECH, zoom: [1.0, 1.1], origin: '50% 30%', enter: 'cut',
-        overlays: [{kind: 'panel', heading: 'المشاركون', at: 0.5, dur: 5.4, members: [
+      // المشاركين واحد واحد: لقطة قريبة سلو موشن لكل واحد من اللقطة العامة، وقائمة الأسماء فوقهم
+      {src: F + 'day1-right.mp4', from: 0, to: 2.0, zoom: [1.0, 1.06], origin: '50% 40%', enter: 'cut',
+        overlays: [{kind: 'panel', heading: 'المشاركون', at: 0.3, dur: 5.6, members: [
           {name: 'م. حمد الحمد', role: 'الوكيل المساعد للتعليم العام'},
           {name: 'أ.د. آدم الملا', role: 'المندوب الدائم السابق لدولة الكويت لدى منظمة الأمم المتحدة للتربية والعلم والثقافة (اليونسكو)'},
           {name: 'أ.د. فايز الظفيري', role: 'مدير وأمين عام جامعة الكويت سابقاً'},
         ]}]},
+      {src: F + 'day1-mid.mp4', from: 0, to: 2.0, zoom: [1.06, 1.0], origin: '50% 40%', enter: 'cut'},
+      {src: F + 'day1-left.mp4', from: 0, to: 2.0, zoom: [1.0, 1.06], origin: '50% 40%', enter: 'cut'},
+      {src: F + 'day1-speaker.mp4', from: 0, to: 6.6, volume: SPEECH, zoom: [1.0, 1.1], origin: '50% 30%', enter: 'soft',
+        overlays: [{kind: 'caption', text: 'رؤى ابتكارية لمستقبل تعليمي مستدام', at: 0.5}]},
     ]},
   // ── اليوم الثاني: ورشة «تطور التعليم من التقليدي إلى الرقمي…» — أ. محمد الأيوب ──
   {label: 'اليوم الثاني', weekday: 'الاثنين', date: 5,
