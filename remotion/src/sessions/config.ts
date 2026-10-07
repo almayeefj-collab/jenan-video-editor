@@ -20,6 +20,8 @@ export type Overlay =
   | {kind: 'caption'; text: string; at?: number}
   // مربع اليوم في بداية كل يوم
   | {kind: 'day'; index: number; label: string; weekday: string; date: number; month: string; dur?: number}
+  // اسم المحاضر ومنصبه
+  | {kind: 'presenter'; name: string; role?: string; at?: number; dur?: number}
   // قائمة المشاركين في حلقة نقاشية
   | {kind: 'panel'; heading: string; members: {name: string; role: string}[]; at?: number; dur?: number}
   | {kind: 'outro'};
@@ -92,9 +94,17 @@ export const days: Day[] = [
           {name: 'أ.د. فايز الظفيري', role: 'مدير وأمين عام جامعة الكويت سابقاً'},
         ]}]},
     ]},
+  // ── اليوم الثاني: ورشة «تطور التعليم من التقليدي إلى الرقمي…» — أ. محمد الأيوب ──
   {label: 'اليوم الثاني', weekday: 'الاثنين', date: 5,
-    backdrop: {src: F + 'room-crowd.mp4', from: 3.6, to: 7.0, zoom: [1.0, 1.12]},
-    sessions: []},
+    // أول ثانية قبل ما يبدأ الكلام، سلو موشن تحت مربع اليوم
+    backdrop: {src: F + 'day2-ai.mp4', from: 0, to: 1.3, rate: 0.4, volume: 0, zoom: [1.0, 1.08], origin: '40% 50%'},
+    sessions: [
+      {src: F + 'day2-ai.mp4', from: 1.3, to: 9.0, volume: SPEECH, zoom: [1.05, 1.3], origin: '45% 52%', enter: 'cut',
+        overlays: [
+          {kind: 'session', label: 'ورشة', title: 'تطور التعليم من التقليدي إلى الرقمي وتطبيقات الذكاء الاصطناعي في تحسين التعليم والتعلم', dur: 4.6},
+          {kind: 'presenter', name: 'أ. محمد الأيوب', role: 'باحث بالمركز العربي للبحوث التربوية لدول الخليج', at: 4.5, dur: 3.2},
+        ]},
+    ]},
   {label: 'اليوم الثالث', weekday: 'الثلاثاء', date: 6,
     backdrop: {src: F + 'podiums.mp4', from: 0.6, to: 4.0, volume: 0, zoom: [1.15, 1.3], origin: '40% 40%'},
     sessions: []},

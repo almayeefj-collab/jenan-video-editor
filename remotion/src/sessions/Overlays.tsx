@@ -111,7 +111,7 @@ export const SessionTag: React.FC<{label: string; title: string; sub?: string}> 
         <Pill style={{padding: '6px 30px', fontSize: 34, fontWeight: 800, color: brand.navyDark, background: brand.gold, border: 'none'}}>
           {label}
         </Pill>
-        <div style={{fontSize: 78, fontWeight: 900, color: brand.text, lineHeight: 1.3, textShadow: shadow}}>
+        <div style={{fontSize: title.length > 40 ? 62 : 78, fontWeight: 900, color: brand.text, lineHeight: 1.3, textShadow: shadow}}>
           <BlurWords text={title} delay={8} stagger={3} />
         </div>
         {sub ? (

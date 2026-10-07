@@ -4,7 +4,7 @@ import {Fragment} from 'react';
 import {AbsoluteFill, Audio, Easing, Img, interpolate, OffthreadVideo, Sequence, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {z} from 'zod';
 import {brand} from '../reel/config';
-import {Outro} from '../reel/Overlays';
+import {LowerThird, Outro} from '../reel/Overlays';
 import {days, FPS, INTRO_LOCKUP_FRAMES, LOGO, MUSIC, type Overlay, type Shot, shotFrames, timeline, totalFrames, TRANSITION} from './config';
 import {Caption, DayCard, Intro, PanelCard, SessionTag} from './Overlays';
 
@@ -41,6 +41,12 @@ const OverlayView: React.FC<{o: Overlay; frames: number; title: string}> = ({o, 
       );
     case 'caption':
       return <Sequence from={from} durationInFrames={frames - from}><Caption text={o.text} /></Sequence>;
+    case 'presenter':
+      return (
+        <Sequence from={from} durationInFrames={o.dur ? Math.round(o.dur * FPS) : frames - from}>
+          <LowerThird name={o.name} role={o.role} bottom={300} />
+        </Sequence>
+      );
     case 'panel':
       return (
         <Sequence from={from} durationInFrames={o.dur ? Math.round(o.dur * FPS) : frames - from}>
