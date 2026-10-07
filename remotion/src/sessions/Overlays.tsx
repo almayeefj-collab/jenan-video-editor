@@ -51,7 +51,7 @@ export const Intro: React.FC<{title: string; to: number}> = ({title, to}) => {
   const dial = spring({frame: frame - dialIn, fps, config: {damping: 16, stiffness: 120}});
   const v = interpolate(frame, [countFrom, countEnd], [0, to], {...clamp, easing: Easing.bezier(0.3, 0, 0.25, 1)});
   const done = interpolate(frame, [countEnd, countEnd + 10], [0, 1], clamp);
-  const gold = (c: string) => interpolateColors(done, [0, 1], [c, brand.goldDeep]);
+  const gold = (c: string) => interpolateColors(done, [0, 1], [c, brand.gold]);
   const pop = spring({frame: frame - countEnd, fps, config: {damping: 8, stiffness: 180}});
   const hit = frame >= countEnd ? 1 + 0.08 * Math.sin(Math.min(1, pop) * Math.PI) : 1;
   const wave = interpolate(frame, [countEnd, countEnd + 26], [0, 1], {...clamp, easing: Easing.out(Easing.cubic)});
@@ -86,7 +86,7 @@ export const Intro: React.FC<{title: string; to: number}> = ({title, to}) => {
             position: 'absolute',
             inset: 0,
             borderRadius: '50%',
-            border: `6px solid ${brand.goldDeep}`,
+            border: `6px solid ${brand.gold}`,
             transform: `scale(${1 + wave * 0.9})`,
             opacity: frame >= countEnd ? 1 - wave : 0,
           }}
@@ -96,7 +96,7 @@ export const Intro: React.FC<{title: string; to: number}> = ({title, to}) => {
             position: 'absolute',
             inset: -80,
             borderRadius: '50%',
-            background: `radial-gradient(circle, ${brand.goldDeep}66 0%, ${brand.goldDeep}00 62%)`,
+            background: `radial-gradient(circle, ${brand.gold}66 0%, ${brand.gold}00 62%)`,
             opacity: done,
           }}
         />
@@ -135,7 +135,7 @@ export const Intro: React.FC<{title: string; to: number}> = ({title, to}) => {
             fontSize: 220,
             fontWeight: 900,
             color: gold('#FFFFFF'),
-            textShadow: done > 0 ? `0 0 ${40 * done}px ${brand.goldDeep}aa, ${shadow}` : shadow,
+            textShadow: done > 0 ? `0 0 ${40 * done}px ${brand.gold}aa, ${shadow}` : shadow,
             fontVariantNumeric: 'lining-nums tabular-nums',
           }}
         >
