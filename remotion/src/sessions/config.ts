@@ -5,7 +5,7 @@ export const FPS = 30;
 export const WIDTH = 1080;
 export const HEIGHT = 1920;
 export const LOGO = 'brand/kts-logo.png';
-export const MUSIC = 'music/calm.wav';
+export const MUSIC = 'music/glow.wav';
 
 // عنوان الانترو — يتغير من props الكومبوزيشن
 export const DEFAULT_TITLE = 'الورش التدريبية في المؤتمر التربوي';

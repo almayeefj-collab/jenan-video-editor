@@ -1,4 +1,4 @@
-import {AbsoluteFill, Easing, interpolate, Sequence, spring, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, Easing, interpolate, interpolateColors, Sequence, spring, useCurrentFrame, useVideoConfig} from 'remotion';
 import {brand} from '../reel/config';
 import {fontFamily, numberFamily} from '../reel/font';
 import {BlurWords, Pill, sfx, tickFrames, Typing} from '../reel/Overlays';
@@ -21,28 +21,53 @@ const Scrim: React.FC<{opacity: number; from?: 'bottom' | 'center'}> = ({opacity
   />
 );
 
-// الانترو: «الورش التدريبية في المؤتمر التربوي» يُكتب كلمة كلمة مع صوت كيبورد،
-// بعدين يرتفع ويطلع تحته عداد لين 46 مع تك على كل رقم وboom في الآخر
+// عمود أرقام يلف مثل عداد السيارة (odometer): pos = رقم عشري، يتحرك عمودياً بنعومة
+const RollDigit: React.FC<{pos: number; h: number}> = ({pos, h}) => (
+  <div style={{height: h, overflow: 'hidden', display: 'inline-block'}}>
+    <div style={{transform: `translateY(${-pos * h}px)`}}>
+      {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((d, i) => (
+        <div key={i} style={{height: h, lineHeight: `${h}px`, textAlign: 'center'}}>
+          {d}
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+// الانترو: «الورش التدريبية في المؤتمر التربوي» يُكتب، بعدين يرتفع ويطلع «قرص النسخ»:
+// 46 شرطة حول دائرة تنور وحدة وحدة (كل شرطة = نسخة من المؤتمر) والرقم في النص يلف مثل العداد.
+// أول ما يوصل 46 يتحول كل شي للذهبي مع موجة ضوء تنتشر ولمعة
 export const Intro: React.FC<{title: string; to: number}> = ({title, to}) => {
   const frame = useCurrentFrame();
   const {fps, durationInFrames} = useVideoConfig();
   const words = title.split(' ');
-  // السطر الأول أول كلمتين، والباقي سطر ذهبي تحته
   const line1 = words.slice(0, 2).join(' ');
   const line2 = words.slice(2).join(' ');
   const liftAt = Math.round(2.5 * fps);
-  const countFrom = Math.round(3.0 * fps);
-  const countEnd = Math.round(5.8 * fps);
-  const lift = interpolate(frame, [liftAt, countFrom + 6], [0, 1], {...clamp, easing: ease});
-  const numIn = interpolate(frame, [countFrom, countFrom + 10], [0, 1], clamp);
-  const n = Math.round(interpolate(frame, [countFrom, countEnd], [1, to], {...clamp, easing: Easing.out(Easing.cubic)}));
-  const pop = spring({frame: frame - countEnd, fps, config: {damping: 9, stiffness: 200}});
-  const hit = frame >= countEnd ? 1 + 0.07 * Math.sin(Math.min(1, pop) * Math.PI) : 1;
+  const dialIn = Math.round(2.8 * fps);
+  const countFrom = Math.round(3.1 * fps);
+  const countEnd = Math.round(5.6 * fps);
+  const lift = interpolate(frame, [liftAt, dialIn + 8], [0, 1], {...clamp, easing: ease});
+  const dial = spring({frame: frame - dialIn, fps, config: {damping: 16, stiffness: 120}});
+  const v = interpolate(frame, [countFrom, countEnd], [0, to], {...clamp, easing: Easing.bezier(0.3, 0, 0.25, 1)});
+  const done = interpolate(frame, [countEnd, countEnd + 10], [0, 1], clamp);
+  const gold = (c: string) => interpolateColors(done, [0, 1], [c, brand.goldDeep]);
+  const pop = spring({frame: frame - countEnd, fps, config: {damping: 8, stiffness: 180}});
+  const hit = frame >= countEnd ? 1 + 0.08 * Math.sin(Math.min(1, pop) * Math.PI) : 1;
+  const wave = interpolate(frame, [countEnd, countEnd + 26], [0, 1], {...clamp, easing: Easing.out(Easing.cubic)});
+  const labelP = interpolate(frame, [countEnd + 8, countEnd + 22], [0, 1], {...clamp, easing: ease});
   const out = interpolate(frame, [durationInFrames - 16, durationInFrames], [0, 1], clamp);
   const typeFrames = words.length * 4 + 12;
+
+  const R = 250;
+  const SIZE = 2 * R + 80;
+  const ones = v % 10;
+  const tens = Math.floor(v / 10) + Math.max(0, ones - 9);
+  const DIGIT_H = 230;
+
   return (
     <AbsoluteFill style={{fontFamily, direction: 'rtl', alignItems: 'center', justifyContent: 'center', opacity: 1 - out, filter: `blur(${out * 16}px)`}}>
-      <div style={{textAlign: 'center', transform: `translateY(${-330 * lift}px) scale(${1 - 0.22 * lift})`, textShadow: shadow}}>
+      <div style={{position: 'absolute', top: 760, textAlign: 'center', transform: `translateY(${-470 * lift}px) scale(${1 - 0.25 * lift})`, textShadow: shadow}}>
         <div style={{fontSize: 120, fontWeight: 900, color: brand.text, lineHeight: 1.2}}>
           <BlurWords text={line1} delay={6} stagger={4} />
         </div>
@@ -50,35 +75,101 @@ export const Intro: React.FC<{title: string; to: number}> = ({title, to}) => {
           <BlurWords text={line2} delay={6 + 2 * 4} stagger={4} />
         </div>
       </div>
+
+      {/* قرص النسخ */}
+      <div style={{position: 'absolute', top: 620, width: SIZE, height: SIZE, opacity: Math.min(1, dial), transform: `scale(${(0.6 + 0.4 * Math.min(1, dial)) * hit})`}}>
+        {/* قرص غامق ورا الأرقام عشان تنقرا فوق أي لقطة */}
+        <div style={{position: 'absolute', inset: 30, borderRadius: '50%', background: 'radial-gradient(circle, rgba(9,28,58,0.82) 0%, rgba(9,28,58,0.6) 68%, rgba(9,28,58,0) 72%)'}} />
+        {/* موجة الضوء عند الوصول لـ 46 */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            borderRadius: '50%',
+            border: `6px solid ${brand.goldDeep}`,
+            transform: `scale(${1 + wave * 0.9})`,
+            opacity: frame >= countEnd ? 1 - wave : 0,
+          }}
+        />
+        <div
+          style={{
+            position: 'absolute',
+            inset: -80,
+            borderRadius: '50%',
+            background: `radial-gradient(circle, ${brand.goldDeep}66 0%, ${brand.goldDeep}00 62%)`,
+            opacity: done,
+          }}
+        />
+        <svg width={SIZE} height={SIZE} style={{position: 'absolute', inset: 0}}>
+          {Array.from({length: to}, (_, i) => {
+            const a = (i / to) * 2 * Math.PI - Math.PI / 2;
+            const lit = interpolate(v, [i, i + 1], [0, 1], clamp);
+            const r1 = R - 26;
+            const r2 = R + 6 + lit * 14;
+            const cx = SIZE / 2;
+            return (
+              <line
+                key={i}
+                x1={cx + r1 * Math.cos(a)}
+                y1={cx + r1 * Math.sin(a)}
+                x2={cx + r2 * Math.cos(a)}
+                y2={cx + r2 * Math.sin(a)}
+                stroke={lit > 0 ? gold('#FFFFFF') : 'rgba(255,255,255,0.18)'}
+                strokeOpacity={0.25 + 0.75 * lit}
+                strokeWidth={9}
+                strokeLinecap="round"
+              />
+            );
+          })}
+        </svg>
+        {/* الرقم يلف مثل العداد */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            direction: 'ltr',
+            fontFamily: numberFamily,
+            fontSize: 220,
+            fontWeight: 900,
+            color: gold('#FFFFFF'),
+            textShadow: done > 0 ? `0 0 ${40 * done}px ${brand.goldDeep}aa, ${shadow}` : shadow,
+            fontVariantNumeric: 'lining-nums tabular-nums',
+          }}
+        >
+          <div style={{opacity: interpolate(v, [9, 10], [0, 1], clamp), width: interpolate(v, [9, 10], [0, 140], clamp), overflow: 'hidden', display: 'flex', justifyContent: 'flex-end'}}>
+            <RollDigit pos={tens} h={DIGIT_H} />
+          </div>
+          <RollDigit pos={ones} h={DIGIT_H} />
+        </div>
+      </div>
       <div
         style={{
           position: 'absolute',
-          top: '50%',
-          marginTop: -90,
-          fontFamily: numberFamily,
-          fontSize: 360,
-          fontWeight: 900,
-          color: brand.text,
-          lineHeight: 1,
+          top: 620 + SIZE + 40,
+          fontSize: 58,
+          fontWeight: 800,
+          color: brand.gold,
+          opacity: labelP,
+          transform: `translateY(${(1 - labelP) * 30}px)`,
           textShadow: shadow,
-          opacity: numIn,
-          filter: `blur(${(1 - numIn) * 14}px)`,
-          transform: `scale(${hit})`,
-          fontVariantNumeric: 'lining-nums tabular-nums',
-          direction: 'ltr',
         }}
       >
-        {n}
+        النسخة السادسة والأربعون
       </div>
+
       <Typing from={6} frames={typeFrames} />
       <Sequence from={liftAt - 4}>{sfx('swoosh-up', 0.35)}</Sequence>
-      <Sequence from={countFrom} durationInFrames={countEnd - countFrom + 4}>{sfx('cinematic-riser', 0.25)}</Sequence>
+      <Sequence from={countFrom} durationInFrames={countEnd - countFrom + 4}>{sfx('cinematic-riser', 0.22)}</Sequence>
       {tickFrames(countFrom, countEnd, to).map((f) => (
         <Sequence key={f} from={f} durationInFrames={4}>
-          {sfx('tick', 0.55)}
+          {sfx('tick', 0.45)}
         </Sequence>
       ))}
-      <Sequence from={countEnd}>{sfx('cinematic-boom', 0.6)}</Sequence>
+      <Sequence from={countEnd}>{sfx('cinematic-boom', 0.55)}</Sequence>
+      <Sequence from={countEnd + 4}>{sfx('shimmer', 0.4)}</Sequence>
     </AbsoluteFill>
   );
 };

@@ -96,7 +96,7 @@ const ShotView: React.FC<{shot: Shot}> = ({shot}) => {
 
 // الموسيقى: أعلى في الانترو والأوترو، متوسطة على اللقطات، وتنزل كثير تحت كلام المحاضرين
 const LOUD = 0.75;
-const BROLL = 0.5;
+const BROLL = 0.65;
 const UNDER_SPEECH = 0.07;
 const RAMP = 14;
 
