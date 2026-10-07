@@ -86,7 +86,7 @@ const sessions: Shot[] = [
   {src: F + 'day2-quality-honor.mp4', from: 3.6, to: 7.8, volume: 0, zoom: [1.0, 1.1], origin: '50% 40%', enter: 'cut'},
   // ── ورشة «التحفيز القيادي وأثره على جودة الأداء» — أ. صالح العجيل ──
   {src: F + 'workshop-wide.jpg', photo: true, dur: 2.6, zoom: [1.0, 1.1], origin: '45% 60%', enter: 'soft',
-    overlays: [{kind: 'session', label: 'ورشة', title: 'التحفيز القيادي وأثره على جودة الأداء', sub: 'أ. صالح العجيل · معلم ومدرب في مجال التعليم', dur: 6.9}]},
+    overlays: [{kind: 'session', label: 'ورشة', title: 'التحفيز القيادي وأثره على جودة الأداء', dur: 6.9}]},
   {src: F + 'workshop-close-a.jpg', photo: true, dur: 2.2, zoom: [1.0, 1.1], origin: '50% 70%', enter: 'cut'},
   {src: F + 'workshop-close-b.jpg', photo: true, dur: 2.2, zoom: [1.1, 1.0], origin: '50% 75%', enter: 'cut'},
   {src: F + 'day3-motivation.mp4', from: 27.6, to: 34.8, volume: SPEECH, zoom: [1.0, 1.12], origin: '35% 45%', enter: 'soft',
