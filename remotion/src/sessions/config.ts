@@ -104,6 +104,11 @@ export const days: Day[] = [
           {kind: 'session', label: 'ورشة', title: 'تطور التعليم من التقليدي إلى الرقمي وتطبيقات الذكاء الاصطناعي في تحسين التعليم والتعلم', dur: 4.6},
           {kind: 'presenter', name: 'أ. محمد الأيوب', role: 'باحث بالمركز العربي للبحوث التربوية لدول الخليج', at: 4.5, dur: 3.2},
         ]},
+      // ورشة «البحث الإجرائي مدخل تطوير العملية التعليمية» — د. موسى جعفر يوسف
+      {src: F + 'research-stage.jpg', photo: true, dur: 3.4, zoom: [1.12, 1.0], origin: '40% 45%', enter: 'soft',
+        overlays: [{kind: 'session', label: 'ورشة', title: 'البحث الإجرائي مدخل تطوير العملية التعليمية'}]},
+      {src: F + 'research.mp4', from: 13.4, to: 21.1, volume: SPEECH, zoom: [1.3, 1.5], origin: '45% 48%', enter: 'cut',
+        overlays: [{kind: 'presenter', name: 'د. موسى جعفر يوسف', role: 'أستاذ الدراسات التربوية المساعد – مملكة البحرين', at: 0.5, dur: 4.5}]},
     ]},
   {label: 'اليوم الثالث', weekday: 'الثلاثاء', date: 6,
     backdrop: {src: F + 'podiums.mp4', from: 0.6, to: 4.0, volume: 0, zoom: [1.15, 1.3], origin: '40% 40%'},
