@@ -5,8 +5,8 @@ import {AbsoluteFill, Audio, Easing, Img, interpolate, OffthreadVideo, Sequence,
 import {z} from 'zod';
 import {brand} from '../reel/config';
 import {LowerThird, Outro} from '../reel/Overlays';
-import {days, FPS, INTRO_LOCKUP_FRAMES, LOGO, MUSIC, type Overlay, type Shot, shotFrames, timeline, totalFrames, TRANSITION} from './config';
-import {Caption, DayCard, Intro, PanelCard, SessionTag} from './Overlays';
+import {FPS, INTRO_LOCKUP_FRAMES, LOGO, MUSIC, type Overlay, type Shot, shotFrames, timeline, totalFrames, TRANSITION} from './config';
+import {Caption, Intro, PanelCard, SessionTag} from './Overlays';
 
 export const sessionsReelSchema = z.object({title: z.string()});
 
@@ -27,12 +27,6 @@ const soft = (): TransitionPresentation<Record<string, never>> => ({component: S
 const OverlayView: React.FC<{o: Overlay; frames: number; title: string}> = ({o, frames, title}) => {
   const from = Math.round((('at' in o && o.at) || 0) * FPS);
   switch (o.kind) {
-    case 'day':
-      return (
-        <Sequence from={from} durationInFrames={o.dur ? Math.round(o.dur * FPS) : frames - from}>
-          <DayCard index={o.index} label={o.label} weekday={o.weekday} date={o.date} month={o.month} total={days.length} />
-        </Sequence>
-      );
     case 'session':
       return (
         <Sequence from={from} durationInFrames={o.dur ? Math.round(o.dur * FPS) : frames - from + 4}>
@@ -153,15 +147,15 @@ export const SessionsReel: React.FC<z.infer<typeof sessionsReelSchema>> = ({titl
         )),
       )}
 
-      {/* الانترو: تعتيم + العنوان يُكتب ثم عداد لين 46 */}
+      {/* الانترو: تعتيم + العنوان الرسمي */}
       <Sequence durationInFrames={INTRO_LOCKUP_FRAMES}>
         <AbsoluteFill
           style={{
-            background: 'rgba(5,12,25,0.45)',
+            background: 'rgba(5,12,25,0.55)',
             opacity: interpolate(frame, [0, 8, INTRO_LOCKUP_FRAMES - 16, INTRO_LOCKUP_FRAMES], [0, 1, 1, 0], clamp),
           }}
         />
-        <Intro title={title} to={46} />
+        <Intro title={title} />
       </Sequence>
 
       <Audio src={staticFile(MUSIC)} volume={(f) => musicVolume(f, levels, total)} />
