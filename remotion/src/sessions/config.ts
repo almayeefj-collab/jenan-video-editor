@@ -19,7 +19,9 @@ export type Overlay =
   // شريط صغير ثابت باسم الجلسة أثناء كلام المحاضر
   | {kind: 'caption'; text: string; at?: number}
   // مربع اليوم في بداية كل يوم
-  | {kind: 'day'; index: number; label: string; weekday: string; date: number; month: string}
+  | {kind: 'day'; index: number; label: string; weekday: string; date: number; month: string; dur?: number}
+  // قائمة المشاركين في حلقة نقاشية
+  | {kind: 'panel'; heading: string; members: {name: string; role: string}[]; at?: number; dur?: number}
   | {kind: 'outro'};
 
 export type Shot = {
@@ -42,7 +44,8 @@ const SPEECH = 1;
 const F = 'footage/sessions/';
 
 // الورش مرتبة حسب الأيام: كل يوم يبدأ بمربع اليوم فوق لقطة من نفس اليوم، بعدين ورشه
-type Day = {label: string; weekday: string; date: number; backdrop: Shot; sessions: Shot[]};
+// backdrop: اللقطة اللي عليها مربع اليوم (dayDur = مدة المربع، والباقي للنصوص اللي بعده)
+type Day = {label: string; weekday: string; date: number; backdrop: Shot; dayDur?: number; sessions: Shot[]};
 
 // ورش محاضرة/دراسة: صورة أو لقطة عليها كبسولة العنوان، بعدها كلام المحاضر بزوم بطيء
 // (الأمثلة تحت جاهزة تنحط في يومها لما توصل فيديوهات كل يوم)
@@ -76,9 +79,19 @@ export const sessionBank = {
 export const MONTH = 'أكتوبر 2026';
 
 export const days: Day[] = [
-  {label: 'اليوم الأول', weekday: 'الأحد', date: 4,
-    backdrop: {src: F + 'hall-wide.mp4', from: 8, to: 11.4, zoom: [1.1, 1.2], origin: '50% 45%'},
-    sessions: []},
+  // ── اليوم الأول: حلقة نقاشية «رؤى ابتكارية لمستقبل تعليمي مستدام» ──
+  {label: 'اليوم الأول', weekday: 'الأحد', date: 4, dayDur: 3.2,
+    // اللقطة العامة للمنصة سلو موشن: مربع اليوم ثم عنوان الحلقة
+    backdrop: {src: F + 'day1-wide.mp4', from: 0, to: 2.8, rate: 0.45, zoom: [1.0, 1.1], origin: '50% 45%',
+      overlays: [{kind: 'session', label: 'حلقة نقاشية', title: 'رؤى ابتكارية لمستقبل تعليمي مستدام', sub: 'رئيس الجلسة: أ. ضاري البليهيس', at: 3.0}]},
+    sessions: [
+      {src: F + 'day1-speaker.mp4', from: 0, to: 6.6, volume: SPEECH, zoom: [1.0, 1.1], origin: '50% 30%', enter: 'cut',
+        overlays: [{kind: 'panel', heading: 'المشاركون', at: 0.5, dur: 5.4, members: [
+          {name: 'م. حمد الحمد', role: 'الوكيل المساعد للتعليم العام'},
+          {name: 'أ.د. آدم الملا', role: 'المندوب الدائم السابق لدولة الكويت لدى منظمة الأمم المتحدة للتربية والعلم والثقافة (اليونسكو)'},
+          {name: 'أ.د. فايز الظفيري', role: 'مدير وأمين عام جامعة الكويت سابقاً'},
+        ]}]},
+    ]},
   {label: 'اليوم الثاني', weekday: 'الاثنين', date: 5,
     backdrop: {src: F + 'room-crowd.mp4', from: 3.6, to: 7.0, zoom: [1.0, 1.12]},
     sessions: []},
@@ -89,7 +102,7 @@ export const days: Day[] = [
 
 const dayShots = (d: Day, i: number): Shot[] => [
   {...d.backdrop, enter: 'soft',
-    overlays: [{kind: 'day', index: i, label: d.label, weekday: d.weekday, date: d.date, month: MONTH}]},
+    overlays: [{kind: 'day', index: i, label: d.label, weekday: d.weekday, date: d.date, month: MONTH, dur: d.dayDur}, ...(d.backdrop.overlays ?? [])]},
   ...d.sessions,
 ];
 

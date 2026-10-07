@@ -6,7 +6,7 @@ import {z} from 'zod';
 import {brand} from '../reel/config';
 import {Outro} from '../reel/Overlays';
 import {days, FPS, INTRO_LOCKUP_FRAMES, LOGO, MUSIC, type Overlay, type Shot, shotFrames, timeline, totalFrames, TRANSITION} from './config';
-import {Caption, DayCard, Intro, SessionTag} from './Overlays';
+import {Caption, DayCard, Intro, PanelCard, SessionTag} from './Overlays';
 
 export const sessionsReelSchema = z.object({title: z.string()});
 
@@ -29,7 +29,7 @@ const OverlayView: React.FC<{o: Overlay; frames: number; title: string}> = ({o, 
   switch (o.kind) {
     case 'day':
       return (
-        <Sequence from={from} durationInFrames={frames - from}>
+        <Sequence from={from} durationInFrames={o.dur ? Math.round(o.dur * FPS) : frames - from}>
           <DayCard index={o.index} label={o.label} weekday={o.weekday} date={o.date} month={o.month} total={days.length} />
         </Sequence>
       );
@@ -41,6 +41,12 @@ const OverlayView: React.FC<{o: Overlay; frames: number; title: string}> = ({o, 
       );
     case 'caption':
       return <Sequence from={from} durationInFrames={frames - from}><Caption text={o.text} /></Sequence>;
+    case 'panel':
+      return (
+        <Sequence from={from} durationInFrames={o.dur ? Math.round(o.dur * FPS) : frames - from}>
+          <PanelCard heading={o.heading} members={o.members} />
+        </Sequence>
+      );
     case 'outro':
       return <Sequence durationInFrames={frames}><Outro logo={LOGO} /></Sequence>;
   }

@@ -257,3 +257,62 @@ export const DayCard: React.FC<{index: number; label: string; weekday: string; d
     </AbsoluteFill>
   );
 };
+
+// كرت المشاركين في الحلقة النقاشية: كل اسم يدخل ورا الثاني مع منصبه تحته
+export const PanelCard: React.FC<{heading: string; members: {name: string; role: string}[]}> = ({heading, members}) => {
+  const frame = useCurrentFrame();
+  const {fps, durationInFrames} = useVideoConfig();
+  const inP = spring({frame, fps, config: {damping: 200}, durationInFrames: 18});
+  const out = interpolate(frame, [durationInFrames - 14, durationInFrames - 2], [0, 1], {...clamp, easing: ease});
+  const STAGGER = 12;
+  return (
+    <AbsoluteFill style={{fontFamily, direction: 'rtl'}}>
+      <Scrim opacity={inP * (1 - out)} />
+      <div
+        style={{
+          position: 'absolute',
+          left: 50,
+          right: 50,
+          bottom: 250,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'flex-start',
+          gap: 18,
+          opacity: 1 - out,
+          transform: `translateY(${out * 60}px)`,
+        }}
+      >
+        <Pill style={{padding: '6px 30px', fontSize: 32, fontWeight: 800, color: brand.navyDark, background: brand.gold, border: 'none', opacity: inP}}>
+          {heading}
+        </Pill>
+        {members.map((m, i) => {
+          const p = spring({frame: frame - 6 - i * STAGGER, fps, config: {damping: 200}, durationInFrames: 18});
+          return (
+            <div
+              key={i}
+              style={{
+                display: 'flex',
+                alignItems: 'stretch',
+                opacity: p,
+                transform: `translateX(${(1 - p) * 70}px)`,
+              }}
+            >
+              <div style={{width: 8, background: brand.goldDeep, borderRadius: 4, marginLeft: 16, transform: `scaleY(${p})`}} />
+              <div>
+                <div style={{fontSize: 44, fontWeight: 900, color: brand.text, lineHeight: 1.25, textShadow: shadow}}>{m.name}</div>
+                <div style={{fontSize: 28, fontWeight: 700, color: brand.gold, lineHeight: 1.35, textShadow: shadow, maxWidth: 940}}>{m.role}</div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      {sfx('swoosh-up', 0.3)}
+      {members.map((_, i) => (
+        <Sequence key={i} from={6 + i * STAGGER}>
+          {sfx('pop', 0.25)}
+        </Sequence>
+      ))}
+      <Sequence from={durationInFrames - 16}>{sfx('swoosh-down', 0.25)}</Sequence>
+    </AbsoluteFill>
+  );
+};
