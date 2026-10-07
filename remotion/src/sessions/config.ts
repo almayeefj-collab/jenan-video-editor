@@ -103,7 +103,7 @@ export const days: Day[] = [
       {src: F + 'workshop-close-a.jpg', photo: true, dur: 2.2, zoom: [1.0, 1.1], origin: '50% 70%', enter: 'cut'},
       {src: F + 'workshop-close-b.jpg', photo: true, dur: 2.2, zoom: [1.1, 1.0], origin: '50% 75%', enter: 'cut'},
       {src: F + 'day3-motivation.mp4', from: 27.6, to: 34.8, volume: SPEECH, zoom: [1.0, 1.12], origin: '35% 45%', enter: 'soft',
-        overlays: [{kind: 'caption', text: 'التحفيز القيادي وأثره على جودة الأداء', at: 0.4}]},
+        overlays: [{kind: 'presenter', name: 'أ. صالح العجيل', role: 'معلم ومدرب في مجال التعليم', at: 0.5, dur: 5}]},
       // محاضرة «حماية المعلم تبدأ بفهم اختلافه» — د. ناصر نجف حسن
       {src: F + 'study-slide.jpg', photo: true, dur: 3.0, zoom: [1.0, 1.12], origin: '55% 30%', enter: 'soft',
         overlays: [{kind: 'session', label: 'محاضرة', title: 'حماية المعلم تبدأ بفهم اختلافه', dur: 5.2}]},
