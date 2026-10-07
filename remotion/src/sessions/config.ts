@@ -49,35 +49,6 @@ const F = 'footage/sessions/';
 // backdrop: اللقطة اللي عليها مربع اليوم (dayDur = مدة المربع، والباقي للنصوص اللي بعده)
 type Day = {label: string; weekday: string; date: number; backdrop: Shot; dayDur?: number; sessions: Shot[]};
 
-// ورش محاضرة/دراسة: صورة أو لقطة عليها كبسولة العنوان، بعدها كلام المحاضر بزوم بطيء
-// (الأمثلة تحت جاهزة تنحط في يومها لما توصل فيديوهات كل يوم)
-export const sessionBank = {
-  study: [
-    {src: F + 'study-slide.jpg', photo: true, dur: 3.0, zoom: [1.0, 1.12], origin: '55% 30%', enter: 'soft',
-      overlays: [{kind: 'session', label: 'دراسة', title: 'حماية المعلم تبدأ بفهم اختلافه', sub: 'د. ناصر نجف حسن · د. يوسف طلق العارضي'}]},
-    {src: F + 'study.mp4', from: 72.0, to: 81.4, volume: SPEECH, zoom: [1.35, 1.6], origin: '48% 50%', enter: 'cut',
-      overlays: [{kind: 'caption', text: 'حماية المعلم تبدأ بفهم اختلافه', at: 0.4}]},
-  ],
-  motivation: [
-    {src: F + 'workshop-wide.jpg', photo: true, dur: 2.4, zoom: [1.0, 1.1], origin: '45% 60%', enter: 'soft',
-      overlays: [{kind: 'session', label: 'ورشة', title: 'التحفيز القيادي وأثره على جودة الأداء', sub: 'إعداد وتقديم أ. صالح العجيل', dur: 6.6}]},
-    {src: F + 'workshop-close-a.jpg', photo: true, dur: 2.2, zoom: [1.0, 1.1], origin: '50% 70%', enter: 'cut'},
-    {src: F + 'workshop-close-b.jpg', photo: true, dur: 2.2, zoom: [1.1, 1.0], origin: '50% 75%', enter: 'cut'},
-  ],
-  leadership: [
-    {src: F + 'leadership-hall.jpg', photo: true, dur: 2.6, zoom: [1.0, 1.1], origin: '65% 55%', enter: 'soft',
-      overlays: [{kind: 'session', label: 'محاضرة', title: 'مفهوم القيادة وصفات القائد'}]},
-    {src: F + 'leadership.mp4', from: 5.3, to: 11.8, volume: SPEECH, zoom: [1.35, 1.55], origin: '78% 58%', enter: 'cut',
-      overlays: [{kind: 'caption', text: 'مفهوم القيادة وصفات القائد', at: 0.4}]},
-  ],
-  research: [
-    {src: F + 'research-stage.jpg', photo: true, dur: 2.6, zoom: [1.12, 1.0], origin: '40% 45%', enter: 'soft',
-      overlays: [{kind: 'session', label: 'محاضرة', title: 'البحث الإجرائي'}]},
-    {src: F + 'research.mp4', from: 13.4, to: 21.1, volume: SPEECH, zoom: [1.3, 1.5], origin: '45% 48%', enter: 'cut',
-      overlays: [{kind: 'caption', text: 'البحث الإجرائي', at: 0.4}]},
-  ],
-} satisfies Record<string, Shot[]>;
-
 export const MONTH = 'أكتوبر 2026';
 
 export const days: Day[] = [
@@ -109,10 +80,41 @@ export const days: Day[] = [
         overlays: [{kind: 'session', label: 'ورشة', title: 'البحث الإجرائي مدخل تطوير العملية التعليمية'}]},
       {src: F + 'research.mp4', from: 13.4, to: 21.1, volume: SPEECH, zoom: [1.3, 1.5], origin: '45% 48%', enter: 'cut',
         overlays: [{kind: 'presenter', name: 'د. موسى جعفر يوسف', role: 'أستاذ الدراسات التربوية المساعد – مملكة البحرين', at: 0.5, dur: 4.5}]},
+      // محاضرة «تصور إداري مقترح لتطوير أداء القادة التربويين…» — أ.د. محمد الحراحشة
+      {src: F + 'day2-leadership.mp4', from: 4.1, to: 13.35, volume: SPEECH, zoom: [1.05, 1.3], origin: '58% 42%', enter: 'soft',
+        overlays: [
+          {kind: 'session', label: 'محاضرة', title: 'تصور إداري مقترح لتطوير أداء القادة التربويين في ضوء أنموذج القيادة الاحتوائية', dur: 4.8},
+          {kind: 'presenter', name: 'أ.د. محمد الحراحشة', role: 'المملكة الأردنية الهاشمية', at: 4.8, dur: 4.0},
+        ]},
     ]},
+  // ── اليوم الثالث: ورشة «التحفيز القيادي وأثره على جودة الأداء» — أ. صالح العجيل ──
   {label: 'اليوم الثالث', weekday: 'الثلاثاء', date: 6,
-    backdrop: {src: F + 'podiums.mp4', from: 0.6, to: 4.0, volume: 0, zoom: [1.15, 1.3], origin: '40% 40%'},
-    sessions: []},
+    backdrop: {src: F + 'day3-motivation.mp4', from: 0, to: 2.7, rate: 0.8, volume: 0, zoom: [1.0, 1.1], origin: '40% 45%'},
+    sessions: [
+      {src: F + 'workshop-wide.jpg', photo: true, dur: 2.6, zoom: [1.0, 1.1], origin: '45% 60%', enter: 'soft',
+        overlays: [{kind: 'session', label: 'ورشة', title: 'التحفيز القيادي وأثره على جودة الأداء', sub: 'أ. صالح العجيل · معلم ومدرب في مجال التعليم', dur: 6.9}]},
+      {src: F + 'workshop-close-a.jpg', photo: true, dur: 2.2, zoom: [1.0, 1.1], origin: '50% 70%', enter: 'cut'},
+      {src: F + 'workshop-close-b.jpg', photo: true, dur: 2.2, zoom: [1.1, 1.0], origin: '50% 75%', enter: 'cut'},
+      {src: F + 'day3-motivation.mp4', from: 27.6, to: 34.8, volume: SPEECH, zoom: [1.0, 1.12], origin: '35% 45%', enter: 'soft',
+        overlays: [{kind: 'caption', text: 'التحفيز القيادي وأثره على جودة الأداء', at: 0.4}]},
+      // محاضرة «حماية المعلم تبدأ بفهم اختلافه» — د. ناصر نجف حسن
+      {src: F + 'study-slide.jpg', photo: true, dur: 3.0, zoom: [1.0, 1.12], origin: '55% 30%', enter: 'soft',
+        overlays: [{kind: 'session', label: 'محاضرة', title: 'حماية المعلم تبدأ بفهم اختلافه', dur: 5.2}]},
+      {src: F + 'day3-study-wide.mp4', from: 0, to: 2.4, volume: 0, zoom: [1.2, 1.35], origin: '45% 40%', enter: 'cut'},
+      {src: F + 'study.mp4', from: 72.0, to: 81.4, volume: SPEECH, zoom: [1.35, 1.6], origin: '48% 50%', enter: 'cut',
+        overlays: [{kind: 'presenter', name: 'د. ناصر نجف حسن', role: 'عضو هيئة تدريس – كلية التربية – جامعة الكويت', at: 0.5, dur: 5}]},
+      // الحلقة النقاشية «مشاريع تعليمية ترسم ملامح المستقبل» (بدون صوت — موسيقى بس)
+      {src: F + 'day3-panel.mp4', from: 0, to: 7.3, rate: 0.75, volume: 0, zoom: [1.0, 1.15], origin: '50% 40%', enter: 'soft',
+        overlays: [
+          {kind: 'session', label: 'حلقة نقاشية', title: 'مشاريع تعليمية ترسم ملامح المستقبل', dur: 3.8},
+          {kind: 'panel', heading: 'المشاركون', at: 3.7, dur: 5.8, members: [
+            {name: 'أ. خالد عبدالعزيز', role: 'مدير إدارة الشؤون التعليمية – منطقة حولي التعليمية – وزارة التربية'},
+            {name: 'د. عائشة العازمي', role: 'أستاذ مشارك – كلية التربية – جامعة الكويت'},
+            {name: 'أ. سهام الخالدي', role: 'مسؤول بروتوكول التعاون بين وزارة التربية وجمعية المعلمين الكويتية'},
+            {name: 'د. بدور الصقعبي', role: 'كلية التربية الأساسية – الهيئة العامة للتعليم التطبيقي والتدريب'},
+          ]},
+        ]},
+    ]},
 ];
 
 const dayShots = (d: Day, i: number): Shot[] => [
