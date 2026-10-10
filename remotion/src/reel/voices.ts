@@ -3,7 +3,7 @@
 import {LOGO, type Overlay, type ReelSpec} from './config';
 
 const V = 1; // صوت المقابلات الأصلي بدون تنظيف (التنظيف كان يقطّع الكلام) — بس رفع مستوى ثابت:
-// ffmpeg -af volume=12dB (أحمد)، 18dB (سهام)، 0dB (هادي) عشان يتساوون
+// ffmpeg -af volume=12dB (أحمد)، 20dB (سهام)، 0dB (هادي) عشان يتساوون
 const LT_BOTTOM = 255; // اسم المتحدث تحت الأيادي وفوق منطقة كابشن إنستغرام
 
 // الأسماء والمناصب — عدّلها هنا
@@ -23,7 +23,9 @@ export const voicesReel: ReelSpec = {
 
     // ── المقابلات بطولها الكامل ──
     {src: 'footage/s1-pink.mp4', from: 0, to: 29.3, volume: V, enter: 'wipe', overlays: [nameAt(SPEAKERS.pink)]},
-    {src: 'footage/s2-teacher.mp4', from: 0, to: 14.9, volume: V, enter: 'wipe', overlays: [nameAt(SPEAKERS.teacher)]},
+    // سهام بمقطعين ورا بعض (IMG_0214 ثم IMG_0215)
+    {src: 'footage/s2-seham-a.mp4', from: 0, to: 12, volume: V, enter: 'wipe', overlays: [nameAt(SPEAKERS.teacher)]},
+    {src: 'footage/s2-seham-b.mp4', from: 0.4, to: 9.5, volume: V, enter: 'cut'},
     {src: 'footage/s3-ghutra.mp4', from: 0, to: 23.9, volume: V, enter: 'wipe', overlays: [nameAt(SPEAKERS.ghutra)]},
 
     // ── الأوترو: آخر اللوبي مضبب والشعار في النص ──
