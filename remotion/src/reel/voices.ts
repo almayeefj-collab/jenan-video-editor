@@ -17,16 +17,16 @@ const nameAt = (s: {name: string; role: string}): Overlay => ({kind: 'lowerThird
 export const voicesReel: ReelSpec = {
   intro: {kind: 'title', sub: 'لقطات ولقاءات من', text: 'المؤتمر التربوي السادس والأربعين', seconds: 7},
   shots: [
-    // ── الانترو: بنر المؤتمر مضبب تحت العنوان والعداد ──
-    {src: 'footage/s2-teacher.mp4', from: 0, to: 7, volume: 0, blur: 14},
+    // ── الانترو: اللوبي من فوق تحت العنوان ──
+    {src: 'footage/lobby-overhead-2.mp4', from: 0, to: 7, volume: 0, grade: true},
 
     // ── المقابلات بطولها الكامل ──
     {src: 'footage/s1-pink.mp4', from: 0, to: 29.3, volume: V, enter: 'wipe', overlays: [nameAt(SPEAKERS.pink)]},
     {src: 'footage/s2-teacher.mp4', from: 0, to: 14.9, volume: V, enter: 'wipe', overlays: [nameAt(SPEAKERS.teacher)]},
     {src: 'footage/s3-ghutra.mp4', from: 0, to: 23.9, volume: V, enter: 'wipe', overlays: [nameAt(SPEAKERS.ghutra)]},
 
-    // ── الأوترو: البهو مضبب والشعار في النص ──
-    {src: 'footage/s3-ghutra.mp4', from: 0, to: 6.5, volume: 0, enter: 'wipe', blur: 10, grade: true,
+    // ── الأوترو: آخر اللوبي مضبب والشعار في النص ──
+    {src: 'footage/lobby-overhead-2.mp4', from: 6, to: 12.2, volume: 0, enter: 'wipe', blur: 10, grade: true,
       overlays: [{kind: 'outro', logo: LOGO}]},
   ],
 };

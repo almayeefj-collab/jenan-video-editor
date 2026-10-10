@@ -173,8 +173,11 @@ export const Title: React.FC<{text: string; sub?: string}> = ({text, sub}) => {
   const {durationInFrames} = useVideoConfig();
   const out = interpolate(frame, [durationInFrames - 10, durationInFrames], [1, 0], clamp);
   const bar = interpolate(frame, [10, 30], [0, 1], {...clamp, easing: ease});
+  const dim = interpolate(frame, [0, 12], [0, 1], clamp);
   return (
     <AbsoluteFill style={{fontFamily, direction: 'rtl', alignItems: 'center', justifyContent: 'center', opacity: out}}>
+      {/* تظليل خلف العنوان عشان ينقرا فوق اللقطات المزدحمة */}
+      <AbsoluteFill style={{background: 'radial-gradient(ellipse 90% 40% at center, rgba(5,12,25,0.7) 0%, rgba(5,12,25,0.35) 60%, rgba(5,12,25,0.15) 100%)', opacity: dim}} />
       {sub ? (
         <div style={{fontSize: 48, fontWeight: 700, color: brand.gold, marginBottom: 10, textShadow: shadow}}>
           <BlurWords text={sub} />
