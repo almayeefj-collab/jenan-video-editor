@@ -15,9 +15,7 @@ const SPEAKERS = {
 const nameAt = (s: {name: string; role: string}): Overlay => ({kind: 'lowerThird', ...s, at: 1, dur: 6, bottom: LT_BOTTOM});
 
 export const voicesReel: ReelSpec = {
-  introTitle: 'المؤتمر التربوي',
-  introTo: 46,
-  introSeconds: 7,
+  intro: {kind: 'title', sub: 'لقطات ولقاءات من', text: 'المؤتمر التربوي السادس والأربعين', seconds: 7},
   shots: [
     // ── الانترو: بنر المؤتمر مضبب تحت العنوان والعداد ──
     {src: 'footage/s2-teacher.mp4', from: 0, to: 7, volume: 0, blur: 14},

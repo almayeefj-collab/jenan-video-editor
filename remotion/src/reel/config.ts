@@ -46,12 +46,11 @@ export type Shot = {
   blur?: number;
 };
 
-// ريل كامل: اللقطات + عنوان الانترو والرقم اللي يعد له العداد ومدته
+// ريل كامل: اللقطات + الانترو فوق أول اللقطات —
+// counter: عنوان وعداد لين رقم، title: عنوان بسطرين (sub فوق بالذهبي)
 export type ReelSpec = {
   shots: Shot[];
-  introTitle: string;
-  introTo: number;
-  introSeconds: number;
+  intro: {kind: 'counter'; title: string; to: number; seconds: number} | {kind: 'title'; text: string; sub?: string; seconds: number};
 };
 
 export const FPS = 30;
@@ -112,7 +111,7 @@ const shots: Shot[] = [
 ];
 
 // الانترو: عنوان «المؤتمر التربوي» ثم عداد لين 46 فوق مقتطفات الناس
-export const teachersReel: ReelSpec = {shots, introTitle: 'المؤتمر التربوي', introTo: 46, introSeconds: 8.6};
+export const teachersReel: ReelSpec = {shots, intro: {kind: 'counter', title: 'المؤتمر التربوي', to: 46, seconds: 8.6}};
 
 export const shotFrames = (s: Shot) => Math.round((s.to - s.from) * FPS);
 export const enterFrames = (s: Shot, i: number) =>

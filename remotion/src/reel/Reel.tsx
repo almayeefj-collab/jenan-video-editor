@@ -77,8 +77,14 @@ export const Reel: React.FC<{spec: ReelSpec}> = ({spec}) => {
           </Fragment>
         ))}
       </TransitionSeries>
-      <Sequence durationInFrames={Math.round(spec.introSeconds * FPS)}>
-        <IntroLockup title={spec.introTitle} to={spec.introTo} />
+      <Sequence durationInFrames={Math.round(spec.intro.seconds * FPS)}>
+        {spec.intro.kind === 'counter' ? (
+          <IntroLockup title={spec.intro.title} to={spec.intro.to} />
+        ) : (
+          <Sequence from={6}>
+            <Title text={spec.intro.text} sub={spec.intro.sub} />
+          </Sequence>
+        )}
       </Sequence>
       {/* موسيقى خلفية: عالية في الانترو والأوترو، وتنخفض تحت كلام المقابلات */}
       <Audio src={staticFile('music/background.wav')} volume={music} />
