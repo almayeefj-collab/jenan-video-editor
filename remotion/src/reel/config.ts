@@ -30,10 +30,12 @@ export type Overlay =
   // exitAt: ثانية خروج الكرت (ينزل ويختفي) في آخر لقطة من مجموعة السؤال
   | {kind: 'question'; text: string; label: string; mode: 'full' | 'docked' | 'inline'; y: number; at?: number; hide?: [number, number]; exitAt?: number}
   | {kind: 'lowerThird'; name: string; role?: string; at: number; dur: number; bottom: number}
-  | {kind: 'outro'; logo?: string};
+  // at: ثانية دخول الشعار (الافتراضي 3)
+  | {kind: 'outro'; logo?: string; at?: number};
 
 export type Shot = {
-  src: string;
+  // بدون src = خلفية متحركة بألوان الهوية
+  src?: string;
   from: number;
   to: number;
   volume: number;
@@ -42,6 +44,12 @@ export type Shot = {
   enter?: 'cut' | 'fade' | 'wipe';
   // تدرج لوني سينمائي + zoom بطيء
   grade?: boolean;
+  // slate: خلفية مضببة وغامقة لكرت السؤال — dim: لقطة أجواء غامقة تحت نصوص الانترو
+  fx?: 'slate' | 'dim';
+  // تقريب ثابت (مثلاً 1.08) عشان القطع داخل نفس المقابلة يبين مقصود
+  zoom?: number;
+  // مكان التركيز الأفقي لما الفيديو الأفقي ينقص عشان يعبي الشاشة (٠–١٠٠٪)
+  focusX?: number;
 };
 
 export const FPS = 30;
@@ -109,9 +117,9 @@ export const enterFrames = (s: Shot, i: number) =>
   i === 0 || !s.enter || s.enter === 'cut' ? 0 : TRANSITION[s.enter];
 
 // بداية كل شوت على الخط الزمني بعد احتساب تداخل الانتقالات
-export const timeline = () => {
+export const timeline = (list: Shot[] = shots) => {
   let t = 0;
-  return shots.map((s, i) => {
+  return list.map((s, i) => {
     t -= enterFrames(s, i);
     const start = t;
     t += shotFrames(s);
@@ -119,8 +127,8 @@ export const timeline = () => {
   });
 };
 
-export const totalFrames = () => {
-  const tl = timeline();
+export const totalFrames = (list: Shot[] = shots) => {
+  const tl = timeline(list);
   const last = tl[tl.length - 1];
   return last.start + last.frames;
 };

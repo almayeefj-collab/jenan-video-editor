@@ -111,7 +111,8 @@ const tickFrames = (from: number, end: number, to: number) => {
 };
 
 // الانترو: «المؤتمر التربوي» يطلع أول، بعدين يرتفع ويطلع تحته عداد بالأرقام الإنجليزية لين 46
-export const IntroLockup: React.FC<{to: number; title: string}> = ({to, title}) => {
+// sub: سطر الشعار تحت الرقم بعد ما يخلص العداد
+export const IntroLockup: React.FC<{to: number; title: string; sub?: string}> = ({to, title, sub}) => {
   const frame = useCurrentFrame();
   const {fps, durationInFrames} = useVideoConfig();
   const countFrom = Math.round(2.9 * fps);
@@ -156,6 +157,24 @@ export const IntroLockup: React.FC<{to: number; title: string}> = ({to, title}) 
       >
         {n}
       </div>
+      {sub ? (
+        <div
+          style={{
+            position: 'absolute',
+            top: '50%',
+            marginTop: 360,
+            width: 960,
+            textAlign: 'center',
+            fontSize: 50,
+            fontWeight: 800,
+            lineHeight: 1.45,
+            color: brand.gold,
+            textShadow: shadow,
+          }}
+        >
+          <BlurWords text={sub} delay={countEnd + 8} stagger={3} />
+        </div>
+      ) : null}
       <Sequence from={8}>{sfx('whoosh', 0.4)}</Sequence>
       <Sequence from={countFrom} durationInFrames={countEnd - countFrom + 4}>{sfx('cinematic-riser', 0.25)}</Sequence>
       {tickFrames(countFrom, countEnd, to).map((f) => (
@@ -327,10 +346,10 @@ export const LowerThird: React.FC<{name: string; role?: string; bottom: number}>
 
 // الأوترو السينمائي: الدرون يقرب ببطء مع تدرج لوني وتعتيم أطراف،
 // بعدين الخلفية تضبب وتغمق والشعار يدخل في نص الشاشة بتلاشي ولمعة
-export const Outro: React.FC<{logo?: string}> = ({logo}) => {
+export const Outro: React.FC<{logo?: string; at?: number}> = ({logo, at = 3}) => {
   const frame = useCurrentFrame();
   const {fps, durationInFrames} = useVideoConfig();
-  const logoAt = Math.round(3 * fps);
+  const logoAt = Math.round(at * fps);
   const t = frame - logoAt;
   const logoIn = interpolate(t, [0, 36], [0, 1], {...clamp, easing: Easing.out(Easing.cubic)});
   const depth = interpolate(t, [-10, 30], [0, 1], {...clamp, easing: ease});
@@ -381,8 +400,8 @@ export const Outro: React.FC<{logo?: string}> = ({logo}) => {
       ) : null}
       {logo ? (
         <>
-          <Sequence from={logoAt - 66} durationInFrames={70}>{sfx('cinematic-riser', 0.45)}</Sequence>
-          <Sequence from={logoAt - 8}>{sfx('whoosh', 0.7)}</Sequence>
+          {logoAt >= 66 ? <Sequence from={logoAt - 66} durationInFrames={70}>{sfx('cinematic-riser', 0.45)}</Sequence> : null}
+          <Sequence from={Math.max(0, logoAt - 8)}>{sfx('whoosh', 0.7)}</Sequence>
           <Sequence from={logoAt}>{sfx('cinematic-boom', 0.9)}</Sequence>
           <Sequence from={logoAt + 34}>{sfx('shimmer', 0.35)}</Sequence>
         </>
