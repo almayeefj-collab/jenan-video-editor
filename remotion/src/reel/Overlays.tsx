@@ -316,7 +316,7 @@ export const LowerThird: React.FC<{name: string; role?: string; bottom: number}>
     <AbsoluteFill style={{fontFamily, direction: 'rtl'}}>
       <div style={{position: 'absolute', right: 60, bottom, display: 'flex', alignItems: 'stretch', opacity: p}}>
         <div style={{width: 10, background: brand.goldDeep, borderRadius: 5, transform: `scaleY(${p})`, marginLeft: 14}} />
-        <Pill style={{clipPath: `inset(0 0 0 ${(1 - p) * 100}%)`, padding: '16px 40px', borderRadius: 24}}>
+        <Pill style={{clipPath: `inset(0 0 0 ${(1 - p) * 100}%)`, padding: '16px 40px', borderRadius: 24, maxWidth: 900}}>
           <div style={{fontSize: 46, fontWeight: 800}}>{name}</div>
           {role ? <div style={{fontSize: 32, fontWeight: 600, color: brand.gold}}>{role}</div> : null}
         </Pill>
