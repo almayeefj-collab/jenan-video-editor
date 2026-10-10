@@ -23,9 +23,9 @@ export const voicesReel: ReelSpec = {
 
     // ── المقابلات بطولها الكامل ──
     {src: 'footage/s1-pink.mp4', from: 0, to: 29.3, volume: V, enter: 'wipe', overlays: [nameAt(SPEAKERS.pink)]},
-    // سهام بمقطعين ورا بعض بطولهم الكامل بدون قص (IMG_0214 ثم IMG_0215)
-    {src: 'footage/s2-seham-a.mp4', from: 0, to: 13.6, volume: V, enter: 'wipe', overlays: [nameAt(SPEAKERS.teacher)]},
-    {src: 'footage/s2-seham-b.mp4', from: 0, to: 10, volume: V, enter: 'cut'},
+    // سهام بمقطعين بطولهم الكامل بدون قص: تعريفها بنفسها (IMG_0215) ثم «وهذا البروتوكول…» (IMG_0214)
+    {src: 'footage/s2-seham-b.mp4', from: 0, to: 10, volume: V, enter: 'wipe', overlays: [nameAt(SPEAKERS.teacher)]},
+    {src: 'footage/s2-seham-a.mp4', from: 0, to: 13.6, volume: V, enter: 'cut'},
     {src: 'footage/s3-ghutra.mp4', from: 0, to: 23.9, volume: V, enter: 'wipe', overlays: [nameAt(SPEAKERS.ghutra)]},
 
     // ── الأوترو: آخر اللوبي مضبب والشعار في النص ──
