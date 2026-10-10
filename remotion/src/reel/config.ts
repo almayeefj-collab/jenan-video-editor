@@ -42,6 +42,16 @@ export type Shot = {
   enter?: 'cut' | 'fade' | 'wipe';
   // تدرج لوني سينمائي + zoom بطيء
   grade?: boolean;
+  // تضبيب الخلفية بالبكسل (للانترو والأوترو فوق لقطة مقابلة)
+  blur?: number;
+};
+
+// ريل كامل: اللقطات + عنوان الانترو والرقم اللي يعد له العداد ومدته
+export type ReelSpec = {
+  shots: Shot[];
+  introTitle: string;
+  introTo: number;
+  introSeconds: number;
 };
 
 export const FPS = 30;
@@ -65,7 +75,7 @@ const Q3 = 'إذا عندك رسالة مباشرة للمعلمين والمع�
 const LOW = {y: 1600};
 const LT_BOTTOM = 255; // اسم المتحدث بنفس المنطقة، والسؤال ينزل يفسح له المكان
 
-export const shots: Shot[] = [
+const shots: Shot[] = [
   // ── ١) الانترو: مقتطفات الناس يمشون (ghosting) ثم اللقطة من فوق + سؤال الرئيس ──
   {src: 'footage/exterior-ghost.mp4', from: 0.2, to: 2.6, volume: 0},
   {src: 'footage/lobby-entrance-ghost.mp4', from: 0, to: 2.2, volume: 0, enter: 'cut'},
@@ -102,14 +112,14 @@ export const shots: Shot[] = [
 ];
 
 // الانترو: عنوان «المؤتمر التربوي» ثم عداد لين 46 فوق مقتطفات الناس
-export const INTRO_LOCKUP_FRAMES = Math.round(8.6 * 30);
+export const teachersReel: ReelSpec = {shots, introTitle: 'المؤتمر التربوي', introTo: 46, introSeconds: 8.6};
 
 export const shotFrames = (s: Shot) => Math.round((s.to - s.from) * FPS);
 export const enterFrames = (s: Shot, i: number) =>
   i === 0 || !s.enter || s.enter === 'cut' ? 0 : TRANSITION[s.enter];
 
 // بداية كل شوت على الخط الزمني بعد احتساب تداخل الانتقالات
-export const timeline = () => {
+export const timeline = (shots: Shot[]) => {
   let t = 0;
   return shots.map((s, i) => {
     t -= enterFrames(s, i);
@@ -119,8 +129,8 @@ export const timeline = () => {
   });
 };
 
-export const totalFrames = () => {
-  const tl = timeline();
+export const totalFrames = (shots: Shot[]) => {
+  const tl = timeline(shots);
   const last = tl[tl.length - 1];
   return last.start + last.frames;
 };

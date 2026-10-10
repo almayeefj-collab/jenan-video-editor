@@ -1,9 +1,9 @@
 import {fade} from '@remotion/transitions/fade';
 import {linearTiming, TransitionSeries} from '@remotion/transitions';
-import {Fragment} from 'react';
+import {Fragment, useMemo} from 'react';
 import {AbsoluteFill, Audio, Easing, Img, interpolate, OffthreadVideo, Sequence, staticFile, useCurrentFrame} from 'remotion';
 import {zoomBlur} from './zoomBlur';
-import {brand, FPS, INTRO_LOCKUP_FRAMES, LOGO, type Overlay, type Shot, shotFrames, timeline, TRANSITION} from './config';
+import {brand, FPS, LOGO, type Overlay, type ReelSpec, type Shot, shotFrames, timeline, TRANSITION} from './config';
 import {musicVolume} from './music';
 import {IntroLockup, LowerThird, Outro, Question, Title} from './Overlays';
 
@@ -31,7 +31,8 @@ const OverlayView: React.FC<{o: Overlay; frames: number}> = ({o, frames}) => {
 const ShotView: React.FC<{shot: Shot}> = ({shot}) => {
   const frames = shotFrames(shot);
   const frame = useCurrentFrame();
-  const push = shot.grade ? interpolate(frame, [0, frames], [1, 1.12]) : 1;
+  // التضبيب يكبّر اللقطة شوي عشان ما تطلع أطراف سودا
+  const push = (shot.grade ? interpolate(frame, [0, frames], [1, 1.12]) : 1) * (shot.blur ? 1.1 : 1);
   return (
     <AbsoluteFill style={{background: 'black'}}>
       <OffthreadVideo
@@ -43,7 +44,10 @@ const ShotView: React.FC<{shot: Shot}> = ({shot}) => {
           height: '100%',
           objectFit: 'cover',
           transform: `scale(${push})`,
-          filter: shot.grade ? 'contrast(1.12) saturate(1.15) brightness(0.95) sepia(0.12)' : undefined,
+          filter:
+            [shot.grade ? 'contrast(1.12) saturate(1.15) brightness(0.95) sepia(0.12)' : '', shot.blur ? `blur(${shot.blur}px) brightness(0.7)` : '']
+              .join(' ')
+              .trim() || undefined,
         }}
       />
       {shot.overlays?.map((o, i) => <OverlayView key={i} o={o} frames={frames} />)}
@@ -51,8 +55,9 @@ const ShotView: React.FC<{shot: Shot}> = ({shot}) => {
   );
 };
 
-export const Reel: React.FC = () => {
-  const tl = timeline();
+export const Reel: React.FC<{spec: ReelSpec}> = ({spec}) => {
+  const tl = timeline(spec.shots);
+  const music = useMemo(() => musicVolume(spec.shots), [spec.shots]);
   const outroStart = tl[tl.length - 1].start;
   const frame = useCurrentFrame();
   return (
@@ -72,11 +77,11 @@ export const Reel: React.FC = () => {
           </Fragment>
         ))}
       </TransitionSeries>
-      <Sequence durationInFrames={INTRO_LOCKUP_FRAMES}>
-        <IntroLockup title="المؤتمر التربوي" to={46} />
+      <Sequence durationInFrames={Math.round(spec.introSeconds * FPS)}>
+        <IntroLockup title={spec.introTitle} to={spec.introTo} />
       </Sequence>
       {/* موسيقى خلفية: عالية في الانترو والأوترو، وتنخفض تحت كلام المقابلات */}
-      <Audio src={staticFile('music/background.wav')} volume={(f) => musicVolume(f)} />
+      <Audio src={staticFile('music/background.wav')} volume={music} />
       {/* الشعار فوق يمين طول الفيديو، بدون كتابة */}
       <Img
         src={staticFile(LOGO)}

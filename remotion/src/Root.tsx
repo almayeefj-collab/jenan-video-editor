@@ -1,13 +1,19 @@
 import {Composition} from 'remotion';
 import {HelloJenan, helloJenanSchema} from './HelloJenan';
-import {FPS, HEIGHT, totalFrames, WIDTH} from './reel/config';
+import {FPS, HEIGHT, teachersReel, totalFrames, WIDTH} from './reel/config';
 import {Reel} from './reel/Reel';
+import {voicesReel} from './reel/voices';
+
+const TeachersReel: React.FC = () => <Reel spec={teachersReel} />;
+const VoicesReel: React.FC = () => <Reel spec={voicesReel} />;
 
 export const RemotionRoot: React.FC = () => {
   return (
     <>
       {/* ريل مستقبل التعليم بكلمة — جمعية المعلمين الكويتية */}
-      <Composition id="TeachersReel" component={Reel} durationInFrames={totalFrames()} fps={FPS} width={WIDTH} height={HEIGHT} />
+      <Composition id="TeachersReel" component={TeachersReel} durationInFrames={totalFrames(teachersReel.shots)} fps={FPS} width={WIDTH} height={HEIGHT} />
+      {/* ريل أصوات المؤتمر — ثلاث مقابلات */}
+      <Composition id="VoicesReel" component={VoicesReel} durationInFrames={totalFrames(voicesReel.shots)} fps={FPS} width={WIDTH} height={HEIGHT} />
       {/* أفقي 16:9 */}
       <Composition
         id="HelloJenan"
