@@ -91,12 +91,15 @@ export type ReelProps = {
   shots: Shot[];
   lockup: {title: string; to: number; sub?: string; frames: number};
   music: string;
+  // عرض الشعار اللي فوق يمين بالبكسل
+  logoWidth: number;
 };
 
 export const Reel: React.FC<Partial<ReelProps>> = ({
   shots = teachersShots,
   lockup = {title: 'المؤتمر التربوي', to: 46, frames: INTRO_LOCKUP_FRAMES},
   music = 'music/background.wav',
+  logoWidth = 150,
 }) => {
   const tl = timeline(shots);
   const outroStart = tl[tl.length - 1].start;
@@ -131,7 +134,7 @@ export const Reel: React.FC<Partial<ReelProps>> = ({
           position: 'absolute',
           top: 100,
           right: 44,
-          width: 150,
+          width: logoWidth,
           opacity:
             interpolate(frame, [4, 16], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'}) *
             interpolate(frame, [outroStart - 10, outroStart], [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'}),

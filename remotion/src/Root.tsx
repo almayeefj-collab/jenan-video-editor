@@ -4,7 +4,7 @@ import {FPS, HEIGHT, totalFrames, WIDTH} from './reel/config';
 import {CONFERENCE_LOCKUP, conferenceShots} from './reel/conference';
 import {Reel} from './reel/Reel';
 
-const ConferenceReel: React.FC = () => <Reel shots={conferenceShots} lockup={CONFERENCE_LOCKUP} music="music/conference.wav" />;
+const ConferenceReel: React.FC = () => <Reel shots={conferenceShots} lockup={CONFERENCE_LOCKUP} music="music/conference.wav" logoWidth={110} />;
 
 export const RemotionRoot: React.FC = () => {
   return (

@@ -36,8 +36,10 @@ export const conferenceShots: Shot[] = [
     overlays: [name('أ. هشام ملك', 'عضو مجلس إدارة جمعية المعلمين الكويتية')]},
   {src: F.rashed, from: 19.8, to: 30.3, volume: V,
     overlays: [name('أ. محمد الراشد', 'اللجنة المنظمة للمؤتمر')]},
-  {src: F.mashael, from: 44.0, to: 53.95, volume: V,
+  // مشاعل: الاجتماعات والتنسيق، بعدين البروفة ونجاح التنظيم
+  {src: F.mashael, from: 10.95, to: 27.5, volume: V,
     overlays: [name('أ. مشاعل العنزي', 'اللجنة المنظمة للمؤتمر')]},
+  {src: F.mashael, from: 35.9, to: 53.95, volume: V, zoom: JUMP},
 
   // ── ٣) الورش ──
   {src: F.nadia, from: 0, to: SLATE, volume: 0, fx: 'slate', enter: 'wipe',
