@@ -24,13 +24,8 @@ const F = {
 };
 
 export const conferenceShots: Shot[] = [
-  // ── ١) الانترو: لقطات من المؤتمر غامقة تحت «المؤتمر التربوي» والعداد لين 46 والشعار ──
-  {src: F.hisham, from: 0, to: 1.5, volume: 0, fx: 'dim'},
-  {src: F.mashael, from: 20, to: 21.4, volume: 0, fx: 'dim', enter: 'cut'},
-  {src: F.haila, from: 30, to: 31.4, volume: 0, fx: 'dim', enter: 'cut'},
-  {src: F.rashed, from: 3, to: 4.4, volume: 0, fx: 'dim', enter: 'cut'},
-  {src: F.nadia, from: 20, to: 21.4, volume: 0, fx: 'dim', enter: 'cut'},
-  {src: F.nafea, from: 72, to: 73.6, volume: 0, fx: 'dim', enter: 'cut'},
+  // ── ١) الانترو: لوبي المركز الثقافي (السقف والناس) تحت «المؤتمر التربوي» والعداد لين 46 والشعار ──
+  {src: 'footage/lobby-ceiling.mp4', from: 0, to: 8.7, volume: 0, fx: 'shade'},
 
   // ── ٢) التحضير والتنظيم ──
   {src: F.nafea, from: 20, to: 20 + SLATE, volume: 0, fx: 'slate', enter: 'wipe',

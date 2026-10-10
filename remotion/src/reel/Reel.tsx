@@ -47,6 +47,7 @@ const BrandBackground: React.FC = () => {
 const LOOK: Record<NonNullable<Shot['fx']>, string> = {
   slate: 'blur(22px) brightness(0.45) saturate(0.8)',
   dim: 'blur(2px) brightness(0.5) saturate(0.9)',
+  shade: 'brightness(0.72) contrast(1.05)',
 };
 
 // تلاشي قصير للصوت في بداية ونهاية كل لقطة عشان القص ما يطلع فيه طقة
@@ -80,7 +81,7 @@ const ShotView: React.FC<{shot: Shot}> = ({shot}) => {
         <BrandBackground />
       )}
       {/* طبقة كحلية فوق اللقطات الفاتحة (رخام أبيض) عشان النص الأبيض يبين */}
-      {shot.fx ? <AbsoluteFill style={{background: `linear-gradient(180deg, ${brand.navy}, ${brand.navyDark})`, opacity: shot.fx === 'dim' ? 0.55 : 0.4}} /> : null}
+      {shot.fx ? <AbsoluteFill style={{background: `linear-gradient(180deg, ${brand.navy}, ${brand.navyDark})`, opacity: shot.fx === 'slate' ? 0.4 : 0.5}} /> : null}
       {shot.overlays?.map((o, i) => <OverlayView key={i} o={o} frames={frames} />)}
     </AbsoluteFill>
   );
