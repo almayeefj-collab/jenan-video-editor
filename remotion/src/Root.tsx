@@ -1,6 +1,7 @@
 import {Composition} from 'remotion';
 import {HelloJenan, helloJenanSchema} from './HelloJenan';
 import {FPS, HEIGHT, totalFrames, WIDTH} from './reel/config';
+import {CONFERENCE_INTRO, conferenceShots} from './reel/conference';
 import {Reel} from './reel/Reel';
 
 export const RemotionRoot: React.FC = () => {
@@ -8,6 +9,16 @@ export const RemotionRoot: React.FC = () => {
     <>
       {/* ريل مستقبل التعليم بكلمة — جمعية المعلمين الكويتية */}
       <Composition id="TeachersReel" component={Reel} durationInFrames={totalFrames()} fps={FPS} width={WIDTH} height={HEIGHT} />
+      {/* ريل لقاءات ولقطات — المؤتمر التربوي السادس والأربعون */}
+      <Composition
+        id="ConferenceReel"
+        component={Reel}
+        durationInFrames={totalFrames(conferenceShots)}
+        fps={FPS}
+        width={WIDTH}
+        height={HEIGHT}
+        defaultProps={{shots: conferenceShots, intro: CONFERENCE_INTRO, music: 'music/conference.mp3'}}
+      />
       {/* أفقي 16:9 */}
       <Composition
         id="HelloJenan"

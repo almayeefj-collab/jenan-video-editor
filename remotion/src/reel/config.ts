@@ -28,8 +28,9 @@ export type Overlay =
   // inline: الشريط يطلع بموشن من تحت لمكانه. y = مركز الشريط بالبكسل
   // hide: [من، إلى] بالثواني — الكرت ينزل ويختفي (عشان يطلع اسم المتحدث بنفس المكان) ثم يرجع
   // exitAt: ثانية خروج الكرت (ينزل ويختفي) في آخر لقطة من مجموعة السؤال
-  | {kind: 'question'; text: string; label: string; mode: 'full' | 'docked' | 'inline'; y: number; at?: number; hide?: [number, number]; exitAt?: number}
-  | {kind: 'lowerThird'; name: string; role?: string; at: number; dur: number; bottom: number}
+  // quiet: inline بدون صوت الكتابة والنص يطلع كامل (لما يرجع الشريط فوق كلام المتحدث)
+  | {kind: 'question'; text: string; label: string; mode: 'full' | 'docked' | 'inline'; y: number; at?: number; hide?: [number, number]; exitAt?: number; quiet?: boolean}
+  | {kind: 'lowerThird'; name: string; role?: string; extra?: string; at: number; dur: number; bottom: number}
   | {kind: 'outro'; logo?: string};
 
 export type Shot = {
@@ -42,6 +43,10 @@ export type Shot = {
   enter?: 'cut' | 'fade' | 'wipe';
   // تدرج لوني سينمائي + zoom بطيء
   grade?: boolean;
+  // تكبير ثابت للقطة — يخفي القفزة بين مقطعين متتاليين من نفس المقابلة
+  zoom?: number;
+  // لقطات أجواء فوق صوت الشوت (الصوت يكمل من الشوت الأصلي). at وdur نسبة لبداية الشوت
+  cutaways?: {src: string; from: number; at: number; dur: number}[];
 };
 
 export const FPS = 30;
@@ -109,9 +114,9 @@ export const enterFrames = (s: Shot, i: number) =>
   i === 0 || !s.enter || s.enter === 'cut' ? 0 : TRANSITION[s.enter];
 
 // بداية كل شوت على الخط الزمني بعد احتساب تداخل الانتقالات
-export const timeline = () => {
+export const timeline = (list: Shot[] = shots) => {
   let t = 0;
-  return shots.map((s, i) => {
+  return list.map((s, i) => {
     t -= enterFrames(s, i);
     const start = t;
     t += shotFrames(s);
@@ -119,8 +124,8 @@ export const timeline = () => {
   });
 };
 
-export const totalFrames = () => {
-  const tl = timeline();
+export const totalFrames = (list: Shot[] = shots) => {
+  const tl = timeline(list);
   const last = tl[tl.length - 1];
   return last.start + last.frames;
 };

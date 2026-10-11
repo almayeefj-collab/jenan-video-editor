@@ -168,6 +168,53 @@ export const IntroLockup: React.FC<{to: number; title: string}> = ({to, title}) 
   );
 };
 
+// عنوان الانترو ينكتب حرف حرف مع مؤشر يرمش وصوت كيبورد، فوق تغميق خفيف للقطة
+export const TypeTitle: React.FC<{title: string; sub: string}> = ({title, sub}) => {
+  const frame = useCurrentFrame();
+  const {durationInFrames} = useVideoConfig();
+  const start = 10;
+  const perChar = 2;
+  const gap = 8;
+  const titleChars = [...title];
+  const subChars = [...sub];
+  const subStart = start + titleChars.length * perChar + gap;
+  const typedEnd = subStart + subChars.length * perChar;
+  const shown = (chars: string[], from: number) => chars.slice(0, Math.max(0, Math.floor((frame - from) / perChar) + 1)).join('');
+  const t = frame < start ? '' : shown(titleChars, start);
+  const u = frame < subStart ? '' : shown(subChars, subStart);
+  const caretOn = Math.floor(frame / 8) % 2 === 0 || frame < typedEnd;
+  const bar = interpolate(frame, [typedEnd, typedEnd + 18], [0, 1], {...clamp, easing: ease});
+  const dim = interpolate(frame, [0, 10, durationInFrames - 14, durationInFrames], [0, 1, 1, 0], clamp);
+  const out = interpolate(frame, [durationInFrames - 14, durationInFrames], [0, 1], clamp);
+  const caret = (
+    <span style={{display: 'inline-block', width: 6, height: '0.9em', marginRight: 8, background: brand.gold, verticalAlign: 'middle', opacity: caretOn ? 1 : 0}} />
+  );
+  return (
+    <AbsoluteFill style={{fontFamily, direction: 'rtl'}}>
+      <AbsoluteFill
+        style={{
+          opacity: dim,
+          background: 'radial-gradient(ellipse at center, rgba(9,28,58,0.72) 0%, rgba(9,28,58,0.45) 55%, rgba(0,0,0,0.25) 100%)',
+        }}
+      />
+      <AbsoluteFill style={{alignItems: 'center', justifyContent: 'center', opacity: 1 - out, filter: `blur(${out * 14}px)`}}>
+        <div style={{fontSize: 128, fontWeight: 900, color: brand.text, textShadow: shadow, lineHeight: 1.2, minHeight: 154}}>
+          {t}
+          {frame < subStart ? caret : null}
+        </div>
+        <div style={{fontSize: 58, fontWeight: 800, color: brand.gold, textShadow: shadow, marginTop: 18, minHeight: 80}}>
+          {u}
+          {frame >= subStart ? caret : null}
+        </div>
+        <div style={{height: 8, width: 420 * bar, background: brand.bar, borderRadius: 4, marginTop: 26}} />
+      </AbsoluteFill>
+      <Typing from={start} frames={titleChars.length * perChar} />
+      <Typing from={subStart} frames={subChars.length * perChar} />
+      <Sequence from={typedEnd + 2}>{sfx('shimmer', 0.3)}</Sequence>
+    </AbsoluteFill>
+  );
+};
+
 export const Title: React.FC<{text: string; sub?: string}> = ({text, sub}) => {
   const frame = useCurrentFrame();
   const {durationInFrames} = useVideoConfig();
@@ -238,7 +285,8 @@ export const Question: React.FC<{
   y: number;
   hide?: [number, number];
   exitAt?: number;
-}> = ({text, label, mode, y: barY, hide, exitAt}) => {
+  quiet?: boolean;
+}> = ({text, label, mode, y: barY, hide, exitAt, quiet}) => {
   const frame = useCurrentFrame();
   const {fps, height} = useVideoConfig();
   const hold = Math.round(3.6 * fps);
@@ -293,9 +341,9 @@ export const Question: React.FC<{
           opacity: toBar * (1 - down),
         }}
       >
-        <QuestionBar text={text} label={label} typing={mode === 'inline'} />
+        <QuestionBar text={text} label={label} typing={mode === 'inline' && !quiet} />
       </div>
-      {mode !== 'docked' ? <Typing from={8} frames={text.split(' ').length * 3 + 10} /> : null}
+      {mode !== 'docked' && !quiet ? <Typing from={8} frames={text.split(' ').length * 3 + 10} /> : null}
       {mode === 'full' ? sfx('pop', 0.5) : null}
       {mode === 'full' && !exitEarly ? <Sequence from={hold - 2}>{sfx('swoosh-down', 0.55)}</Sequence> : null}
       {mode === 'inline' ? sfx('swoosh-up', 0.55) : null}
@@ -306,7 +354,7 @@ export const Question: React.FC<{
   );
 };
 
-export const LowerThird: React.FC<{name: string; role?: string; bottom: number}> = ({name, role, bottom}) => {
+export const LowerThird: React.FC<{name: string; role?: string; extra?: string; bottom: number}> = ({name, role, extra, bottom}) => {
   const frame = useCurrentFrame();
   const {fps, durationInFrames} = useVideoConfig();
   const inP = spring({frame, fps, config: {damping: 200}, durationInFrames: 18});
@@ -319,6 +367,7 @@ export const LowerThird: React.FC<{name: string; role?: string; bottom: number}>
         <Pill style={{clipPath: `inset(0 0 0 ${(1 - p) * 100}%)`, padding: '16px 40px', borderRadius: 24}}>
           <div style={{fontSize: 46, fontWeight: 800}}>{name}</div>
           {role ? <div style={{fontSize: 32, fontWeight: 600, color: brand.gold}}>{role}</div> : null}
+          {extra ? <div style={{fontSize: 28, fontWeight: 600, color: brand.skyText}}>{extra}</div> : null}
         </Pill>
       </div>
     </AbsoluteFill>

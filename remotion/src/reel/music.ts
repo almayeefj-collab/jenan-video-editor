@@ -1,5 +1,5 @@
 import {interpolate} from 'remotion';
-import {FPS, timeline, totalFrames} from './config';
+import {FPS, type Shot, timeline, totalFrames} from './config';
 
 // مستوى الموسيقى: عالي في الانترو والأوترو، متوسط على لقطات الأجواء،
 // ومنخفض تحت كلام المقابلات
@@ -8,8 +8,8 @@ const BROLL = 0.4;
 const UNDER_SPEECH = 0.1;
 const RAMP = 12;
 
-const levels = () => {
-  const tl = timeline();
+const levels = (list: Shot[]) => {
+  const tl = timeline(list);
   const firstSpeech = tl.findIndex((t) => t.shot.volume >= 1);
   return tl.map((t, i) => {
     const isIntro = i < firstSpeech;
@@ -19,10 +19,11 @@ const levels = () => {
   });
 };
 
-const cached = levels();
-const total = totalFrames();
+const cache = new Map<Shot[], {cached: ReturnType<typeof levels>; total: number}>();
 
-export const musicVolume = (f: number) => {
+export const musicVolume = (f: number, list: Shot[]) => {
+  if (!cache.has(list)) cache.set(list, {cached: levels(list), total: totalFrames(list)});
+  const {cached, total} = cache.get(list)!;
   let idx = 0;
   for (let i = 0; i < cached.length; i++) if (cached[i].start <= f) idx = i;
   const cur = cached[idx];

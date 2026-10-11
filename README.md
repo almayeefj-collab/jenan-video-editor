@@ -27,6 +27,7 @@
 ```bash
 cd remotion
 npm run studio                                                    # محرر بصري في المتصفح
+npx remotion render src/index.ts ConferenceReel out/conference.mp4 # ريل لقاءات ولقطات (المؤتمر 46)
 npx remotion render src/index.ts HelloJenan out/hello.mp4        # 16:9
 npx remotion render src/index.ts HelloJenanVertical out/reel.mp4 # 9:16
 npx remotion render src/index.ts HelloJenan out/x.mp4 --props='{"title":"عنوانك","subtitle":"نصك"}'

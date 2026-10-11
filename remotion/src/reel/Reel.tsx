@@ -3,9 +3,9 @@ import {linearTiming, TransitionSeries} from '@remotion/transitions';
 import {Fragment} from 'react';
 import {AbsoluteFill, Audio, Easing, Img, interpolate, OffthreadVideo, Sequence, staticFile, useCurrentFrame} from 'remotion';
 import {zoomBlur} from './zoomBlur';
-import {brand, FPS, INTRO_LOCKUP_FRAMES, LOGO, type Overlay, type Shot, shotFrames, timeline, TRANSITION} from './config';
+import {brand, FPS, INTRO_LOCKUP_FRAMES, LOGO, type Overlay, type Shot, shotFrames, shots as teachersShots, timeline, TRANSITION} from './config';
 import {musicVolume} from './music';
-import {IntroLockup, LowerThird, Outro, Question, Title} from './Overlays';
+import {IntroLockup, LowerThird, Outro, Question, Title, TypeTitle} from './Overlays';
 
 const OverlayView: React.FC<{o: Overlay; frames: number}> = ({o, frames}) => {
   switch (o.kind) {
@@ -14,13 +14,13 @@ const OverlayView: React.FC<{o: Overlay; frames: number}> = ({o, frames}) => {
     case 'question':
       return (
         <Sequence from={Math.round((o.at ?? 0) * FPS)}>
-          <Question text={o.text} label={o.label} mode={o.mode} y={o.y} hide={o.hide} exitAt={o.exitAt} />
+          <Question text={o.text} label={o.label} mode={o.mode} y={o.y} hide={o.hide} exitAt={o.exitAt} quiet={o.quiet} />
         </Sequence>
       );
     case 'lowerThird':
       return (
         <Sequence from={Math.round(o.at * FPS)} durationInFrames={Math.round(o.dur * FPS)}>
-          <LowerThird name={o.name} role={o.role} bottom={o.bottom} />
+          <LowerThird name={o.name} role={o.role} extra={o.extra} bottom={o.bottom} />
         </Sequence>
       );
     case 'outro':
@@ -28,10 +28,21 @@ const OverlayView: React.FC<{o: Overlay; frames: number}> = ({o, frames}) => {
   }
 };
 
+// لقطة أجواء بدون صوت فوق كلام المتحدث، تدخل وتطلع بتلاشي سريع
+const Cutaway: React.FC<{src: string; from: number; frames: number}> = ({src, from, frames}) => {
+  const frame = useCurrentFrame();
+  const opacity = interpolate(frame, [0, 6, frames - 6, frames], [0, 1, 1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+  return (
+    <AbsoluteFill style={{opacity}}>
+      <OffthreadVideo src={staticFile(src)} trimBefore={Math.round(from * FPS)} muted style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+    </AbsoluteFill>
+  );
+};
+
 const ShotView: React.FC<{shot: Shot}> = ({shot}) => {
   const frames = shotFrames(shot);
   const frame = useCurrentFrame();
-  const push = shot.grade ? interpolate(frame, [0, frames], [1, 1.12]) : 1;
+  const push = (shot.grade ? interpolate(frame, [0, frames], [1, 1.12]) : 1) * (shot.zoom ?? 1);
   return (
     <AbsoluteFill style={{background: 'black'}}>
       <OffthreadVideo
@@ -46,13 +57,25 @@ const ShotView: React.FC<{shot: Shot}> = ({shot}) => {
           filter: shot.grade ? 'contrast(1.12) saturate(1.15) brightness(0.95) sepia(0.12)' : undefined,
         }}
       />
+      {shot.cutaways?.map((c, i) => (
+        <Sequence key={i} from={Math.round(c.at * FPS)} durationInFrames={Math.round(c.dur * FPS)}>
+          <Cutaway src={c.src} from={c.from} frames={Math.round(c.dur * FPS)} />
+        </Sequence>
+      ))}
       {shot.overlays?.map((o, i) => <OverlayView key={i} o={o} frames={frames} />)}
     </AbsoluteFill>
   );
 };
 
-export const Reel: React.FC = () => {
-  const tl = timeline();
+// intro: lockup = «المؤتمر التربوي» + عداد 46، typewriter = عنوان ينكتب حرف حرف مع صوت كيبورد
+export type ReelProps = {
+  shots?: Shot[];
+  intro?: {kind: 'lockup'} | {kind: 'typewriter'; title: string; sub: string; seconds: number};
+  music?: string;
+};
+
+export const Reel: React.FC<ReelProps> = ({shots = teachersShots, intro = {kind: 'lockup'}, music = 'music/background.wav'}) => {
+  const tl = timeline(shots);
   const outroStart = tl[tl.length - 1].start;
   const frame = useCurrentFrame();
   return (
@@ -72,11 +95,17 @@ export const Reel: React.FC = () => {
           </Fragment>
         ))}
       </TransitionSeries>
-      <Sequence durationInFrames={INTRO_LOCKUP_FRAMES}>
-        <IntroLockup title="المؤتمر التربوي" to={46} />
-      </Sequence>
+      {intro.kind === 'lockup' ? (
+        <Sequence durationInFrames={INTRO_LOCKUP_FRAMES}>
+          <IntroLockup title="المؤتمر التربوي" to={46} />
+        </Sequence>
+      ) : (
+        <Sequence durationInFrames={Math.round(intro.seconds * FPS)}>
+          <TypeTitle title={intro.title} sub={intro.sub} />
+        </Sequence>
+      )}
       {/* موسيقى خلفية: عالية في الانترو والأوترو، وتنخفض تحت كلام المقابلات */}
-      <Audio src={staticFile('music/background.wav')} volume={(f) => musicVolume(f)} />
+      <Audio src={staticFile(music)} volume={(f) => musicVolume(f, shots)} />
       {/* الشعار فوق يمين طول الفيديو، بدون كتابة */}
       <Img
         src={staticFile(LOGO)}
