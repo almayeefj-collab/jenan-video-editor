@@ -83,7 +83,7 @@ export const Reel: React.FC<{spec: ReelSpec}> = ({spec}) => {
           <IntroLockup title={spec.intro.title} to={spec.intro.to} />
         ) : (
           <Sequence from={6}>
-            <Title text={spec.intro.text} sub={spec.intro.sub} />
+            <Title text={spec.intro.text} sub={spec.intro.sub} typewriter={spec.intro.typewriter} />
           </Sequence>
         )}
       </Sequence>

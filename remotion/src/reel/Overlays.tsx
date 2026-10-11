@@ -168,26 +168,59 @@ export const IntroLockup: React.FC<{to: number; title: string}> = ({to, title}) 
   );
 };
 
-export const Title: React.FC<{text: string; sub?: string}> = ({text, sub}) => {
+// كتابة حرف حرف مع مؤشر: الجزء الباقي مخفي بمكانه عشان السطور ما تتحرك وهي تنكتب
+const TypeText: React.FC<{text: string; from: number; speed: number}> = ({text, from, speed}) => {
+  const frame = useCurrentFrame();
+  const chars = Array.from(text);
+  const n = Math.max(0, Math.min(chars.length, Math.floor((frame - from) / speed)));
+  const typing = frame >= from && n < chars.length;
+  const blink = Math.floor(frame / 8) % 2 === 0;
+    return (
+    <>
+      <span>{chars.slice(0, n).join('')}</span>
+      <span style={{display: 'inline-block', width: 0, overflow: 'visible', opacity: typing || (n === chars.length && blink && frame < from + chars.length * speed + 40) ? 1 : 0}}>
+        <span style={{display: 'inline-block', width: '0.08em', height: '0.9em', background: brand.goldDeep, verticalAlign: 'middle', transform: 'translateX(-0.06em)'}} />
+      </span>
+      <span style={{opacity: 0}}>{chars.slice(n).join('')}</span>
+    </>
+  );
+};
+
+export const Title: React.FC<{text: string; sub?: string; typewriter?: boolean}> = ({text, sub, typewriter}) => {
   const frame = useCurrentFrame();
   const {durationInFrames} = useVideoConfig();
   const out = interpolate(frame, [durationInFrames - 10, durationInFrames], [1, 0], clamp);
-  const bar = interpolate(frame, [10, 30], [0, 1], {...clamp, easing: ease});
   const dim = interpolate(frame, [0, 12], [0, 1], clamp);
+  // الكتابة: العنوان الصغير أول ثم الكبير، حرفين كل 3 فريمات تقريباً
+  const SPEED = 2;
+  const subFrom = 8;
+  const subLen = sub ? Array.from(sub).length * SPEED : 0;
+  const mainFrom = typewriter ? subFrom + subLen + (sub ? 6 : 0) : 10;
+  const mainEnd = mainFrom + Array.from(text).length * SPEED;
+  const barFrom = typewriter ? mainEnd : 10;
+  const bar = interpolate(frame, [barFrom, barFrom + 20], [0, 1], {...clamp, easing: ease});
   return (
     <AbsoluteFill style={{fontFamily, direction: 'rtl', alignItems: 'center', justifyContent: 'center', opacity: out}}>
       {/* تظليل خلف العنوان عشان ينقرا فوق اللقطات المزدحمة */}
       <AbsoluteFill style={{background: 'radial-gradient(ellipse 90% 40% at center, rgba(5,12,25,0.7) 0%, rgba(5,12,25,0.35) 60%, rgba(5,12,25,0.15) 100%)', opacity: dim}} />
       {sub ? (
-        <div style={{fontSize: 48, fontWeight: 700, color: brand.gold, marginBottom: 10, textShadow: shadow}}>
-          <BlurWords text={sub} />
+        <div style={{position: 'relative', fontSize: 48, fontWeight: 700, color: brand.gold, marginBottom: 10, textShadow: shadow}}>
+          {typewriter ? <TypeText text={sub} from={subFrom} speed={SPEED} /> : <BlurWords text={sub} />}
         </div>
       ) : null}
-      <div style={{fontSize: 104, fontWeight: 900, color: brand.text, textAlign: 'center', padding: '0 60px', textShadow: shadow, lineHeight: 1.25}}>
-        <BlurWords text={text} delay={10} stagger={4} />
+      <div style={{position: 'relative', fontSize: 104, fontWeight: 900, color: brand.text, textAlign: 'center', padding: '0 60px', textShadow: shadow, lineHeight: 1.25}}>
+        {typewriter ? <TypeText text={text} from={mainFrom} speed={SPEED} /> : <BlurWords text={text} delay={10} stagger={4} />}
       </div>
-      <div style={{height: 8, width: 360 * bar, background: brand.bar, borderRadius: 4, marginTop: 24}} />
-      <Sequence from={10}>{sfx('whoosh', 0.45)}</Sequence>
+      <div style={{position: 'relative', height: 8, width: 360 * bar, background: brand.bar, borderRadius: 4, marginTop: 24}} />
+      {typewriter ? (
+        <>
+          {sub ? <Typing from={subFrom} frames={subLen} /> : null}
+          <Typing from={mainFrom} frames={mainEnd - mainFrom} />
+          <Sequence from={barFrom}>{sfx('whoosh', 0.4)}</Sequence>
+        </>
+      ) : (
+        <Sequence from={10}>{sfx('whoosh', 0.45)}</Sequence>
+      )}
     </AbsoluteFill>
   );
 };

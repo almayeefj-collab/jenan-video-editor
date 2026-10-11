@@ -52,7 +52,7 @@ export type Shot = {
 // counter: عنوان وعداد لين رقم، title: عنوان بسطرين (sub فوق بالذهبي)
 export type ReelSpec = {
   shots: Shot[];
-  intro: {kind: 'counter'; title: string; to: number; seconds: number} | {kind: 'title'; text: string; sub?: string; seconds: number};
+  intro: {kind: 'counter'; title: string; to: number; seconds: number} | {kind: 'title'; text: string; sub?: string; seconds: number; typewriter?: boolean};
 };
 
 export const FPS = 30;
