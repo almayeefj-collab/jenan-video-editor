@@ -34,11 +34,11 @@ export const conferenceShots: Shot[] = [
       {kind: 'lowerThird', name: 'د. خالد المخلف', role: 'رئيس لجنة الوفود الخارجية ومدير فرع الجهراء', at: 0.8, dur: 6.5, bottom: LT_BOTTOM},
     ]},
 
-  // ── ٣) سؤال المحاضرين: د. منال العاصمي (أهم النقاط) ──
+  // ── ٣) سؤال المحاضرين: د. منال القحطاني (أهم النقاط) ──
   {src: 'footage/ws-niqab.mp4', from: 0, to: 31.95, volume: V, enter: 'wipe',
     overlays: [
       {kind: 'question', ...BAR, mode: 'full', exitAt: 3.3},
-      {kind: 'lowerThird', name: 'د. منال بنت حزان العاصمي', role: 'ورشة: التقويم التكويني التشاركي واستدامة أثر التدريب', at: 3.6, dur: 6.5, bottom: LT_BOTTOM},
+      {kind: 'lowerThird', name: 'د. منال حزام القحطاني', role: 'وكيلة مدرسة — وزارة التعليم السعودية', extra: 'ورشة: التقويم التكويني التشاركي واستدامة أثر التدريب', at: 3.6, dur: 6.5, bottom: LT_BOTTOM},
       {kind: 'question', ...BAR, mode: 'inline', quiet: true, at: 10.4},
     ]},
   {src: 'footage/ws-niqab.mp4', from: 32, to: 64.2, volume: V, enter: 'cut', zoom: 1.1,
@@ -46,19 +46,19 @@ export const conferenceShots: Shot[] = [
   {src: 'footage/ws-niqab.mp4', from: 173.3, to: 185.9, volume: V, enter: 'cut',
     overlays: [{kind: 'question', ...BAR, mode: 'docked', exitAt: 11.8}]},
 
-  // ── ٤) بشرى البوسعيدي من سلطنة عُمان: المذيعة تعرّف فيها ثم كلامها ──
+  // ── ٤) أ. بشرى البوسعيدية من سلطنة عُمان: المذيعة تعرّف فيها ثم كلامها ──
   {src: 'footage/ws-green.mp4', from: 25.5, to: 36.35, volume: V, enter: 'wipe',
     overlays: [{kind: 'question', ...BAR, mode: 'inline', quiet: true, at: 0.6}]},
   {src: 'footage/ws-green.mp4', from: 71.22, to: 90.75, volume: V, enter: 'cut',
     overlays: [
       {kind: 'question', ...BAR, mode: 'docked', hide: [2, 8.8], exitAt: 18.8},
-      {kind: 'lowerThird', name: 'بشرى البوسعيدي', role: 'سلطنة عُمان', at: 2.2, dur: 6.3, bottom: LT_BOTTOM},
+      {kind: 'lowerThird', name: 'أ. بشرى بنت حمود البوسعيدية', role: 'رئيسة قسم العلوم الاجتماعية — كلية البيان', extra: 'وزارة التعليم — سلطنة عُمان', at: 2.2, dur: 6.3, bottom: LT_BOTTOM},
     ]},
 
-  // ── ٥) د. موسى فتيل: البحث الإجرائي (أهم النقاط) ──
+  // ── ٥) د. موسى جعفر يوسف: البحث الإجرائي (أهم النقاط) ──
   {src: 'footage/ws-suit.mp4', from: 3.2, to: 20.95, volume: V, enter: 'wipe',
     overlays: [
-      {kind: 'lowerThird', name: 'د. موسى فتيل', role: 'أستاذ الدراسات التربوية المساعد — جامعة البحرين', extra: 'ورشة: البحث الإجرائي مدخل لتطوير العملية التعليمية', at: 0.4, dur: 7, bottom: LT_BOTTOM},
+      {kind: 'lowerThird', name: 'د. موسى جعفر يوسف', role: 'أستاذ الدراسات التربوية المساعد', extra: 'ورشة: البحث الإجرائي مدخل لتطوير العملية التعليمية', at: 0.4, dur: 7, bottom: LT_BOTTOM},
       {kind: 'question', ...BAR, mode: 'inline', quiet: true, at: 7.8},
     ]},
   {src: 'footage/ws-suit.mp4', from: 21, to: 44.9, volume: V, enter: 'cut', zoom: 1.1,
