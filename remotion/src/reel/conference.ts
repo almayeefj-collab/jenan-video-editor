@@ -38,7 +38,7 @@ export const conferenceShots: Shot[] = [
   {src: 'footage/ws-niqab.mp4', from: 0, to: 31.95, volume: V, enter: 'wipe',
     overlays: [
       {kind: 'question', ...BAR, mode: 'full', exitAt: 3.3},
-      {kind: 'lowerThird', name: 'د. منال حزام القحطاني', role: 'وكيلة مدرسة — وزارة التعليم السعودية', extra: 'ورشة: التقويم التكويني التشاركي واستدامة أثر التدريب', at: 3.6, dur: 6.5, bottom: LT_BOTTOM},
+      {kind: 'lowerThird', name: 'د. منال حزام القحطاني', role: 'وكيلة مدرسة — وزارة التعليم السعودية', at: 3.6, dur: 6.5, bottom: LT_BOTTOM},
       {kind: 'question', ...BAR, mode: 'inline', quiet: true, at: 10.4},
     ]},
   {src: 'footage/ws-niqab.mp4', from: 32, to: 64.2, volume: V, enter: 'cut', zoom: 1.1,
@@ -58,7 +58,7 @@ export const conferenceShots: Shot[] = [
   // ── ٥) د. موسى جعفر يوسف: البحث الإجرائي (أهم النقاط) ──
   {src: 'footage/ws-suit.mp4', from: 3.2, to: 20.95, volume: V, enter: 'wipe',
     overlays: [
-      {kind: 'lowerThird', name: 'د. موسى جعفر يوسف', role: 'أستاذ الدراسات التربوية المساعد', extra: 'ورشة: البحث الإجرائي مدخل لتطوير العملية التعليمية', at: 0.4, dur: 7, bottom: LT_BOTTOM},
+      {kind: 'lowerThird', name: 'د. موسى جعفر يوسف', role: 'أستاذ الدراسات التربوية المساعد', at: 0.4, dur: 7, bottom: LT_BOTTOM},
       {kind: 'question', ...BAR, mode: 'inline', quiet: true, at: 7.8},
     ]},
   {src: 'footage/ws-suit.mp4', from: 21, to: 44.9, volume: V, enter: 'cut', zoom: 1.1,
