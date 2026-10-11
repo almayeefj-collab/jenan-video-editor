@@ -32,7 +32,7 @@ const ShotView: React.FC<{shot: Shot}> = ({shot}) => {
   const frames = shotFrames(shot);
   const frame = useCurrentFrame();
   // التضبيب يكبّر اللقطة شوي عشان ما تطلع أطراف سودا
-  const push = (shot.grade ? interpolate(frame, [0, frames], [1, 1.12]) : 1) * (shot.blur ? 1.1 : 1);
+  const push = (shot.grade ? interpolate(frame, [0, frames], [1, 1.12]) : 1) * (shot.blur ? 1.1 : 1) * (shot.zoom ?? 1);
   return (
     <AbsoluteFill style={{background: 'black'}}>
       <OffthreadVideo
@@ -44,6 +44,7 @@ const ShotView: React.FC<{shot: Shot}> = ({shot}) => {
           height: '100%',
           objectFit: 'cover',
           transform: `scale(${push})`,
+          transformOrigin: shot.zoom ? 'center 30%' : undefined,
           filter:
             [shot.grade ? 'contrast(1.12) saturate(1.15) brightness(0.95) sepia(0.12)' : '', shot.blur ? `blur(${shot.blur}px) brightness(0.7)` : '']
               .join(' ')

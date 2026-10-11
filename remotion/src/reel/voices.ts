@@ -25,8 +25,10 @@ export const voicesReel: ReelSpec = {
     {src: 'footage/s1-pink.mp4', from: 0, to: 29.3, volume: V, enter: 'wipe', overlays: [nameAt(SPEAKERS.pink)]},
     // سهام بمقطعين بطولهم الكامل بدون قص: تعريفها بنفسها (IMG_0211، 10 ث) ثم IMG_0209 (14 ث)
     // قطع مباشر: الـ wipe كان يركّب أول كلامها على آخر كلام أحمد
-    {src: 'footage/s2-seham-2.mp4', from: 0, to: 10.03, volume: V, enter: 'cut', overlays: [nameAt(SPEAKERS.teacher)]},
-    {src: 'footage/s2-seham-intro.mp4', from: 0, to: 13.8, volume: V, enter: 'cut'},
+    // التسجيل الأول ينقطع بنص كلمة عند 9.5 ث، فينتهي بالوقفة الطبيعية قبلها (9.4)
+    {src: 'footage/s2-seham-2.mp4', from: 0, to: 9.4, volume: V, enter: 'cut', overlays: [nameAt(SPEAKERS.teacher)]},
+    // تلاشي ناعم عشان الوصل ما يبين إنه مقطوع (التسجيل الثاني أصلاً بزاوية مختلفة)
+    {src: 'footage/s2-seham-intro.mp4', from: 0, to: 13.8, volume: V, enter: 'fade'},
     // قطع مباشر (بدون wipe) عشان الانتقال ما ياكل آخر كلام سهام
     {src: 'footage/s3-ghutra.mp4', from: 0, to: 23.9, volume: V, enter: 'cut', overlays: [nameAt(SPEAKERS.ghutra)]},
 
