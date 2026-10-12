@@ -12,8 +12,8 @@ const LT_BOTTOM = 255; // اسم المتحدث تحت
 // الانترو: لقطات الشباب الواقفين والعنوان ينكتب فوقها
 export const CONFERENCE_INTRO = {
   kind: 'typewriter' as const,
-  title: 'لقاءات ولقطات',
-  sub: 'في المؤتمر التربوي السادس والأربعين',
+  title: 'لقاءات',
+  sub: 'من المؤتمر التربوي السادس والأربعين',
   seconds: 6.8,
 };
 
@@ -21,19 +21,16 @@ export const conferenceShots: Shot[] = [
   // ── ١) الانترو ──
   {src: 'footage/group-b.mp4', from: 0, to: 2.3, volume: 0},
   {src: 'footage/group-c.mp4', from: 0.3, to: 2.6, volume: 0, enter: 'cut'},
-  {src: 'footage/group-a.mp4', from: 0.3, to: 3, volume: 0, enter: 'cut'},
+  {src: 'footage/group-a.mp4', from: 0.3, to: 2.6, volume: 0, enter: 'cut'},
 
   // ── ٢) د. خالد المخلف: أهم كلامه عن الوفود، ولقطات الشباب فوق صوته ──
   {src: 'footage/mukhlif.mp4', from: 14.5, to: 25.5, volume: V, enter: 'wipe',
-    cutaways: [{src: 'footage/group-a.mp4', from: 3, at: 7.8, dur: 1.8}],
+    cutaways: [{src: 'footage/group-a.mp4', from: 2.6, at: 7.6, dur: 2.2}],
     overlays: [
       {kind: 'lowerThird', name: 'د. خالد المخلف', role: 'رئيس لجنة الوفود الخارجية ومدير فرع الجهراء', at: 0.5, dur: 6, bottom: LT_BOTTOM},
     ]},
   {src: 'footage/mukhlif.mp4', from: 37, to: 46.75, volume: V, enter: 'cut', zoom: 1.1,
-    cutaways: [
-      {src: 'footage/group-b.mp4', from: 2.4, at: 1.6, dur: 3},
-      {src: 'footage/group-c.mp4', from: 2.8, at: 5.8, dur: 3.2},
-    ]},
+    cutaways: [{src: 'footage/group-c.mp4', from: 2.8, at: 3, dur: 3.2}]},
 
   // ── ٣) سؤال المحاضرين، ثم د. منال القحطاني: التقويم التكويني التشاركي ومن يشارك فيه ──
   {src: 'footage/ws-niqab.mp4', from: 32, to: 61.5, volume: V, enter: 'wipe',
@@ -42,12 +39,12 @@ export const conferenceShots: Shot[] = [
       {kind: 'lowerThird', name: 'د. منال حزام القحطاني', role: 'وكيلة مدرسة — وزارة التعليم السعودية', at: 3.6, dur: 6, bottom: LT_BOTTOM},
     ]},
 
-  // ── ٤) أ. بشرى البوسعيدية من سلطنة عُمان ──
-  {src: 'footage/ws-green.mp4', from: 71.22, to: 78.2, volume: V, enter: 'wipe',
+  // ── ٤) أ. بشرى البوسعيدية: المذيعة تسألها عن موضوعها (المشكلات المتعددة) وكلامها كامل
+  //    لين «بورقة بحثية علمية» — التصوير الأصلي ينتهي بعدها بثواني ──
+  {src: 'footage/ws-green.mp4', from: 63.6, to: 90.75, volume: V, enter: 'wipe',
     overlays: [
-      {kind: 'lowerThird', name: 'أ. بشرى بنت حمود البوسعيدية', role: 'رئيسة قسم العلوم الاجتماعية — كلية البيان', extra: 'وزارة التعليم — سلطنة عُمان', at: 1, dur: 5.8, bottom: LT_BOTTOM},
+      {kind: 'lowerThird', name: 'أ. بشرى بنت حمود البوسعيدية', role: 'رئيسة قسم العلوم الاجتماعية — كلية البيان', extra: 'وزارة التعليم — سلطنة عُمان', at: 8.2, dur: 6.5, bottom: LT_BOTTOM},
     ]},
-  {src: 'footage/ws-green.mp4', from: 84.6, to: 90.75, volume: V, enter: 'cut', zoom: 1.1},
 
   // ── ٥) أ. محمد البراك: ورشة الشخصية القيادية ──
   {src: 'footage/barrak.mp4', from: 0, to: 13.75, volume: V, enter: 'wipe',
@@ -55,7 +52,7 @@ export const conferenceShots: Shot[] = [
       {kind: 'lowerThird', name: 'أ. محمد البراك', role: 'رئيس شعبة المواد الفلسفية — ثانوية أحمد العدواني', at: 0.4, dur: 6, bottom: LT_BOTTOM},
     ]},
 
-  // ── ٦) الأوترو: لقطة الشباب بتدرج سينمائي والشعار في النص ──
-  {src: 'footage/group-b.mp4', from: 0, to: 5.4, volume: 0, enter: 'wipe', grade: true,
+  // ── ٦) الأوترو: خلفية الهوية الكحلية والشعار في النص (لقطة الشباب الثلاثة تطلع مرة وحدة بس في الانترو) ──
+  {from: 0, to: 5.4, volume: 0, enter: 'wipe',
     overlays: [{kind: 'outro', logo: LOGO}]},
 ];

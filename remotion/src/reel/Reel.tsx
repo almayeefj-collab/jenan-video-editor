@@ -44,19 +44,21 @@ const ShotView: React.FC<{shot: Shot}> = ({shot}) => {
   const frame = useCurrentFrame();
   const push = (shot.grade ? interpolate(frame, [0, frames], [1, 1.12]) : 1) * (shot.zoom ?? 1);
   return (
-    <AbsoluteFill style={{background: 'black'}}>
-      <OffthreadVideo
-        src={staticFile(shot.src)}
-        trimBefore={Math.round(shot.from * FPS)}
-        volume={shot.volume}
-        style={{
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-          transform: `scale(${push})`,
-          filter: shot.grade ? 'contrast(1.12) saturate(1.15) brightness(0.95) sepia(0.12)' : undefined,
-        }}
-      />
+    <AbsoluteFill style={{background: shot.src ? 'black' : `radial-gradient(ellipse at center, ${brand.navy} 0%, ${brand.navyDark} 75%)`}}>
+      {shot.src ? (
+        <OffthreadVideo
+          src={staticFile(shot.src)}
+          trimBefore={Math.round(shot.from * FPS)}
+          volume={shot.volume}
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            transform: `scale(${push})`,
+            filter: shot.grade ? 'contrast(1.12) saturate(1.15) brightness(0.95) sepia(0.12)' : undefined,
+          }}
+        />
+      ) : null}
       {shot.cutaways?.map((c, i) => (
         <Sequence key={i} from={Math.round(c.at * FPS)} durationInFrames={Math.round(c.dur * FPS)}>
           <Cutaway src={c.src} from={c.from} frames={Math.round(c.dur * FPS)} />

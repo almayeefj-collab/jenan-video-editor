@@ -34,7 +34,8 @@ export type Overlay =
   | {kind: 'outro'; logo?: string};
 
 export type Shot = {
-  src: string;
+  // بدون src: خلفية الهوية الكحلية (للأوترو)
+  src?: string;
   from: number;
   to: number;
   volume: number;
