@@ -9,20 +9,17 @@ const Q = 'شنو محاور ورشتك في المؤتمر التربوي ال�
 const BAR = {label: Q_TITLE, text: Q, y: 1600} as const;
 const LT_BOTTOM = 255; // اسم المتحدث تحت
 
-// الانترو: لقطة المبنى من برا ثم لقطات الشباب الواقفين، والعنوان ينكتب فوقها
+// الانترو: لقطة وحدة للمبنى من برا والعنوان ينكتب فوقها
 export const CONFERENCE_INTRO = {
   kind: 'typewriter' as const,
   title: 'لقاءات',
   sub: 'من المؤتمر التربوي السادس والأربعين',
-  seconds: 9.4,
+  seconds: 5.9,
 };
 
 export const conferenceShots: Shot[] = [
-  // ── ١) الانترو ──
-  {src: 'footage/exterior.mp4', from: 0.2, to: 2.9, volume: 0},
-  {src: 'footage/group-b.mp4', from: 0, to: 2.3, volume: 0, enter: 'cut'},
-  {src: 'footage/group-c.mp4', from: 0.3, to: 2.6, volume: 0, enter: 'cut'},
-  {src: 'footage/group-a.mp4', from: 0.3, to: 2.6, volume: 0, enter: 'cut'},
+  // ── ١) الانترو: لقطة وحدة ──
+  {src: 'footage/exterior.mp4', from: 0.2, to: 6.2, volume: 0},
 
   // ── ٢) د. خالد المخلف: أهم كلامه عن الوفود، ولقطات الشباب فوق صوته ──
   {src: 'footage/mukhlif.mp4', from: 14.5, to: 25.5, volume: V, enter: 'wipe',
@@ -42,11 +39,12 @@ export const conferenceShots: Shot[] = [
 
   // ── ٤) أ. بشرى البوسعيدية: المذيعة تسألها عن موضوعها، ثم كلامها لين «بالمشاركة»
   //    ويكمل من المقطع الثاني «لمناقشة ورقة بحث علمية…» لين نتيجة الدراسة ──
-  {src: 'footage/ws-green.mp4', from: 63.6, to: 87.9, volume: V, enter: 'wipe',
+  {src: 'footage/ws-green.mp4', from: 63.6, to: 87.9, volume: V, enter: 'wipe', audioOut: 4,
     overlays: [
       {kind: 'lowerThird', name: 'أ. بشرى بنت حمود البوسعيدية', role: 'رئيسة قسم العلوم الاجتماعية — كلية البيان', extra: 'وزارة التعليم — سلطنة عُمان', at: 8.2, dur: 6.5, bottom: LT_BOTTOM},
     ]},
-  {src: 'footage/bushra2.mp4', from: 0.25, to: 14.7, volume: V, enter: 'cut'},
+  // المقطع الثاني يندمج بتلاشي ناعم، ومكبّر ومزاح عشان تطابق مكانها في المقطع الأول
+  {src: 'footage/bushra2.mp4', from: 0, to: 14.7, volume: V, enter: 'fade', zoom: 1.13, shift: [-70, -110]},
 
   // ── ٥) أ. محمد البراك: ورشة الشخصية القيادية ──
   {src: 'footage/barrak.mp4', from: 0, to: 13.75, volume: V, enter: 'wipe',

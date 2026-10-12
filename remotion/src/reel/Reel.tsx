@@ -49,12 +49,15 @@ const ShotView: React.FC<{shot: Shot}> = ({shot}) => {
         <OffthreadVideo
           src={staticFile(shot.src)}
           trimBefore={Math.round(shot.from * FPS)}
-          volume={shot.volume}
+          volume={(f) =>
+            shot.volume *
+            (shot.audioOut ? interpolate(f, [frames - shot.audioOut, frames], [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'}) : 1)
+          }
           style={{
             width: '100%',
             height: '100%',
             objectFit: 'cover',
-            transform: `scale(${push})`,
+            transform: `translate(${shot.shift?.[0] ?? 0}px, ${shot.shift?.[1] ?? 0}px) scale(${push})`,
             filter: shot.grade ? 'contrast(1.12) saturate(1.15) brightness(0.95) sepia(0.12)' : undefined,
           }}
         />
