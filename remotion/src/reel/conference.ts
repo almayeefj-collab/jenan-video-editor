@@ -35,14 +35,12 @@ export const conferenceShots: Shot[] = [
       {src: 'footage/group-c.mp4', from: 2.8, at: 5.8, dur: 3.2},
     ]},
 
-  // ── ٣) سؤال المحاضرين، ثم د. منال القحطاني: المفهوم، أول آلية، والخلاصة ──
-  {src: 'footage/ws-niqab.mp4', from: 32, to: 41.4, volume: V, enter: 'wipe',
+  // ── ٣) سؤال المحاضرين، ثم د. منال القحطاني: التقويم التكويني التشاركي ومن يشارك فيه ──
+  {src: 'footage/ws-niqab.mp4', from: 32, to: 61.5, volume: V, enter: 'wipe',
     overlays: [
       {kind: 'question', ...BAR, mode: 'full', exitAt: 3.3},
-      {kind: 'lowerThird', name: 'د. منال حزام القحطاني', role: 'وكيلة مدرسة — وزارة التعليم السعودية', at: 3.6, dur: 5.6, bottom: LT_BOTTOM},
+      {kind: 'lowerThird', name: 'د. منال حزام القحطاني', role: 'وكيلة مدرسة — وزارة التعليم السعودية', at: 3.6, dur: 6, bottom: LT_BOTTOM},
     ]},
-  {src: 'footage/ws-niqab.mp4', from: 103.3, to: 109.15, volume: V, enter: 'cut', zoom: 1.1},
-  {src: 'footage/ws-niqab.mp4', from: 173.3, to: 180.5, volume: V, enter: 'cut'},
 
   // ── ٤) أ. بشرى البوسعيدية من سلطنة عُمان ──
   {src: 'footage/ws-green.mp4', from: 71.22, to: 78.2, volume: V, enter: 'wipe',
@@ -51,13 +49,11 @@ export const conferenceShots: Shot[] = [
     ]},
   {src: 'footage/ws-green.mp4', from: 84.6, to: 90.75, volume: V, enter: 'cut', zoom: 1.1},
 
-  // ── ٥) د. موسى جعفر يوسف: البحث الإجرائي ──
-  {src: 'footage/ws-suit.mp4', from: 15, to: 20.95, volume: V, enter: 'wipe',
+  // ── ٥) أ. محمد البراك: ورشة الشخصية القيادية ──
+  {src: 'footage/barrak.mp4', from: 0, to: 13.75, volume: V, enter: 'wipe',
     overlays: [
-      {kind: 'lowerThird', name: 'د. موسى جعفر يوسف', role: 'أستاذ الدراسات التربوية المساعد', at: 0.3, dur: 5.5, bottom: LT_BOTTOM},
+      {kind: 'lowerThird', name: 'أ. محمد البراك', role: 'رئيس شعبة المواد الفلسفية — ثانوية أحمد العدواني', at: 0.4, dur: 6, bottom: LT_BOTTOM},
     ]},
-  {src: 'footage/ws-suit.mp4', from: 24.3, to: 36.15, volume: V, enter: 'cut', zoom: 1.1},
-  {src: 'footage/ws-suit.mp4', from: 87.5, to: 94.35, volume: V, enter: 'cut'},
 
   // ── ٦) الأوترو: لقطة الشباب بتدرج سينمائي والشعار في النص ──
   {src: 'footage/group-b.mp4', from: 0, to: 5.4, volume: 0, enter: 'wipe', grade: true,
