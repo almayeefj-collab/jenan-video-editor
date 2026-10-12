@@ -40,8 +40,8 @@ export const conferenceShots: Shot[] = [
     ]},
 
   // ── ٤) أ. بشرى البوسعيدية: المذيعة تسألها عن موضوعها (المشكلات المتعددة) وكلامها كامل
-  //    لين «بورقة بحثية علمية» — التصوير الأصلي ينتهي بعدها بثواني ──
-  {src: 'footage/ws-green.mp4', from: 63.6, to: 90.75, volume: V, enter: 'wipe',
+  //    لين آخر كلمة في التصوير («لنبرز أبرز…» — المقطع الأصلي ينتهي هنا) ──
+  {src: 'footage/ws-green.mp4', from: 63.6, to: 93.75, volume: V, enter: 'wipe',
     overlays: [
       {kind: 'lowerThird', name: 'أ. بشرى بنت حمود البوسعيدية', role: 'رئيسة قسم العلوم الاجتماعية — كلية البيان', extra: 'وزارة التعليم — سلطنة عُمان', at: 8.2, dur: 6.5, bottom: LT_BOTTOM},
     ]},
