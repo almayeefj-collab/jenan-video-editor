@@ -5,6 +5,9 @@ import {Reel} from './reel/Reel';
 import {FPS as T4_FPS, HEIGHT as T4_H, totalFrames as t4Frames, WIDTH as T4_W} from './teacher4/config';
 import {Teacher4} from './teacher4/Teacher4';
 import {AINews} from './ainews/AINews';
+import {makeChatGPTEasy} from './chatgpt/ChatGPTEasy';
+import {episodeFrames, episodes} from './chatgpt/episodes';
+import {TRANSITION as AI_TR} from './ainews/config';
 import {FPS as AI_FPS, HEIGHT as AI_H, totalFrames as aiFrames, WIDTH as AI_W} from './ainews/config';
 
 export const RemotionRoot: React.FC = () => {
@@ -16,6 +19,10 @@ export const RemotionRoot: React.FC = () => {
       <Composition id="Teacher4" component={Teacher4} durationInFrames={t4Frames()} fps={T4_FPS} width={T4_W} height={T4_H} />
       {/* ريل أخبار الذكاء الاصطناعي — أكتوبر 2026 */}
       <Composition id="AINews" component={AINews} durationInFrames={aiFrames()} fps={AI_FPS} width={AI_W} height={AI_H} />
+      {/* سلسلة ChatGPT بسهولة — حلقة لكل عنصر في episodes.ts */}
+      {episodes.map((e) => (
+        <Composition key={e.n} id={`ChatGPTEp${e.n}`} component={makeChatGPTEasy(e)} durationInFrames={episodeFrames(e, AI_TR)} fps={30} width={1080} height={1920} />
+      ))}
       {/* أفقي 16:9 */}
       <Composition
         id="HelloJenan"

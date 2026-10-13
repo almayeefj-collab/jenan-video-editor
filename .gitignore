@@ -8,3 +8,6 @@ __pycache__/
 !remotion/public/**
 # لقطات المقابلات ومقاطع الاختبار ما ترفع للمستودع
 remotion/public/footage/
+# موسيقى الريلز تتولد بالكود (npm run music) — كل يوم/حلقة مقطوعة مختلفة
+remotion/public/music/ainews.wav
+remotion/public/music/chatgpt-ep*.wav

@@ -51,3 +51,15 @@ export HF_KEY="api-key:api-secret"   # من https://cloud.higgsfield.ai
 .venv/bin/scenedetect -i input.mp4 split-video                   # قطّع حسب المشاهد
 ffmpeg -i in.mp4 -vf "crop=ih*9/16:ih,scale=1080:1920" reel.mp4  # حوّل لعمودي
 ```
+
+## ريلز جنان (ستايل فاتح + انستغرام @t.jenanalmayeef4)
+
+```bash
+cd remotion
+npm run music                                                    # يولّد موسيقى جديدة (ريل الأخبار تتغير كل يوم)
+npx remotion render src/index.ts AINews out/ai-news.mp4          # أخبار الذكاء الاصطناعي — النصوص في src/ainews/config.ts
+npx remotion render src/index.ts ChatGPTEp1 out/ep1.mp4          # سلسلة «ChatGPT بسهولة» — الحلقات في src/chatgpt/episodes.ts
+```
+
+- الرسومات متحركة ومرسومة بالكود (`src/ainews/Illustrations.tsx`): chat, assistant, image, video, motion, design, robot, voice, code.
+- `tools/reel_music.py --seed <أي نص>`: كل seed يعطي مقطوعة مختلفة (سرعة، مقام، تتابع، صوت سنث).
