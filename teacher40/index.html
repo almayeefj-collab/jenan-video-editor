@@ -2543,7 +2543,7 @@ var qrcode = function() {
     init(){if(this.ctx)return true;const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return false;
       this.ctx=new AC();this.master=this.ctx.createGain();this.master.gain.value=.8;this.master.connect(this.ctx.destination);
       this.music=this.ctx.createGain();this.music.gain.value=0;this.music.connect(this.master);
-      const n=this.ctx.createBuffer(1,this.ctx.sampleRate*.3,this.ctx.sampleRate),d=n.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;this.noise=n;return true},
+      const n=this.ctx.createBuffer(1,this.ctx.sampleRate*2,this.ctx.sampleRate),d=n.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;this.noise=n;return true},
     resume(){if(this.ctx&&this.ctx.state==="suspended")this.ctx.resume()},
     tone(t,f,dur,type,g,dest){const o=this.ctx.createOscillator(),a=this.ctx.createGain();o.type=type;o.frequency.setValueAtTime(f,t);a.gain.setValueAtTime(0,t);a.gain.linearRampToValueAtTime(g,t+.01);a.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(a);a.connect(dest||this.music);o.start(t);o.stop(t+dur+.05)},
     hit(t,freq,dur,g,type){const s=this.ctx.createBufferSource(),f=this.ctx.createBiquadFilter(),a=this.ctx.createGain();s.buffer=this.noise;f.type=type;f.frequency.value=freq;a.gain.setValueAtTime(g,t);a.gain.exponentialRampToValueAtTime(.0001,t+dur);s.connect(f);f.connect(a);a.connect(this.music);s.start(t);s.stop(t+dur)},
@@ -2563,25 +2563,50 @@ var qrcode = function() {
     stopMusic(){this.on=false;if(!this.ctx)return;this.fade(0);setTimeout(()=>{if(!this.on){clearInterval(this.timer);this.timer=null}},700)},
     fade(v,sec=.6){if(!this.music)return;const g=this.music.gain,t=this.ctx.currentTime;g.cancelScheduledValues(t);g.setValueAtTime(g.value,t);g.linearRampToValueAtTime(this.on?v:0,t+sec)},
     setLevel(v){this.level=v;this.fade(v)},
+
+    /* ---- stage sound effects, synthesised (no audio files) ---- */
+    nz(t,dur,freq,type,g,q,dest,attack){const s=this.ctx.createBufferSource(),f=this.ctx.createBiquadFilter(),a=this.ctx.createGain();s.buffer=this.noise;s.loop=true;
+      f.type=type;f.frequency.setValueAtTime(freq,t);if(q)f.Q.value=q;a.gain.setValueAtTime(.0001,t);a.gain.linearRampToValueAtTime(g,t+(attack||.005));a.gain.exponentialRampToValueAtTime(.0001,t+dur);
+      s.connect(f);f.connect(a);a.connect(dest);s.start(t);s.stop(t+dur+.05);return f},
+    osc(t,dur,f0,f1,type,g,dest,attack){const o=this.ctx.createOscillator(),a=this.ctx.createGain();o.type=type;o.frequency.setValueAtTime(f0,t);if(f1)o.frequency.exponentialRampToValueAtTime(f1,t+dur);
+      a.gain.setValueAtTime(.0001,t);a.gain.linearRampToValueAtTime(g,t+(attack||.01));a.gain.setValueAtTime(g,t+Math.max(attack||.01,dur-.15));a.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(a);a.connect(dest);o.start(t);o.stop(t+dur+.05);return o},
+    train(t,m){ // steam locomotive: accelerating chuffs, rail clacks, then the whistle
+      let x=t,gap=.42;for(let i=0;i<14;i++){this.nz(x,.16,700,"bandpass",i%2?.35:.55,1.2,m,.01);this.nz(x,.05,180,"lowpass",.5,0,m);x+=gap;gap=Math.max(.17,gap*.9)}
+      for(let i=0;i<6;i++)this.nz(t+.3+i*.55,.03,3500,"highpass",.2,0,m);
+      const w=t+1.9,lfo=this.ctx.createOscillator(),lg=this.ctx.createGain();lfo.frequency.value=5.5;lg.gain.value=9;lfo.connect(lg);lfo.start(w);lfo.stop(w+1.6);
+      [587,740,880].forEach(f=>{const o=this.osc(w,1.4,f,0,"triangle",.09,m,.12);lg.connect(o.frequency)});
+      this.nz(w,1.4,2600,"bandpass",.08,3,m,.12);return 3.6},
+    electric(t,m){ // light switch click, rising mains hum, crackles, bulb glow ping
+      this.nz(t,.03,3000,"highpass",.6,0,m);this.nz(t+.05,.02,1500,"bandpass",.4,2,m);
+      const lp=this.ctx.createBiquadFilter();lp.type="lowpass";lp.frequency.value=500;lp.connect(m);
+      this.osc(t+.1,2.6,100,0,"sawtooth",.12,lp,.6);this.osc(t+.1,2.6,50,0,"square",.05,lp,.6);
+      for(let i=0;i<9;i++){const at=t+.3+Math.random()*2.2;this.nz(at,.02+Math.random()*.04,2500+Math.random()*3000,"bandpass",.25+Math.random()*.25,4,m)}
+      this.osc(t+.2,1.8,1320,0,"sine",.07,m,.05);this.osc(t+.2,1.8,1980,0,"sine",.03,m,.05);return 3},
+    computer(t,m){ // keyboard typing, dial-up modem handshake, then a start-up chime
+      let x=t;for(let i=0;i<10;i++){this.nz(x,.018,4000,"highpass",.35,0,m);this.nz(x,.03,900,"bandpass",.15,3,m);x+=.07+Math.random()*.07}
+      x+=.15;[[1209,697],[1336,770],[1477,852]].forEach(([a,b],i)=>{this.osc(x+i*.14,.11,a,0,"sine",.08,m);this.osc(x+i*.14,.11,b,0,"sine",.08,m)});
+      x+=.5;this.osc(x,.35,2100,0,"sine",.08,m);this.osc(x+.38,.3,1200,0,"square",.05,m);this.osc(x+.7,.4,400,2400,"sine",.07,m);
+      this.nz(x+1.1,.7,1800,"bandpass",.18,1.5,m,.05);
+      [[60,64,67,72]].forEach(c=>c.forEach((n,i)=>this.osc(x+1.85+i*.04,1.1,this.hz(n),0,"triangle",.06,m,.02)));return x-t+3},
+    ai(t,m){ // power-up whoosh, rising tone, data blips, shimmering chord
+      const f=this.nz(t,1.3,200,"lowpass",.35,6,m,.6);f.frequency.exponentialRampToValueAtTime(7000,t+1.2);
+      this.osc(t,1.2,110,880,"sawtooth",.05,m,.3);this.osc(t,1.2,165,1320,"sine",.06,m,.3);
+      for(let i=0;i<16;i++)this.osc(t+1.1+i*.07,.05,1400+Math.random()*2600,0,"square",.035,m,.003);
+      [69,73,76,81].forEach((n,i)=>{this.osc(t+2.2,1.3,this.hz(n),0,"sine",.06,m,.05);this.osc(t+2.2,1.3,this.hz(n)*1.006,0,"sine",.04,m,.05)});return 3.6},
+    stageFx(i){if(!this.init())return;this.resume();const t=this.ctx.currentTime+.05;
+      const fx=this.fxBus||(this.fxBus=(()=>{const g=this.ctx.createGain();g.gain.value=1.4;g.connect(this.master);return g})());
+      const dur=[this.train,this.electric,this.computer,this.ai][i].call(this,t,fx);
+      this.fade(.06,.25);clearTimeout(this.duckT);this.duckT=setTimeout(()=>this.fade(this.level,1),dur*1000)},
+    pop(){if(!this.init())return;this.resume();const t=this.ctx.currentTime+.02;this.tone(t,this.hz(84),.12,"sine",.25,this.master);this.tone(t+.06,this.hz(91),.15,"sine",.2,this.master)},
     sfx(kind){if(!this.init())return;this.resume();const t=this.ctx.currentTime+.02,m=this.master;
       if(kind==="right"){this.tone(t,this.hz(76),.18,"triangle",.4,m);this.tone(t+.12,this.hz(81),.3,"triangle",.4,m)}
       else if(kind==="wrong"){this.tone(t,this.hz(52),.25,"sawtooth",.15,m);this.tone(t+.15,this.hz(47),.35,"sawtooth",.15,m)}
       else if(kind==="stage"){[72,76,79,84].forEach((n,i)=>this.tone(t+i*.09,this.hz(n),.25,"triangle",.3,m))}
       else if(kind==="fanfare"){[[60,64,67],[65,69,72],[67,71,74],[72,76,79,84]].forEach((c,i)=>c.forEach(n=>this.tone(t+i*.28,this.hz(n),i===3?1.6:.3,"sawtooth",.07,m)));this.kick(t);this.kick(t+.84)}}
   };
-  /* ================= voice: Arabic speech synthesis ================= */
-  const Voice={on:true,v:null,q:[],
-    pick(){const vs=window.speechSynthesis?speechSynthesis.getVoices():[];const ar=vs.filter(v=>/^ar/i.test(v.lang));
-      this.v=ar.find(v=>/natural|online|google/i.test(v.name))||ar[0]||null},
-    ok(){return !!window.speechSynthesis},
-    say(text,force){if(!this.ok()||(!this.on&&!force))return;if(!this.v)this.pick();
-      const u=new SpeechSynthesisUtterance(text);u.lang=this.v?this.v.lang:"ar-SA";if(this.v)u.voice=this.v;u.rate=.95;
-      u.onstart=()=>Sound.fade(.1,.3);u.onend=()=>{if(!speechSynthesis.speaking)Sound.fade(Sound.level,.8)};
-      speechSynthesis.speak(u)},
-    stop(){if(this.ok())speechSynthesis.cancel()}};
-  if(window.speechSynthesis)speechSynthesis.onvoiceschanged=()=>Voice.pick();
 
   /* ================= PLAYER ================= */
+  let lastFx=null;
   const P=Object.assign({pid:rid(),name:"",code:"",color:COLORS[Math.floor(Math.random()*COLORS.length)],epoch:null,si:0,step:0,score:0,answers:{},done:false},store.get("t40-player",{}));
   if(params.get("join"))P.code=params.get("join").replace(/\D/g,"").slice(0,4);
   let G={phase:"lobby",epoch:null},pPeer=null,pConn=null,pStatus="idle",pErr="",retryT=null;
@@ -2629,7 +2654,7 @@ var qrcode = function() {
       const codeIn=el("input",{type:"text",id:"pcode",class:"code",inputmode:"numeric",maxlength:"4",placeholder:"0000",value:P.code||""});
       const nameIn=el("input",{type:"text",id:"pname",maxlength:"30",placeholder:"مثال: أ. سارة",value:P.name||""});
       const msg=el("p",{class:"err"});
-      const go=()=>{const c=codeIn.value.replace(/\D/g,""),n=nameIn.value.trim();if(c.length!==4){msg.textContent="اكتب رمز اللعبة المكوّن من 4 أرقام.";return codeIn.focus()}if(!n){msg.textContent="اكتب اسمك.";return nameIn.focus()}
+      const go=()=>{Sound.init();Sound.resume();const c=codeIn.value.replace(/\D/g,""),n=nameIn.value.trim();if(c.length!==4){msg.textContent="اكتب رمز اللعبة المكوّن من 4 أرقام.";return codeIn.focus()}if(!n){msg.textContent="اكتب اسمك.";return nameIn.focus()}
         P.code=c;P.name=n;saveP();pStatus="connecting";renderPlayer();connectHost()};
       nameIn.onkeydown=e=>{if(e.key==="Enter")go()};
       paint([top,el("div",{class:"card in"},[el("span",{class:"eyebrow",text:"أهلًا بك في التحدّي"}),el("h1",{text:"انضم إلى اللعبة"}),
@@ -2654,10 +2679,9 @@ var qrcode = function() {
       card.append(head,artNode(P.si),el("div",{class:"era-head"},[el("div",{class:"badge",text:st.v}),el("div",{},[el("h2",{text:st.rev}),el("p",{class:"muted",text:st.years})])]));
       if(st.hidden)card.append(el("p",{class:"notice",text:"معلومات هذه المرحلة مخفية! أجب عن سؤاليها لتكشف سرّ اسم الورشة."}));
       else card.append(el("div",{class:"fact"},[el("h3",{text:"ماذا حدث في العالم؟"}),el("ul",{},st.world.map(x=>el("li",{text:x})))]),el("div",{class:"fact"},[el("h3",{text:`وكيف كانت المدرسة؟ (${st.edu})`}),el("ul",{},st.school.map(x=>el("li",{text:x})))]));
-      const sayStage=st.hidden?`${st.name}: ${st.rev}، ${st.say}. معلومات هذه المرحلة مخفية. أجب عن سؤاليها لتكشف سرّ اسم الورشة.`
-        :`${st.name}: ${st.rev}، ${st.say}. ماذا حدث في العالم؟ ${st.world.join("، ")}. وكيف كانت المدرسة؟ ${st.school.join("، ")}.`;
-      card.append(el("div",{class:"actions"},[btn("ابدأ أسئلة المرحلة ←",()=>{Voice.stop();P.step=1;saveP();renderPlayer();scrollTo(0,0)},"btn big"),
-        Voice.ok()?btn("🔊 استمع",()=>{Voice.stop();Voice.say(sayStage,true)},"btn ghost"):null]));
+      const fxKey=P.epoch+"-"+P.si;if(lastFx!==fxKey){lastFx=fxKey;Sound.stageFx(P.si)}
+      card.append(el("div",{class:"actions"},[btn("ابدأ أسئلة المرحلة ←",()=>{P.step=1;saveP();renderPlayer();scrollTo(0,0)},"btn big"),
+        btn("🔊 صوت المرحلة",()=>Sound.stageFx(P.si),"btn ghost")]));
     }else{
       const qi=P.step-1,Q=st.qs[qi],key=P.si+"-"+qi,picked=P.answers[key],pts=Q.pts||10;
       card.append(head,el("span",{class:"muted",text:`سؤال ${qi+1} من ${st.qs.length} · ${pts} نقاط`}),el("h2",{text:Q.q}));
@@ -2670,7 +2694,7 @@ var qrcode = function() {
         const ok=picked===Q.a,last=qi===st.qs.length-1,lastStage=P.si===STAGES.length-1;
         card.append(el("div",{class:"feedback"+(ok?"":" no")},[el("b",{text:ok?`إجابة صحيحة! +${pts}`:"إجابة غير صحيحة"}),el("p",{class:"muted",text:Q.why})]));
         card.append(el("div",{class:"actions"},[btn(last?(lastStage?"أنهِ التحدّي ←":`انتقل إلى ${STAGES[P.si+1].name} ←`):"السؤال التالي ←",()=>{
-          if(!last)P.step++;else if(!lastStage){P.si++;P.step=0;Sound.sfx("stage")}else{P.done=true;Sound.sfx("fanfare")}
+          if(!last)P.step++;else if(!lastStage){P.si++;P.step=0}else{P.done=true;Sound.sfx("fanfare")}
           saveP();sendState();renderPlayer();scrollTo(0,0)},"btn big")]));
       }
     }
@@ -2722,11 +2746,11 @@ var qrcode = function() {
     Object.assign(rec,{name:d.name.slice(0,30),color:/^#[0-9A-Fa-f]{6}$/.test(d.color)?d.color:"#A2AAD6",
       si:cur?Math.min(3,Math.max(0,+d.si||0)):0,n:cur?Math.min(TOTAL,Math.max(0,+d.n||0)):0,score:cur?Math.min(200,Math.max(0,+d.score||0)):0,done:cur&&d.done===true});
     const isNew=!H.players[pid];
-    if(isNew&&H.phase==="lobby")announceJoin(rec.name);
+    if(isNew&&H.phase==="lobby")Sound.pop();
     if(H.phase==="play"&&cur){
       H.firsts=H.firsts||{};
-      if(rec.si>0&&!H.firsts[rec.si]){H.firsts[rec.si]=pid;Voice.say(`${rec.name} أول من يصل إلى ${STAGES[rec.si].name}: ${STAGES[rec.si].rev}!`)}
-      if(rec.done&&!H.order.length)Voice.say(`أول الواصلين إلى خط النهاية: ${rec.name}!`);
+      if(rec.si>0&&!H.firsts[rec.si]){H.firsts[rec.si]=pid;Sound.stageFx(rec.si)}
+      if(rec.done&&!H.order.length)Sound.sfx("fanfare");
     }
     if(rec.done&&!H.order.includes(pid))H.order.push(pid);
     H.players[pid]=rec;saveH();
@@ -2736,20 +2760,15 @@ var qrcode = function() {
   let rT=null;function renderHostSoon(){if(!rT)rT=setTimeout(()=>{rT=null;renderHost()},150)}
   const ranked=()=>Object.keys(H.players).map(id=>({id,...H.players[id],arr:H.order.indexOf(id)}))
     .sort((a,b)=>b.score-a.score||((a.arr<0?1e9:a.arr)-(b.arr<0?1e9:b.arr))||b.n-a.n);
-  let joinQ=[],joinT=null;
-  function announceJoin(name){joinQ.push(name);if(joinT)return;joinT=setTimeout(()=>{const q=joinQ;joinQ=[];joinT=null;
-    Voice.say(q.length<=3?`أهلًا وسهلًا: ${q.join("، ")}`:`انضم ${q.length} معلمين جدد إلى التحدّي`)},2500)}
   function setPhase(ph){
     const was=H.phase;H.phase=ph;if(ph==="lobby"||(ph==="play"&&was==="lobby"))H.firsts={};saveH();broadcast();renderHost();
-    if(ph==="play"&&was==="lobby"){Sound.startMusic();Sound.setLevel(.3);Voice.say("انطلق التحدّي! أمامكم أربع مراحل، من عصر البخار إلى عصر الذكاء الاصطناعي. بالتوفيق للجميع!")}
-    if(ph==="over"){const w=ranked()[0];Sound.setLevel(.5);Sound.sfx("fanfare");
-      if(w)setTimeout(()=>Voice.say(`انتهى التحدّي! المركز الأول من نصيب ${w.name}، برصيد ${w.score} نقطة. مبروك! والآن عرفنا لماذا سُمّيت ورشتنا معلم أربعة نقطة صفر: لأننا نعيش الثورة الصناعية الرابعة، ونحتاج معلمًا يوظّف الذكاء الاصطناعي، ويجعل الطالب صانعًا للمعرفة.`),1800)}
+    if(ph==="play"&&was==="lobby"){Sound.startMusic();Sound.level=.3;Sound.stageFx(0)}
+    if(ph==="over"){const w=ranked()[0];Sound.setLevel(.5);Sound.sfx("fanfare");}
     if(ph==="lobby")Sound.setLevel(.5);
   }
   function soundControls(){
     const m=el("button",{class:"btn ghost small","aria-pressed":String(Sound.on),text:Sound.on?"🎵 الموسيقى: تعمل":"🎵 شغّل الموسيقى",onclick:()=>{Sound.on?Sound.stopMusic():Sound.startMusic();renderHost()}});
-    const v=Voice.ok()?el("button",{class:"btn ghost small","aria-pressed":String(Voice.on),text:Voice.on?"🗣️ التعليق: يعمل":"🗣️ التعليق: متوقف",onclick:()=>{Voice.on=!Voice.on;if(!Voice.on)Voice.stop();else Voice.say("التعليق الصوتي يعمل");renderHost()}}):null;
-    return el("span",{class:"sound"},[m,v]);
+    return el("span",{class:"sound"},[m]);
   }
   function joinUrl(){const u=new URL(location.href);u.search="";u.hash="";u.searchParams.set("join",H.code);const s=params.get("server");if(s)u.searchParams.set("server",s);return u.toString()}
   function qrNode(text){const box=el("div",{class:"qr"});try{const q=qrcode(0,"M");q.addData(text);q.make();box.innerHTML=q.createSvgTag({cellSize:4,margin:0,scalable:true})}catch(e){box.textContent="QR"}return box}
@@ -2764,7 +2783,7 @@ var qrcode = function() {
       paint([top,el("div",{class:"card in"},[el("span",{class:"eyebrow",text:"قاعة الانتظار"}),el("h1",{text:"من البخار إلى الذكاء الاصطناعي"}),
         el("div",{class:"join-box"},[qrNode(url),el("div",{style:"display:flex;flex-direction:column;gap:8px;min-width:0"},[
           el("span",{class:"muted",text:"امسحوا الرمز بالجوال، أو افتحوا الرابط واكتبوا رمز اللعبة:"}),el("span",{class:"bigcode",text:H.code}),el("span",{class:"link",text:url})])]),
-        el("div",{class:"strip"},STAGES.map((s,i)=>el("figure",{},[artNode(i),el("figcaption",{text:s.v+" · "+s.rev})]))),
+        el("div",{class:"strip"},STAGES.map((s,i)=>el("figure",{style:"cursor:pointer",title:"اضغط لسماع صوت المرحلة",onclick:()=>Sound.stageFx(i)},[artNode(i),el("figcaption",{text:"🔊 "+s.v+" · "+s.rev})]))),
         el("div",{class:"actions"},[el("span",{class:"count",text:players.length}),el("span",{class:"muted",text:"معلم انضم"})]),list,
         el("div",{class:"actions"},[btn("ابدأ ←",()=>setPhase("play"),"btn big"),
           players.length?btn("مسح القائمة",()=>{H.players={};H.order=[];saveH();renderHost()},"btn ghost small"):null,
