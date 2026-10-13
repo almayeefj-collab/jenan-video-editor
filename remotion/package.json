@@ -6,7 +6,7 @@
     "studio": "remotion studio",
     "render": "remotion render",
     "build": "remotion render src/index.ts HelloJenan out/hello.mp4",
-    "music": "python3 ../tools/reel_music.py --seconds 55 --seed $(date +%F) -o public/music/ainews.wav && for n in 1 2 3; do python3 ../tools/reel_music.py --seconds 45 --seed chatgpt-ep$n -o public/music/chatgpt-ep$n.wav; done"
+    "music": "python3 ../tools/reel_music.py --seconds 55 --seed $(date +%F) -o public/music/ainews.wav && for n in 1 2 3 4 5 6; do python3 ../tools/reel_music.py --seconds 45 --seed chatgpt-ep$n -o public/music/chatgpt-ep$n.wav; done"
   },
   "dependencies": {
     "@remotion/cli": "^4.0.533",

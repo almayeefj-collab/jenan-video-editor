@@ -221,7 +221,7 @@ const Intro: React.FC<{e: Episode; frames: number}> = ({e, frames}) => {
         <div style={{fontFamily, fontSize: 60, fontWeight: 700, color: 'rgba(20,26,46,0.75)', marginTop: 80, padding: '0 60px', ...useReveal(8)}}>{e.hook}</div>
         <div
           style={{
-            fontFamily, fontSize: 110, fontWeight: 900, color: '#fff', background: GREEN, borderRadius: 34, padding: '0 46px', marginTop: 30, lineHeight: 1.4,
+            fontFamily, fontSize: Math.min(110, Math.round(1350 / e.title.length)), fontWeight: 900, color: '#fff', background: GREEN, borderRadius: 34, padding: '0 46px', marginTop: 30, lineHeight: 1.4,
             whiteSpace: 'nowrap', opacity: pop, transform: `scale(${interpolate(pop, [0, 1], [0.5, 1])}) rotate(${(1 - pop) * -6 - 2}deg)`, boxShadow: `0 20px 50px ${GREEN}55`,
           }}
         >
