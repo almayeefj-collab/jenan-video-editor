@@ -1,6 +1,6 @@
 import {linearTiming, TransitionSeries} from '@remotion/transitions';
 import {Fragment} from 'react';
-import {AbsoluteFill, Audio, interpolate, Sequence, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, Audio, Img, interpolate, Sequence, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {fontFamily} from '../reel/font';
 import {zoomBlur} from '../reel/zoomBlur';
 import {FPS, INK, MUSIC, type News, newsCount, type Scene, timeline, totalFrames, TRANSITION} from './config';
@@ -71,7 +71,16 @@ const NewsScene: React.FC<{n: News; idx: number; frames: number}> = ({n, idx, fr
             opacity: card, transform: `translateY(${(1 - card) * 80}px) scale(${interpolate(card, [0, 1], [0.9, 1])})`,
           }}
         >
-          <Illustration art={n.art} accent={n.accent} />
+          {n.img ? (
+            <div style={{width: 940, height: 620, overflow: 'hidden'}}>
+              <Img
+                src={staticFile(n.img)}
+                style={{width: '100%', height: '100%', objectFit: 'cover', transform: `scale(${interpolate(frame, [0, frames], [1.05, 1.18])})`}}
+              />
+            </div>
+          ) : (
+            <Illustration art={n.art} accent={n.accent} />
+          )}
         </div>
         {/* رقم الخبر */}
         <div

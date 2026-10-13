@@ -19,6 +19,7 @@ export type News = {
   tag: string; // التاريخ أو التصنيف
   title: string;
   points: string[];
+  img?: string; // صورة حقيقية اختيارية من public/ (مثلاً ainews/chatgpt.jpg مولّدة بـ Higgsfield) — إذا موجودة تنعرض بدل الرسمة
   art: Art; // نوع الرسمة: chat | assistant | image | video | motion | design | robot | voice | code
   accent: string; // لون غامق نوعاً ما يبان على الخلفية الفاتحة
   glow: string; // لون باستيل فاتح للخلفية
