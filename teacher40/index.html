@@ -117,6 +117,23 @@ input.code{font-family:var(--f-mono);letter-spacing:.3em;text-align:center;direc
 .step.g2{min-height:170px}.step.g3{min-height:140px}
 .in{animation:rise .4s ease both}
 @keyframes rise{from{transform:translateY(8px);opacity:.3}to{transform:none;opacity:1}}
+.art{display:block;width:100%;height:auto;border-radius:16px}
+.strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media (max-width:760px){.strip{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.strip figure{margin:0;display:flex;flex-direction:column;gap:6px;min-width:0}
+.strip figcaption{font-size:.8em;color:var(--muted);text-align:center}
+.sound{display:inline-flex;gap:8px;flex-wrap:wrap}
+.sound .btn[aria-pressed="true"]{border-color:var(--good);color:var(--good)}
+.smoke circle{animation:smoke 4s ease-in-out infinite}
+.smoke circle:nth-child(2){animation-delay:.6s}.smoke circle:nth-child(3){animation-delay:1.2s}
+@keyframes smoke{0%{transform:translateY(6px);opacity:.15}50%{opacity:.55}100%{transform:translateY(-10px);opacity:0}}
+.glow{animation:glow 2.4s ease-in-out infinite;transform-origin:center;transform-box:fill-box}
+@keyframes glow{0%,100%{opacity:.18;transform:scale(.92)}50%{opacity:.45;transform:scale(1.08)}}
+.belt{animation:belt 3s linear infinite}
+@keyframes belt{from{transform:translateX(0)}to{transform:translateX(-40px)}}
+.blink{animation:blink 1.8s ease-in-out infinite}
+.blink:nth-of-type(2n){animation-delay:.5s}.blink:nth-of-type(3n){animation-delay:1s}
+@keyframes blink{0%,100%{opacity:.35}50%{opacity:1}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -2438,22 +2455,22 @@ var qrcode = function() {
   const PREFIX="jenan-teacher40-";
   const COLORS=["#FF8A65","#4FD69C","#B388FF","#FFD54F","#4FC3F7","#F06292","#AED581","#FFB74D","#9575CD","#4DD0E1","#E57373","#81C784"];
   const STAGES=[
-    {v:"1.0",c:"var(--p1)",name:"المرحلة الأولى",rev:"الثورة الصناعية الأولى",short:"الأولى",years:"نحو 1760 – 1840",edu:"التعليم 1.0",
+    {v:"1.0",c:"var(--p1)",name:"المرحلة الأولى",rev:"الثورة الصناعية الأولى",short:"الأولى",years:"نحو 1760 – 1840",say:"من عام 1760 إلى 1840",edu:"التعليم 1.0",
      world:["المحرك البخاري (جيمس واط)","المصانع وآلات النسيج","السكك الحديدية والقطارات"],
      school:["المعلم هو المصدر الوحيد للمعرفة","التلقين والحفظ والتكرار","السبورة والطباشير"],
      qs:[{q:"ما الاختراع الذي أطلق الثورة الصناعية الأولى؟",o:["المحرك البخاري","الكهرباء","الحاسوب","الهاتف"],a:0,why:"المحرك البخاري شغّل المصانع والقطارات وغيّر شكل العمل."},
          {q:"في «التعليم 1.0» كان المعلم…",o:["ميسّرًا يوجّه الطلاب للبحث","المصدر الوحيد للمعرفة والطالب متلقٍّ","مصمّمًا لتجارب رقمية","مدرّبًا على الذكاء الاصطناعي"],a:1,why:"كان التعليم قائمًا على التلقين، والمعلم يملك المعرفة وحده."}]},
-    {v:"2.0",c:"var(--p2)",name:"المرحلة الثانية",rev:"الثورة الصناعية الثانية",short:"الثانية",years:"نحو 1870 – 1914",edu:"التعليم 2.0",
+    {v:"2.0",c:"var(--p2)",name:"المرحلة الثانية",rev:"الثورة الصناعية الثانية",short:"الثانية",years:"نحو 1870 – 1914",say:"من عام 1870 إلى 1914",edu:"التعليم 2.0",
      world:["الكهرباء والمصابيح","خطوط الإنتاج والإنتاج بالجملة","الهاتف والتلغراف"],
      school:["مدارس نظامية لأعداد كبيرة","جرس وحصص وصفوف متشابهة","منهج واحد للجميع"],
      qs:[{q:"أي مما يلي ارتبط بالثورة الصناعية الثانية؟",o:["الإنترنت","الذكاء الاصطناعي","الكهرباء وخطوط الإنتاج","المحرك البخاري فقط"],a:2,why:"الكهرباء وخط الإنتاج جعلا الإنتاج بالجملة ممكنًا."},
          {q:"لماذا شُبّهت مدارس تلك المرحلة بالمصنع؟",o:["كل طالب يتعلّم بطريقته","تعتمد على الحاسوب","الطلاب يصنعون المعرفة","جرس وصفوف متشابهة ومنهج واحد للجميع"],a:3,why:"كما يُخرج المصنع منتجات متطابقة، أخرجت المدرسة طلابًا تعلّموا الشيء نفسه بالطريقة نفسها."}]},
-    {v:"3.0",c:"var(--p3)",name:"المرحلة الثالثة",rev:"الثورة الصناعية الثالثة",short:"الثالثة",years:"نحو 1969 – 2000",edu:"التعليم 3.0",
+    {v:"3.0",c:"var(--p3)",name:"المرحلة الثالثة",rev:"الثورة الصناعية الثالثة",short:"الثالثة",years:"نحو 1969 – 2000",say:"من عام 1969 إلى 2000",edu:"التعليم 3.0",
      world:["الحاسوب والإلكترونيات","الإنترنت","الأتمتة في المصانع"],
      school:["الحاسوب وجهاز العرض في الفصل","التعلم الإلكتروني والمنصات","المعلم ميسّر وموجّه"],
      qs:[{q:"ما الذي قاد الثورة الصناعية الثالثة؟",o:["الحاسوب والإنترنت","البخار والفحم","الكهرباء فقط","الطباعة"],a:0,why:"الحوسبة والإنترنت نقلت العالم إلى العصر الرقمي."},
          {q:"كيف تغيّر دور المعلم في «التعليم 3.0»؟",o:["عاد إلى التلقين","أصبح ميسّرًا يوجّه الطالب للبحث","اختفى دوره تمامًا","صار يدرّس بالطباشير فقط"],a:1,why:"لم يعد المعلم المصدر الوحيد؛ صار يوجّه الطالب إلى مصادر المعرفة."}]},
-    {v:"4.0",c:"var(--p4)",name:"المرحلة الرابعة",rev:"الثورة الصناعية الرابعة",short:"الرابعة",years:"من 2011 إلى اليوم",edu:"التعليم 4.0",
+    {v:"4.0",c:"var(--p4)",name:"المرحلة الرابعة",rev:"الثورة الصناعية الرابعة",short:"الرابعة",years:"من 2011 إلى اليوم",say:"من عام 2011 إلى اليوم",edu:"التعليم 4.0",
      world:["الذكاء الاصطناعي وتعلّم الآلة","إنترنت الأشياء","البيانات الضخمة والروبوتات"],
      school:["تعلّم مخصّص لكل طالب","الطالب صانع للمعرفة","الذكاء الاصطناعي شريك في التعليم"],
      hidden:true,
@@ -2476,13 +2493,101 @@ var qrcode = function() {
   }
   if(typeof Peer==="undefined"){paint([el("div",{class:"card"},[el("h2",{text:"تعذّر تحميل اللعبة"}),el("p",{class:"muted",text:"حدّث الصفحة."})])],true);return}
 
+
+  /* ================= stage illustrations ================= */
+  const ART=[
+`<svg class="art" viewBox="0 0 320 180" role="img" aria-label="قطار بخاري ومصنع بمدخنة"><rect width="320" height="180" rx="16" fill="#2B1B14"/>
+<circle cx="268" cy="34" r="16" fill="#D08455" opacity=".35"/>
+<g class="smoke" fill="#9C8B82"><circle cx="70" cy="44" r="12"/><circle cx="84" cy="30" r="16"/><circle cx="104" cy="20" r="11"/></g>
+<rect x="60" y="52" width="16" height="50" fill="#5B3A2C"/>
+<polygon points="26,100 26,146 124,146 124,100 108,86 92,100 76,86 60,100 44,86" fill="#6B4532"/>
+<rect x="36" y="112" width="14" height="14" fill="#F2C94C" opacity=".8"/><rect x="62" y="112" width="14" height="14" fill="#F2C94C" opacity=".6"/><rect x="88" y="112" width="14" height="14" fill="#F2C94C" opacity=".8"/>
+<g class="smoke" fill="#B8A79E"><circle cx="186" cy="70" r="9"/><circle cx="196" cy="58" r="12"/><circle cx="210" cy="48" r="8"/></g>
+<rect x="180" y="78" width="14" height="24" rx="2" fill="#3A2419"/>
+<rect x="168" y="100" width="92" height="34" rx="12" fill="#D08455"/>
+<rect x="244" y="80" width="42" height="54" rx="4" fill="#A9623C"/><rect x="254" y="88" width="22" height="16" fill="#2B1B14"/>
+<rect x="150" y="148" width="160" height="4" fill="#7A5A48"/><rect x="10" y="148" width="130" height="4" fill="#7A5A48"/>
+<g fill="#1D120D" stroke="#D08455" stroke-width="4"><circle cx="190" cy="140" r="11"/><circle cx="224" cy="140" r="11"/><circle cx="266" cy="138" r="14"/></g>
+</svg>`,
+`<svg class="art" viewBox="0 0 320 180" role="img" aria-label="مصباح كهربائي وخط إنتاج"><rect width="320" height="180" rx="16" fill="#25230F"/>
+<circle class="glow" cx="80" cy="66" r="54" fill="#F2C94C"/>
+<circle cx="80" cy="66" r="34" fill="#F2C94C"/>
+<path d="M68 70 q6 -14 12 0 q6 14 12 0" fill="none" stroke="#8A6D12" stroke-width="3"/>
+<rect x="66" y="98" width="28" height="10" rx="2" fill="#B8B29A"/><rect x="68" y="108" width="24" height="8" rx="2" fill="#8E8A76"/><rect x="72" y="116" width="16" height="6" rx="3" fill="#6E6A58"/>
+<path d="M92 112 C 130 112, 140 40, 300 40" fill="none" stroke="#6E6A58" stroke-width="2"/>
+<rect x="296" y="26" width="6" height="104" fill="#6E6A58"/>
+<svg x="140" y="96" width="170" height="40" overflow="hidden"><g class="belt" fill="#F2C94C">
+<rect x="10" y="4" width="24" height="24" rx="3"/><rect x="50" y="4" width="24" height="24" rx="3"/><rect x="90" y="4" width="24" height="24" rx="3"/><rect x="130" y="4" width="24" height="24" rx="3"/><rect x="170" y="4" width="24" height="24" rx="3"/><rect x="210" y="4" width="24" height="24" rx="3"/></g></svg>
+<rect x="140" y="128" width="170" height="10" rx="5" fill="#5A5320"/>
+<g fill="#25230F" stroke="#5A5320" stroke-width="3"><circle cx="156" cy="146" r="7"/><circle cx="200" cy="146" r="7"/><circle cx="244" cy="146" r="7"/><circle cx="288" cy="146" r="7"/></g>
+</svg>`,
+`<svg class="art" viewBox="0 0 320 180" role="img" aria-label="حاسوب وكرة أرضية متصلة بالإنترنت"><rect width="320" height="180" rx="16" fill="#121C3A"/>
+<rect x="30" y="38" width="130" height="86" rx="8" fill="#1D2C5C" stroke="#6B9BFF" stroke-width="3"/>
+<rect x="42" y="50" width="70" height="8" rx="4" fill="#6B9BFF"/><rect x="42" y="66" width="100" height="6" rx="3" fill="#3F5FAF"/><rect x="42" y="78" width="86" height="6" rx="3" fill="#3F5FAF"/><rect x="42" y="94" width="40" height="18" rx="4" fill="#5FE0EC" opacity=".7"/>
+<rect x="84" y="124" width="22" height="16" fill="#3F5FAF"/><rect x="66" y="140" width="58" height="6" rx="3" fill="#3F5FAF"/>
+<g fill="none" stroke="#6B9BFF" stroke-width="2.5"><circle cx="240" cy="84" r="46"/><ellipse cx="240" cy="84" rx="20" ry="46"/><line x1="194" y1="84" x2="286" y2="84"/><path d="M200 62 h80 M200 106 h80"/></g>
+<path d="M160 80 C 180 60, 186 120, 196 96" fill="none" stroke="#5FE0EC" stroke-width="2" stroke-dasharray="5 5"/>
+<g fill="#5FE0EC"><circle class="blink" cx="214" cy="52" r="5"/><circle class="blink" cx="270" cy="66" r="5"/><circle class="blink" cx="252" cy="118" r="5"/><circle class="blink" cx="222" cy="100" r="5"/></g>
+</svg>`,
+`<svg class="art" viewBox="0 0 320 180" role="img" aria-label="شريحة ذكاء اصطناعي وشبكة عصبية"><rect width="320" height="180" rx="16" fill="#0D2A30"/>
+<g stroke="#2E7F8A" stroke-width="2"><line x1="40" y1="40" x2="125" y2="80"/><line x1="40" y1="90" x2="125" y2="90"/><line x1="40" y1="140" x2="125" y2="100"/><line x1="280" y1="40" x2="195" y2="80"/><line x1="280" y1="90" x2="195" y2="90"/><line x1="280" y1="140" x2="195" y2="100"/><line x1="40" y1="40" x2="40" y2="140"/><line x1="280" y1="40" x2="280" y2="140"/></g>
+<g stroke="#5FE0EC" stroke-width="3"><line x1="140" y1="40" x2="140" y2="55"/><line x1="160" y1="40" x2="160" y2="55"/><line x1="180" y1="40" x2="180" y2="55"/><line x1="140" y1="125" x2="140" y2="140"/><line x1="160" y1="125" x2="160" y2="140"/><line x1="180" y1="125" x2="180" y2="140"/></g>
+<rect x="125" y="55" width="70" height="70" rx="12" fill="#123A42" stroke="#5FE0EC" stroke-width="3"/>
+<text x="160" y="100" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-weight="700" font-size="26" fill="#5FE0EC">AI</text>
+<g fill="#5FE0EC"><circle class="blink" cx="40" cy="40" r="8"/><circle class="blink" cx="40" cy="90" r="8"/><circle class="blink" cx="40" cy="140" r="8"/><circle class="blink" cx="280" cy="40" r="8"/><circle class="blink" cx="280" cy="90" r="8"/><circle class="blink" cx="280" cy="140" r="8"/></g>
+</svg>`];
+  const artNode=i=>{const d=document.createElement("div");d.innerHTML=ART[i];return d.firstElementChild};
+
+  /* ================= sound: generated music + effects ================= */
+  const Sound={ctx:null,master:null,music:null,on:false,timer:null,step:0,next:0,level:.5,
+    init(){if(this.ctx)return true;const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return false;
+      this.ctx=new AC();this.master=this.ctx.createGain();this.master.gain.value=.8;this.master.connect(this.ctx.destination);
+      this.music=this.ctx.createGain();this.music.gain.value=0;this.music.connect(this.master);
+      const n=this.ctx.createBuffer(1,this.ctx.sampleRate*.3,this.ctx.sampleRate),d=n.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;this.noise=n;return true},
+    resume(){if(this.ctx&&this.ctx.state==="suspended")this.ctx.resume()},
+    tone(t,f,dur,type,g,dest){const o=this.ctx.createOscillator(),a=this.ctx.createGain();o.type=type;o.frequency.setValueAtTime(f,t);a.gain.setValueAtTime(0,t);a.gain.linearRampToValueAtTime(g,t+.01);a.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(a);a.connect(dest||this.music);o.start(t);o.stop(t+dur+.05)},
+    hit(t,freq,dur,g,type){const s=this.ctx.createBufferSource(),f=this.ctx.createBiquadFilter(),a=this.ctx.createGain();s.buffer=this.noise;f.type=type;f.frequency.value=freq;a.gain.setValueAtTime(g,t);a.gain.exponentialRampToValueAtTime(.0001,t+dur);s.connect(f);f.connect(a);a.connect(this.music);s.start(t);s.stop(t+dur)},
+    kick(t){const o=this.ctx.createOscillator(),a=this.ctx.createGain();o.frequency.setValueAtTime(140,t);o.frequency.exponentialRampToValueAtTime(45,t+.18);a.gain.setValueAtTime(.9,t);a.gain.exponentialRampToValueAtTime(.0001,t+.3);o.connect(a);a.connect(this.music);o.start(t);o.stop(t+.32)},
+    // vi–IV–I–V in C: an uplifting pop progression
+    CH:[[57,60,64],[53,57,60],[48,52,55],[55,59,62]],
+    hz:m=>440*Math.pow(2,(m-69)/12),
+    sched(){const spb=60/116/4;while(this.next<this.ctx.currentTime+.25){const t=this.next,st=this.step%64,bar=Math.floor(st/16),b=st%16,ch=this.CH[bar];
+        if(b%4===0)this.kick(t);
+        if(b%4===2)this.hit(t,8000,.05,.18,"highpass");
+        if(b===4||b===12)this.hit(t,1800,.16,.35,"bandpass");
+        if(b%2===0)this.tone(t,this.hz(ch[0]-12),spb*1.8,"triangle",.32);
+        const arp=[0,1,2,1];this.tone(t,this.hz(ch[arp[b%4]]+12+(b>=8?12:0)),spb*1.4,"square",.035);
+        if(b===0)ch.forEach(m=>this.tone(t,this.hz(m),spb*15,"sawtooth",.025));
+        this.step++;this.next+=spb}},
+    startMusic(){if(!this.init())return;this.resume();this.on=true;if(this.timer)return;this.next=this.ctx.currentTime+.1;this.timer=setInterval(()=>this.sched(),60);this.fade(this.level)},
+    stopMusic(){this.on=false;if(!this.ctx)return;this.fade(0);setTimeout(()=>{if(!this.on){clearInterval(this.timer);this.timer=null}},700)},
+    fade(v,sec=.6){if(!this.music)return;const g=this.music.gain,t=this.ctx.currentTime;g.cancelScheduledValues(t);g.setValueAtTime(g.value,t);g.linearRampToValueAtTime(this.on?v:0,t+sec)},
+    setLevel(v){this.level=v;this.fade(v)},
+    sfx(kind){if(!this.init())return;this.resume();const t=this.ctx.currentTime+.02,m=this.master;
+      if(kind==="right"){this.tone(t,this.hz(76),.18,"triangle",.4,m);this.tone(t+.12,this.hz(81),.3,"triangle",.4,m)}
+      else if(kind==="wrong"){this.tone(t,this.hz(52),.25,"sawtooth",.15,m);this.tone(t+.15,this.hz(47),.35,"sawtooth",.15,m)}
+      else if(kind==="stage"){[72,76,79,84].forEach((n,i)=>this.tone(t+i*.09,this.hz(n),.25,"triangle",.3,m))}
+      else if(kind==="fanfare"){[[60,64,67],[65,69,72],[67,71,74],[72,76,79,84]].forEach((c,i)=>c.forEach(n=>this.tone(t+i*.28,this.hz(n),i===3?1.6:.3,"sawtooth",.07,m)));this.kick(t);this.kick(t+.84)}}
+  };
+  /* ================= voice: Arabic speech synthesis ================= */
+  const Voice={on:true,v:null,q:[],
+    pick(){const vs=window.speechSynthesis?speechSynthesis.getVoices():[];const ar=vs.filter(v=>/^ar/i.test(v.lang));
+      this.v=ar.find(v=>/natural|online|google/i.test(v.name))||ar[0]||null},
+    ok(){return !!window.speechSynthesis},
+    say(text,force){if(!this.ok()||(!this.on&&!force))return;if(!this.v)this.pick();
+      const u=new SpeechSynthesisUtterance(text);u.lang=this.v?this.v.lang:"ar-SA";if(this.v)u.voice=this.v;u.rate=.95;
+      u.onstart=()=>Sound.fade(.1,.3);u.onend=()=>{if(!speechSynthesis.speaking)Sound.fade(Sound.level,.8)};
+      speechSynthesis.speak(u)},
+    stop(){if(this.ok())speechSynthesis.cancel()}};
+  if(window.speechSynthesis)speechSynthesis.onvoiceschanged=()=>Voice.pick();
+
   /* ================= PLAYER ================= */
   const P=Object.assign({pid:rid(),name:"",code:"",color:COLORS[Math.floor(Math.random()*COLORS.length)],epoch:null,si:0,step:0,score:0,answers:{},done:false},store.get("t40-player",{}));
   if(params.get("join"))P.code=params.get("join").replace(/\D/g,"").slice(0,4);
   let G={phase:"lobby",epoch:null},pPeer=null,pConn=null,pStatus="idle",pErr="",retryT=null;
   const saveP=()=>store.set("t40-player",P);
   const answeredCount=()=>Object.keys(P.answers).length;
-  function sendState(){if(pConn&&pConn.open)pConn.send({t:"state",pid:P.pid,name:P.name.slice(0,30),color:P.color,epoch:P.epoch,n:answeredCount(),score:P.score,done:P.done})}
+  function sendState(){if(pConn&&pConn.open)pConn.send({t:"state",pid:P.pid,name:P.name.slice(0,30),color:P.color,epoch:P.epoch,si:P.si,n:answeredCount(),score:P.score,done:P.done})}
   function scheduleRetry(){clearTimeout(retryT);retryT=setTimeout(connectHost,3000)}
   function connectHost(){
     clearTimeout(retryT);
@@ -2546,23 +2651,26 @@ var qrcode = function() {
     const head=el("div",{class:"topbar"},[el("span",{class:"eyebrow",text:`${st.name} من 4`}),el("span",{class:"score-chip",html:`<span class="num">${P.score}</span> نقطة`})]);
     const card=el("div",{class:"card in",style:`--c:${st.c}`});
     if(P.step===0){
-      card.append(head,el("div",{class:"era-head"},[el("div",{class:"badge",text:st.v}),el("div",{},[el("h2",{text:st.rev}),el("p",{class:"muted",text:st.years})])]));
+      card.append(head,artNode(P.si),el("div",{class:"era-head"},[el("div",{class:"badge",text:st.v}),el("div",{},[el("h2",{text:st.rev}),el("p",{class:"muted",text:st.years})])]));
       if(st.hidden)card.append(el("p",{class:"notice",text:"معلومات هذه المرحلة مخفية! أجب عن سؤاليها لتكشف سرّ اسم الورشة."}));
       else card.append(el("div",{class:"fact"},[el("h3",{text:"ماذا حدث في العالم؟"}),el("ul",{},st.world.map(x=>el("li",{text:x})))]),el("div",{class:"fact"},[el("h3",{text:`وكيف كانت المدرسة؟ (${st.edu})`}),el("ul",{},st.school.map(x=>el("li",{text:x})))]));
-      card.append(el("div",{class:"actions"},[btn("ابدأ أسئلة المرحلة ←",()=>{P.step=1;saveP();renderPlayer();scrollTo(0,0)},"btn big")]));
+      const sayStage=st.hidden?`${st.name}: ${st.rev}، ${st.say}. معلومات هذه المرحلة مخفية. أجب عن سؤاليها لتكشف سرّ اسم الورشة.`
+        :`${st.name}: ${st.rev}، ${st.say}. ماذا حدث في العالم؟ ${st.world.join("، ")}. وكيف كانت المدرسة؟ ${st.school.join("، ")}.`;
+      card.append(el("div",{class:"actions"},[btn("ابدأ أسئلة المرحلة ←",()=>{Voice.stop();P.step=1;saveP();renderPlayer();scrollTo(0,0)},"btn big"),
+        Voice.ok()?btn("🔊 استمع",()=>{Voice.stop();Voice.say(sayStage,true)},"btn ghost"):null]));
     }else{
       const qi=P.step-1,Q=st.qs[qi],key=P.si+"-"+qi,picked=P.answers[key],pts=Q.pts||10;
       card.append(head,el("span",{class:"muted",text:`سؤال ${qi+1} من ${st.qs.length} · ${pts} نقاط`}),el("h2",{text:Q.q}));
       const letters=["أ","ب","ج","د"];
       card.append(el("div",{class:"opts"},Q.o.map((o,i)=>{
         let cls="opt";if(picked!=null)cls+=i===Q.a?" right":i===picked?" wrongpick":" dim";
-        const b=el("button",{class:cls,onclick:()=>{if(P.answers[key]!=null)return;P.answers[key]=i;if(i===Q.a)P.score+=pts;saveP();sendState();renderPlayer()}},[el("span",{class:"l",text:letters[i]}),el("span",{text:o})]);
+        const b=el("button",{class:cls,onclick:()=>{if(P.answers[key]!=null)return;P.answers[key]=i;if(i===Q.a)P.score+=pts;Sound.sfx(i===Q.a?"right":"wrong");saveP();sendState();renderPlayer()}},[el("span",{class:"l",text:letters[i]}),el("span",{text:o})]);
         if(picked!=null)b.disabled=true;return b})));
       if(picked!=null){
         const ok=picked===Q.a,last=qi===st.qs.length-1,lastStage=P.si===STAGES.length-1;
         card.append(el("div",{class:"feedback"+(ok?"":" no")},[el("b",{text:ok?`إجابة صحيحة! +${pts}`:"إجابة غير صحيحة"}),el("p",{class:"muted",text:Q.why})]));
         card.append(el("div",{class:"actions"},[btn(last?(lastStage?"أنهِ التحدّي ←":`انتقل إلى ${STAGES[P.si+1].name} ←`):"السؤال التالي ←",()=>{
-          if(!last)P.step++;else if(!lastStage){P.si++;P.step=0}else P.done=true;
+          if(!last)P.step++;else if(!lastStage){P.si++;P.step=0;Sound.sfx("stage")}else{P.done=true;Sound.sfx("fanfare")}
           saveP();sendState();renderPlayer();scrollTo(0,0)},"btn big")]));
       }
     }
@@ -2612,7 +2720,14 @@ var qrcode = function() {
     conns.set(c,pid);
     const cur=H.epoch===d.epoch,rec=H.players[pid]||{};
     Object.assign(rec,{name:d.name.slice(0,30),color:/^#[0-9A-Fa-f]{6}$/.test(d.color)?d.color:"#A2AAD6",
-      n:cur?Math.min(TOTAL,Math.max(0,+d.n||0)):0,score:cur?Math.min(200,Math.max(0,+d.score||0)):0,done:cur&&d.done===true});
+      si:cur?Math.min(3,Math.max(0,+d.si||0)):0,n:cur?Math.min(TOTAL,Math.max(0,+d.n||0)):0,score:cur?Math.min(200,Math.max(0,+d.score||0)):0,done:cur&&d.done===true});
+    const isNew=!H.players[pid];
+    if(isNew&&H.phase==="lobby")announceJoin(rec.name);
+    if(H.phase==="play"&&cur){
+      H.firsts=H.firsts||{};
+      if(rec.si>0&&!H.firsts[rec.si]){H.firsts[rec.si]=pid;Voice.say(`${rec.name} أول من يصل إلى ${STAGES[rec.si].name}: ${STAGES[rec.si].rev}!`)}
+      if(rec.done&&!H.order.length)Voice.say(`أول الواصلين إلى خط النهاية: ${rec.name}!`);
+    }
     if(rec.done&&!H.order.includes(pid))H.order.push(pid);
     H.players[pid]=rec;saveH();
     if(d.epoch!==H.epoch)try{c.send(gameMsg())}catch(e){}
@@ -2621,20 +2736,35 @@ var qrcode = function() {
   let rT=null;function renderHostSoon(){if(!rT)rT=setTimeout(()=>{rT=null;renderHost()},150)}
   const ranked=()=>Object.keys(H.players).map(id=>({id,...H.players[id],arr:H.order.indexOf(id)}))
     .sort((a,b)=>b.score-a.score||((a.arr<0?1e9:a.arr)-(b.arr<0?1e9:b.arr))||b.n-a.n);
-  function setPhase(ph){H.phase=ph;saveH();broadcast();renderHost()}
+  let joinQ=[],joinT=null;
+  function announceJoin(name){joinQ.push(name);if(joinT)return;joinT=setTimeout(()=>{const q=joinQ;joinQ=[];joinT=null;
+    Voice.say(q.length<=3?`أهلًا وسهلًا: ${q.join("، ")}`:`انضم ${q.length} معلمين جدد إلى التحدّي`)},2500)}
+  function setPhase(ph){
+    const was=H.phase;H.phase=ph;if(ph==="lobby"||(ph==="play"&&was==="lobby"))H.firsts={};saveH();broadcast();renderHost();
+    if(ph==="play"&&was==="lobby"){Sound.startMusic();Sound.setLevel(.3);Voice.say("انطلق التحدّي! أمامكم أربع مراحل، من عصر البخار إلى عصر الذكاء الاصطناعي. بالتوفيق للجميع!")}
+    if(ph==="over"){const w=ranked()[0];Sound.setLevel(.5);Sound.sfx("fanfare");
+      if(w)setTimeout(()=>Voice.say(`انتهى التحدّي! المركز الأول من نصيب ${w.name}، برصيد ${w.score} نقطة. مبروك! والآن عرفنا لماذا سُمّيت ورشتنا معلم أربعة نقطة صفر: لأننا نعيش الثورة الصناعية الرابعة، ونحتاج معلمًا يوظّف الذكاء الاصطناعي، ويجعل الطالب صانعًا للمعرفة.`),1800)}
+    if(ph==="lobby")Sound.setLevel(.5);
+  }
+  function soundControls(){
+    const m=el("button",{class:"btn ghost small","aria-pressed":String(Sound.on),text:Sound.on?"🎵 الموسيقى: تعمل":"🎵 شغّل الموسيقى",onclick:()=>{Sound.on?Sound.stopMusic():Sound.startMusic();renderHost()}});
+    const v=Voice.ok()?el("button",{class:"btn ghost small","aria-pressed":String(Voice.on),text:Voice.on?"🗣️ التعليق: يعمل":"🗣️ التعليق: متوقف",onclick:()=>{Voice.on=!Voice.on;if(!Voice.on)Voice.stop();else Voice.say("التعليق الصوتي يعمل");renderHost()}}):null;
+    return el("span",{class:"sound"},[m,v]);
+  }
   function joinUrl(){const u=new URL(location.href);u.search="";u.hash="";u.searchParams.set("join",H.code);const s=params.get("server");if(s)u.searchParams.set("server",s);return u.toString()}
   function qrNode(text){const box=el("div",{class:"qr"});try{const q=qrcode(0,"M");q.addData(text);q.make();box.innerHTML=q.createSvgTag({cellSize:4,margin:0,scalable:true})}catch(e){box.textContent="QR"}return box}
   function renderHost(){
     if(mode!=="host")return;
     const players=ranked(),online=onlinePids();
     const st=hStatus==="ok"?["جاهز · "+online.size+" متصل",""]:hStatus==="offline"?["لا يوجد إنترنت"," warn"]:["جاري التجهيز…"," warn"];
-    const top=el("div",{class:"topbar"},[brand(),el("span",{class:"pill"+st[1]},[el("span",{class:"live"}),el("span",{text:st[0]})])]);
+    const top=el("div",{class:"topbar"},[brand(),el("div",{class:"actions"},[soundControls(),el("span",{class:"pill"+st[1]},[el("span",{class:"live"}),el("span",{text:st[0]})])])]);
     if(H.phase==="lobby"){
       const url=joinUrl();
       const list=el("div",{class:"joined"},players.length?players.map(p=>el("span",{class:"who"+(online.has(p.id)?"":" off"),style:`--tc:${p.color}`},[el("span",{class:"dot"}),el("span",{text:p.name})])):[el("p",{class:"muted",text:"لم ينضم أحد بعد. ستظهر الأسماء هنا مباشرة."})]);
       paint([top,el("div",{class:"card in"},[el("span",{class:"eyebrow",text:"قاعة الانتظار"}),el("h1",{text:"من البخار إلى الذكاء الاصطناعي"}),
         el("div",{class:"join-box"},[qrNode(url),el("div",{style:"display:flex;flex-direction:column;gap:8px;min-width:0"},[
           el("span",{class:"muted",text:"امسحوا الرمز بالجوال، أو افتحوا الرابط واكتبوا رمز اللعبة:"}),el("span",{class:"bigcode",text:H.code}),el("span",{class:"link",text:url})])]),
+        el("div",{class:"strip"},STAGES.map((s,i)=>el("figure",{},[artNode(i),el("figcaption",{text:s.v+" · "+s.rev})]))),
         el("div",{class:"actions"},[el("span",{class:"count",text:players.length}),el("span",{class:"muted",text:"معلم انضم"})]),list,
         el("div",{class:"actions"},[btn("ابدأ ←",()=>setPhase("play"),"btn big"),
           players.length?btn("مسح القائمة",()=>{H.players={};H.order=[];saveH();renderHost()},"btn ghost small"):null,
@@ -2678,7 +2808,7 @@ var qrcode = function() {
       el("p",{class:"muted",text:"تحدٍّ من أربع مراحل: كل مرحلة ثورة صناعية غيّرت المدرسة ودور المعلم. من يصل أولًا بأعلى النقاط يكتشف سرّ اسم الورشة ويفوز."})]),
       el("div",{class:"choose"},[
         el("div",{class:"card"},[el("h2",{text:"أنا معلم مشارك"}),el("label",{},[el("span",{text:"رمز اللعبة"}),codeIn]),btn("انضم ←",()=>{const c=codeIn.value.replace(/\D/g,"");if(c.length!==4)return codeIn.focus();P.code=c;saveP();mode="player";renderPlayer()})]),
-        el("div",{class:"card"},[el("h2",{text:"أنا المقدّم"}),el("p",{class:"muted",text:"اعرض هذه الشاشة على البروجكتر: يظهر رمز اللعبة وأسماء المنضمين ومسار السباق."}),btn("افتح لوحة المقدّم",()=>{store.set("t40-role","host");mode="host";startHost()},"btn ghost")])])]);
+        el("div",{class:"card"},[el("h2",{text:"أنا المقدّم"}),el("p",{class:"muted",text:"اعرض هذه الشاشة على البروجكتر: يظهر رمز اللعبة وأسماء المنضمين ومسار السباق."}),btn("افتح لوحة المقدّم",()=>{store.set("t40-role","host");mode="host";Sound.startMusic();startHost()},"btn ghost")])])]);
   }
   if(params.get("join")){mode="player";renderPlayer();if(P.name)connectHost()}
   else if(store.get("t40-role",null)==="host"){mode="host";startHost()}
