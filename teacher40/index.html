@@ -2580,8 +2580,8 @@ var qrcode = function() {
   }
 
   /* ================= HOST ================= */
-  const newCode=()=>String(Math.floor(1000+Math.random()*9000));
-  const H=Object.assign({code:newCode(),epoch:rid(),phase:"lobby",players:{},order:[]},store.get("t40-host",{}));
+  const FIXED_CODE="4040";// fixed so the QR code printed on the workshop slide always works
+  const H=Object.assign({epoch:rid(),phase:"lobby",players:{},order:[]},store.get("t40-host",{}),{code:FIXED_CODE});
   const saveH=()=>store.set("t40-host",H);
   let hPeer=null,hStatus="connecting",hTries=0;const conns=new Map();// conn -> pid
   const onlinePids=()=>new Set([...conns.entries()].filter(([c,p])=>c.open&&p).map(([c,p])=>p));
@@ -2594,7 +2594,7 @@ var qrcode = function() {
     hPeer.on("open",()=>{hStatus="ok";hTries=0;renderHost()});
     hPeer.on("disconnected",()=>{hStatus="connecting";renderHost();setTimeout(()=>{try{hPeer.reconnect()}catch(e){}},1500)});
     hPeer.on("error",e=>{
-      if(e.type==="unavailable-id"){hTries++;if(hTries>4){H.code=newCode();saveH();hTries=0}setTimeout(startHost,3000);return}
+      if(e.type==="unavailable-id"){hTries++;hStatus="connecting";renderHost();setTimeout(startHost,3000);return}
       if(["network","server-error","socket-error","socket-closed"].includes(e.type)){hStatus="offline";renderHost();setTimeout(startHost,4000)}
     });
     hPeer.on("connection",c=>{
