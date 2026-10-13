@@ -8,6 +8,9 @@ import {Illustration} from './Illustrations';
 import {clamp, ease, HandleTag, InstaOutro, latin, LightBg, useExit, useReveal} from './kit';
 
 // تاريخ الافتتاحية — يتحدث كل يوم
+// صورة الافتتاحية (من Higgsfield عبر tools/fetch_reel_images.py) — null = الرسمة
+export const INTRO_IMG: string | null = null;
+
 export const DATE_LABEL = '13 أكتوبر 2026';
 
 // شريط تقدّم الأخبار أعلى الشاشة
@@ -154,7 +157,11 @@ const Intro: React.FC<{frames: number}> = ({frames}) => {
       <LightBg accent={accent} glow="#D6E2FF" />
       <AbsoluteFill style={{alignItems: 'center', direction: 'rtl', opacity: exit, textAlign: 'center'}}>
         <div style={{marginTop: 210, width: 820, borderRadius: 48, overflow: 'hidden', boxShadow: `0 30px 60px ${accent}30`, opacity: art, transform: `scale(${interpolate(art, [0, 1], [0.85, 1])})`}}>
-          <Illustration art="robot" accent={accent} width={820} />
+          {INTRO_IMG ? (
+            <Img src={staticFile(INTRO_IMG)} style={{width: 820, height: 541, objectFit: 'cover', display: 'block', transform: `scale(${interpolate(frame, [0, frames], [1.04, 1.14])})`}} />
+          ) : (
+            <Illustration art="robot" accent={accent} width={820} />
+          )}
         </div>
         <div style={{fontFamily, fontSize: 52, fontWeight: 700, color: accent, marginTop: 70, ...useReveal(6)}}>{DATE_LABEL}</div>
         <div style={{fontFamily, fontSize: 112, fontWeight: 900, color: INK, lineHeight: 1.2, marginTop: 6, ...useReveal(10, 18)}}>وش الجديد في</div>
