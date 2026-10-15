@@ -31,6 +31,7 @@ npm run studio                                                    # محرر ب�
 npx remotion render src/index.ts HelloJenan out/hello.mp4        # 16:9
 npx remotion render src/index.ts HelloJenanVertical out/reel.mp4 # 9:16
 npx remotion render src/index.ts HelloJenan out/x.mp4 --props='{"title":"عنوانك","subtitle":"نصك"}'
+npx remotion render src/index.ts AINews out/ai-news.mp4             # قالب أخبار الذكاء الاصطناعي (الأخبار في src/news/config.ts)
 npx remotion render src/index.ts BadgeUnlock out/badge-unlock.mp4 # شارة أخبار الذكاء الاصطناعي 9:16
 ```
 

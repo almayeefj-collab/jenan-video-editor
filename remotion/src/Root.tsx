@@ -1,5 +1,7 @@
 import {Composition} from 'remotion';
 import {BadgeUnlock} from './badge/BadgeUnlock';
+import {AINews} from './news/AINews';
+import {FPS as NEWS_FPS, HEIGHT as NEWS_H, newsDefaults, NewsProps, totalFrames as newsFrames, WIDTH as NEWS_W} from './news/config';
 import {badgeUnlockSchema, DURATION as BADGE_FRAMES, FPS as BADGE_FPS, HEIGHT as BADGE_H, WIDTH as BADGE_W} from './badge/config';
 import {HelloJenan, helloJenanSchema} from './HelloJenan';
 import {FPS, HEIGHT, totalFrames, WIDTH} from './reel/config';
@@ -14,6 +16,17 @@ export const RemotionRoot: React.FC = () => {
       <Composition id="TeachersReel" component={Reel} durationInFrames={totalFrames()} fps={FPS} width={WIDTH} height={HEIGHT} />
       {/* ورشة المعلم 4.0 — من الثورة الصناعية الأولى إلى المعلم 4.0 */}
       <Composition id="Teacher4" component={Teacher4} durationInFrames={t4Frames()} fps={T4_FPS} width={T4_W} height={T4_H} />
+      {/* قالب آخر أخبار الذكاء الاصطناعي — المدة تتغير حسب عدد الأخبار */}
+      <Composition
+        id="AINews"
+        component={AINews}
+        durationInFrames={newsFrames(newsDefaults)}
+        fps={NEWS_FPS}
+        width={NEWS_W}
+        height={NEWS_H}
+        defaultProps={newsDefaults}
+        calculateMetadata={({props}: {props: NewsProps}) => ({durationInFrames: newsFrames(props)})}
+      />
       {/* شاشة فتح الشارة — سلسلة آخر أخبار الذكاء الاصطناعي */}
       <Composition
         id="BadgeUnlock"
