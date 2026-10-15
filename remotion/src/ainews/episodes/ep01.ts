@@ -1,6 +1,7 @@
 import type {Episode} from '../types';
 
 // الحلقة ١ — ١٥ أكتوبر ٢٠٢٦
+// الفويس أوفر بصوت جنان (raw/jenan-voice.m4a) مقطّع على المشاهد
 // المصادر: ChatGPT release notes (help.openai.com)، TechCrunch و MacRumors (٧ أكتوبر)،
 // Gemini release notes (gemini.google) و HPCwire (١٤ أكتوبر)
 const D = 'ainews/ep01';
@@ -10,15 +11,15 @@ export const ep01: Episode = {
   date: '١٥ أكتوبر ٢٠٢٦',
   music: `${D}/music.mp3`,
   scenes: [
-    {kind: 'hook', image: `${D}/s0.jpg`, voice: `${D}/v0.mp3`, dur: 5.3,
+    {kind: 'hook', image: `${D}/s0.jpg`, voice: `${D}/v0.mp3`, dur: 6.0,
       title: 'آخر أخبار أدوات الـ\u00A0AI', sub: 'مع جنان المعييف'},
-    {kind: 'news', image: `${D}/s1.jpg`, voice: `${D}/v1.mp3`, dur: 11.9, tag: 'ChatGPT',
+    {kind: 'news', image: `${D}/s1.jpg`, voice: `${D}/v1.mp3`, dur: 9.8, tag: 'ChatGPT',
       title: 'GPT-6 وصل', sub: 'إجابات مرئية وتفاعلية، ويبدأ يجاوبك وهو للحين يفكر'},
-    {kind: 'news', image: `${D}/s2.jpg`, voice: `${D}/v2.mp3`, dur: 10.1, tag: 'ChatGPT',
+    {kind: 'news', image: `${D}/s2.jpg`, voice: `${D}/v2.mp3`, dur: 9.1, tag: 'ChatGPT',
       title: 'ارفع تسجيل صوتي', sub: 'تفريغ + ملخص، واسأله عن أي شي في الاجتماع أو المحاضرة'},
-    {kind: 'news', image: `${D}/s3.jpg`, voice: `${D}/v3.mp3`, dur: 6.5, tag: 'ChatGPT',
+    {kind: 'news', image: `${D}/s3.jpg`, voice: `${D}/v3.mp3`, dur: 7.5, tag: 'ChatGPT',
       title: 'زر Try on', sub: 'ارفع سيلفي وشوف الملابس عليك قبل لا تشتري'},
-    {kind: 'news', image: `${D}/s4.jpg`, voice: `${D}/v4.mp3`, dur: 5.9, tag: 'Gemini',
+    {kind: 'news', image: `${D}/s4.jpg`, voice: `${D}/v4.mp3`, dur: 5.7, tag: 'Gemini',
       title: 'Gemini 4 Argon', sub: 'متوفر الحين لمشتركي جوجل Pro و Ultra'},
   ],
   outro: {image: `${D}/s5.jpg`, voice: `${D}/v5.mp3`, dur: 7},
