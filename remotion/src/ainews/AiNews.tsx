@@ -25,11 +25,23 @@ const Background: React.FC<{src: string; frames: number; dim?: number}> = ({src,
   );
 };
 
+// الكلمات الإنجليزية المتتالية (Try on، Google AI Pro) تطلع قطعة وحدة عشان ما ينقلب ترتيبها
+const isArabic = (w: string) => /[\u0600-\u06FF]/.test(w);
+const chunks = (text: string) =>
+  text.split(' ').reduce<string[]>((out, w) => {
+    const prev = out[out.length - 1];
+    if (prev !== undefined && !isArabic(w) && !isArabic(prev)) out[out.length - 1] = `${prev} ${w}`;
+    else out.push(w);
+    return out;
+  }, []);
+
 const Words: React.FC<{text: string; delay?: number; stagger?: number}> = ({text, delay = 0, stagger = 3}) => {
   const f = useCurrentFrame();
+  // عنوان إنجليزي كامل (مثل Gemini 4 Argon) لازم ينعرض LTR وإلا تنقلب الكلمات
+  const latin = !isArabic(text);
   return (
-    <>
-      {text.split(' ').map((w, i) => {
+    <span style={{direction: latin ? 'ltr' : 'rtl', display: 'inline-block'}}>
+      {chunks(text).map((w, i) => {
         const p = interpolate(f - delay - i * stagger, [0, 10], [0, 1], {...clamp, easing: ease});
         return (
           <span key={i} style={{display: 'inline-block', opacity: p, filter: `blur(${(1 - p) * 10}px)`, transform: `translateY(${(1 - p) * 30}px)`, marginLeft: '0.25em'}}>
@@ -37,7 +49,7 @@ const Words: React.FC<{text: string; delay?: number; stagger?: number}> = ({text
           </span>
         );
       })}
-    </>
+    </span>
   );
 };
 
@@ -173,7 +185,7 @@ export const AiNews: React.FC<{ep: Episode; voice: boolean}> = ({ep, voice}) => 
         );
       })}
       <Sequence from={outroStart} durationInFrames={Math.round(ep.outro.dur * FPS)}>
-        <Background src={ep.outro.image} frames={Math.round(ep.outro.dur * FPS)} dim={0.55} />
+        <Background src={ep.outro.image} frames={Math.round(ep.outro.dur * FPS)} dim={0.2} />
         <Outro />
         {voice && ep.outro.voice ? (
           <Sequence from={6}>

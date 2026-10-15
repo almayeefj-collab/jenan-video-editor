@@ -19,7 +19,7 @@ export const ep01: Episode = {
     {kind: 'news', image: `${D}/s3.jpg`, voice: `${D}/v3.mp3`, dur: 6.5, tag: 'ChatGPT',
       title: 'زر Try on', sub: 'ارفع سيلفي وشوف الملابس عليك قبل لا تشتري'},
     {kind: 'news', image: `${D}/s4.jpg`, voice: `${D}/v4.mp3`, dur: 5.9, tag: 'Gemini',
-      title: 'Gemini 4 Argon', sub: 'متوفر الحين لمشتركي Google AI Pro و Ultra'},
+      title: 'Gemini 4 Argon', sub: 'متوفر الحين لمشتركي جوجل Pro و Ultra'},
   ],
-  outro: {image: `${D}/s0.jpg`, voice: `${D}/v5.mp3`, dur: 7},
+  outro: {image: `${D}/s5.jpg`, voice: `${D}/v5.mp3`, dur: 7},
 };
