@@ -11,7 +11,7 @@ export const ep01: Episode = {
   music: `${D}/music.mp3`,
   scenes: [
     {kind: 'hook', image: `${D}/s0.jpg`, voice: `${D}/v0.mp3`, dur: 5.3,
-      title: 'خبر نازل!', sub: 'أخبار أدوات الذكاء الاصطناعي'},
+      title: 'آخر أخبار أدوات الذكاء الاصطناعي', sub: 'مع جنان المعييف'},
     {kind: 'news', image: `${D}/s1.jpg`, voice: `${D}/v1.mp3`, dur: 11.9, tag: 'ChatGPT',
       title: 'GPT-6 وصل', sub: 'إجابات مرئية وتفاعلية، ويبدأ يجاوبك وهو للحين يفكر'},
     {kind: 'news', image: `${D}/s2.jpg`, voice: `${D}/v2.mp3`, dur: 10.1, tag: 'ChatGPT',

@@ -61,7 +61,7 @@ const TopBar: React.FC<{ep: Episode}> = ({ep}) => {
   );
 };
 
-// المشهد الأول: «خبر نازل!» كبير مع اهتزاز
+// المشهد الأول: «آخر أخبار أدوات الذكاء الاصطناعي» + «مع جنان المعييف»
 const Hook: React.FC<{s: NewsScene}> = ({s}) => {
   const f = useCurrentFrame();
   const {fps} = useVideoConfig();
@@ -70,14 +70,14 @@ const Hook: React.FC<{s: NewsScene}> = ({s}) => {
   const stripe = interpolate(f, [0, 14], [0, 1], {...clamp, easing: ease});
   return (
     <AbsoluteFill style={{fontFamily, direction: 'rtl', alignItems: 'center', justifyContent: 'center'}}>
-      <div style={{position: 'absolute', top: 1060, left: 0, right: 0, height: 210, background: `linear-gradient(90deg, ${theme.red}, #B5003A)`,
-        transform: `scaleX(${stripe}) skewY(-4deg)`, boxShadow: glow(theme.red)}} />
-      <div style={{position: 'absolute', top: 1050, width: '100%', textAlign: 'center', fontSize: 170, fontWeight: 1000, color: 'white',
+      <div style={{position: 'absolute', top: 1010, left: 0, right: 0, height: 330, background: `linear-gradient(90deg, ${theme.violet}, ${theme.cyan})`,
+        transform: `scaleX(${stripe}) skewY(-4deg)`, boxShadow: glow(theme.violet)}} />
+      <div style={{position: 'absolute', top: 1030, width: '100%', padding: '0 60px', textAlign: 'center', fontSize: 104, fontWeight: 1000, lineHeight: 1.2, color: 'white',
         transform: `translateX(${shake}px) scale(${pop}) rotate(-4deg)`, textShadow: '0 8px 30px rgba(0,0,0,0.5)'}}>
         {s.title}
       </div>
-      <div style={{position: 'absolute', top: 1340, width: '100%', textAlign: 'center', fontSize: 62, fontWeight: 800, color: 'white', textShadow: glow(theme.cyan)}}>
-        <Words text={s.sub ?? ''} delay={16} />
+      <div style={{position: 'absolute', top: 1420, width: '100%', textAlign: 'center', fontSize: 76, fontWeight: 900, color: 'white', textShadow: glow(theme.violet)}}>
+        <Words text={s.sub ?? ''} delay={16} stagger={5} />
       </div>
     </AbsoluteFill>
   );
