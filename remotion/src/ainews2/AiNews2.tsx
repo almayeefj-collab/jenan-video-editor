@@ -1,4 +1,4 @@
-import {AbsoluteFill, Audio, interpolate, Sequence, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, Audio, Img, interpolate, Sequence, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {fontFamily} from '../reel/font';
 import {Backdrop, BeatView, Kinetic, Spark} from './Beats';
 import {C, type Episode2, episodeLayout, FPS, INSTAGRAM} from './types';
@@ -29,18 +29,18 @@ const Outro: React.FC<{word?: string}> = ({word}) => {
           </div>
         </>
       ) : null}
-      <div style={{position: 'absolute', top: word ? 950 : 600, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 40}}>
-        <div style={{width: 380, height: 380, borderRadius: '50%', background: C.coral, display: 'flex', alignItems: 'center', justifyContent: 'center',
-          transform: `scale(${q(24)})`, boxShadow: '0 30px 70px rgba(232,115,90,0.45)'}}>
-          <svg width="200" height="200" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="2.5" y="2.5" width="19" height="19" rx="5.5" />
-            <circle cx="12" cy="12" r="4.4" />
-            <circle cx="17.6" cy="6.4" r="0.7" fill="white" />
-          </svg>
-        </div>
-        <div style={{fontSize: 70, fontWeight: 900, opacity: q(32)}}>تابعوني على الانستغرام</div>
-        <div style={{background: C.ink, color: 'white', fontSize: 62, fontWeight: 900, padding: '18px 56px', borderRadius: 999, direction: 'ltr',
-          transform: `scale(${q(38)})`}}>{INSTAGRAM}</div>
+      <div style={{position: 'absolute', top: word ? 860 : 500, width: '100%', textAlign: 'center', fontSize: 64, fontWeight: 900, opacity: q(24)}}>
+        تابعوني على الانستغرام
+      </div>
+      {/* صورة جنان: دائرة مرجانية وراها، وتطلع من تحت */}
+      <div style={{position: 'absolute', top: word ? 1000 : 640, left: 0, right: 0, height: 760, display: 'flex', justifyContent: 'center'}}>
+        <div style={{position: 'absolute', top: 30, width: 560, height: 560, borderRadius: '50%', background: C.coral, transform: `scale(${q(26)})`,
+          boxShadow: '0 30px 70px rgba(232,115,90,0.4)'}} />
+        <Img src={staticFile('ainews/brand/jenan.png')} style={{position: 'absolute', top: 0, height: 760,
+          transform: `translateY(${(1 - q(30)) * 300}px)`, opacity: Math.min(1, q(30) * 1.5),
+          WebkitMaskImage: 'linear-gradient(180deg, black 82%, transparent 100%)'}} />
+        <div style={{position: 'absolute', bottom: 40, background: C.ink, color: 'white', fontSize: 56, fontWeight: 900, padding: '16px 50px', borderRadius: 999,
+          direction: 'ltr', transform: `scale(${q(40)})`, boxShadow: '0 16px 40px rgba(0,0,0,0.35)'}}>{INSTAGRAM}</div>
       </div>
     </AbsoluteFill>
   );
@@ -79,8 +79,10 @@ export const AiNews2: React.FC<{ep: Episode2; voice: boolean}> = ({ep, voice}) =
       </Sequence>
       <Audio src={staticFile(ep.music)} volume={(f) => bed * interpolate(f, [total - 30, total], [1, 0], clamp)} />
       {/* حساب جنان صغير تحت طول الفيديو */}
-      <div style={{position: 'absolute', bottom: 120, width: '100%', textAlign: 'center', fontFamily, fontSize: 30, fontWeight: 800, color: 'rgba(120,110,105,0.55)',
-        direction: 'ltr'}}>{INSTAGRAM}</div>
+      <Sequence durationInFrames={outroStart} layout="none">
+        <div style={{position: 'absolute', bottom: 120, width: '100%', textAlign: 'center', fontFamily, fontSize: 30, fontWeight: 800, color: 'rgba(120,110,105,0.55)',
+          direction: 'ltr'}}>{INSTAGRAM}</div>
+      </Sequence>
     </AbsoluteFill>
   );
 };
