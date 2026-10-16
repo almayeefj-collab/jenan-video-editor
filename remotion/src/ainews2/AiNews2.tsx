@@ -49,7 +49,7 @@ const Outro: React.FC<{word?: string}> = ({word}) => {
 
 export const AiNews2: React.FC<{ep: Episode2; voice: boolean}> = ({ep, voice}) => {
   const {stories, outroStart, total} = episodeLayout(ep, voice);
-  const bed = voice ? 0.2 : 0.7;
+  const bed = voice ? 0.12 : 0.5; // جنان طلبت الموسيقى أوطى
   return (
     <AbsoluteFill style={{background: C.cream}}>
       {stories.map(({story, start, beats}, si) => {
