@@ -39,5 +39,5 @@ export const ep02v2: Episode2 = {
       {type: 'chips', look: 'coral', dur: 2.9, head: 'مخصص لـ', chips: ['البرمجة', 'وكلاء AI', 'مفتوح']},
     ]},
   ],
-  outro: {dur: 7, word: 'AI'},
+  outro: {dur: 7, word: 'Claude'},
 };

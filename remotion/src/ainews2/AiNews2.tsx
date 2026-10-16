@@ -17,7 +17,7 @@ const Outro: React.FC<{word?: string}> = ({word}) => {
       {word ? (
         <>
           <div style={{position: 'absolute', top: 230, left: 40, right: 40}}><Kinetic text="علّق بكلمة" look="light" size={96} /></div>
-          <div style={{position: 'absolute', top: 360, width: '100%', textAlign: 'center', fontSize: 230, fontWeight: 1000, color: C.coral,
+          <div style={{position: 'absolute', top: 360, width: '100%', textAlign: 'center', fontSize: Math.min(230, Math.round(1500 / Math.max(1, word.length))), fontWeight: 1000, color: C.coral,
             transform: `scale(${q(10)})`}}>{word}</div>
           <div style={{position: 'absolute', top: 700, left: 90, right: 90, height: 120, borderRadius: 60, background: C.paper, display: 'flex', alignItems: 'center',
             justifyContent: 'space-between', padding: '0 26px', boxShadow: '0 20px 50px rgba(40,25,20,0.18)', opacity: q(20)}}>
