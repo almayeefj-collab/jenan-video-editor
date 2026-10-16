@@ -48,7 +48,7 @@ def main():
         if not options:
             sys.exit(f'ما لقيت سكتة كافية بعد {last:.1f}s — قطّع يدوي')
         # السكتة الطويلة (نفَس بين فقرتين) أولى من سكتة قصيرة داخل الجملة حتى لو أبعد شوي
-        g = min(options, key=lambda g: abs(g[0] - e) - 6 * g[1])[0]
+        g = min(options, key=lambda g: abs(g[0] - e) - 10 * g[1])[0]
         picked.append(g)
         last = g
     cuts = [0.0] + picked + [total]
