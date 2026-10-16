@@ -29,11 +29,12 @@ const Outro: React.FC<{word?: string}> = ({word}) => {
           </div>
         </>
       ) : null}
-      <div style={{position: 'absolute', top: word ? 860 : 500, width: '100%', textAlign: 'center', fontSize: 64, fontWeight: 900, opacity: q(24)}}>
+      {!word ? <div style={{position: 'absolute', top: 300, left: 40, right: 40}}><Kinetic text="تبون الأخبار *أول بأول؟*" look="light" size={100} /></div> : null}
+      <div style={{position: 'absolute', top: word ? 860 : 560, width: '100%', textAlign: 'center', fontSize: 64, fontWeight: 900, opacity: q(24)}}>
         تابعوني على الانستغرام
       </div>
       {/* صورة جنان: دائرة مرجانية وراها، وتطلع من تحت */}
-      <div style={{position: 'absolute', top: word ? 1000 : 640, left: 0, right: 0, height: 760, display: 'flex', justifyContent: 'center'}}>
+      <div style={{position: 'absolute', top: word ? 1000 : 720, left: 0, right: 0, height: 760, display: 'flex', justifyContent: 'center'}}>
         <div style={{position: 'absolute', top: 30, width: 560, height: 560, borderRadius: '50%', background: C.coral, transform: `scale(${q(26)})`,
           boxShadow: '0 30px 70px rgba(232,115,90,0.4)'}} />
         <Img src={staticFile('ainews/brand/jenan.png')} style={{position: 'absolute', top: 0, height: 760,

@@ -318,7 +318,7 @@ export const BeatView: React.FC<{b: Beat; frames: number}> = ({b, frames}) => {
     case 'bars': center = <Bars items={b.items} look={look} />; break;
     case 'stat': center = <Stat value={b.value} unit={b.unit} look={look} />; break;
     case 'doc': center = <Doc title={b.title} rows={b.rows} />; break;
-    case 'phone': center = <Phone bubbles={b.bubbles} wave={b.wave} />; break;
+    case 'phone': center = <div style={{transform: `scale(${b.foot ? 0.78 : 0.88})`}}><Phone bubbles={b.bubbles} wave={b.wave} /></div>; break;
     case 'chips': center = <Chips chips={b.chips} look={look} />; break;
   }
   return (
