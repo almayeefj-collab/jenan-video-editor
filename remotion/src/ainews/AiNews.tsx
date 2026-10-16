@@ -6,21 +6,90 @@ const clamp = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
 const ease = Easing.bezier(0.16, 1, 0.3, 1);
 const glow = (c: string) => `0 0 24px ${c}aa, 0 6px 30px rgba(0,0,0,0.6)`;
 
-// صورة بخلفية Ken Burns + دخول zoom/blur/flash عند بداية كل مشهد
-const Background: React.FC<{src: string; frames: number; dim?: number}> = ({src, frames, dim = 0}) => {
+const BPM = 124; // نفس سرعة الموسيقى (tools/compose_hype.py)
+const BEAT = (60 / BPM) * FPS;
+// نبضة خفيفة مع كل ضربة kick
+const beatPulse = (f: number) => Math.exp(-((f % BEAT) / BEAT) * 6);
+
+// جزيئات مضيئة تطلع لفوق — ثابتة (deterministic) عشان الرندر يطلع نفسه كل مرة
+const rand = (i: number) => {
+  const x = Math.sin(i * 127.1 + 311.7) * 43758.5453;
+  return x - Math.floor(x);
+};
+const Particles: React.FC<{count?: number; color?: string}> = ({count = 34, color = theme.cyan}) => {
   const f = useCurrentFrame();
-  const enter = interpolate(f, [0, 10], [0, 1], {...clamp, easing: ease});
-  const scale = interpolate(f, [0, frames], [1.08, 1.2]) * (1.25 - 0.25 * enter);
-  const flash = interpolate(f, [0, 2, 9], [0.8, 0.5, 0], clamp);
   return (
-    <AbsoluteFill style={{background: theme.bg}}>
-      <Img
-        src={staticFile(src)}
-        style={{width: '100%', height: '100%', objectFit: 'cover', transform: `scale(${scale})`, filter: `blur(${(1 - enter) * 24}px) brightness(${1 - dim})`}}
-      />
-      {/* تدرج غامق فوق وتحت عشان النص يقرا */}
-      <AbsoluteFill style={{background: 'linear-gradient(180deg, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0) 26%, rgba(0,0,0,0) 48%, rgba(0,0,0,0.88) 80%)'}} />
+    <AbsoluteFill style={{pointerEvents: 'none'}}>
+      {Array.from({length: count}, (_, i) => {
+        const speed = 1.2 + rand(i) * 2.8;
+        const size = 4 + rand(i + 50) * 10;
+        const x = rand(i + 100) * 1080 + Math.sin((f + i * 20) / 40) * 30;
+        const y = 1920 - ((f * speed + rand(i + 200) * 1920) % 2100);
+        const tw = 0.35 + 0.65 * Math.abs(Math.sin((f + i * 13) / 18));
+        const c = i % 3 === 0 ? theme.violet : color;
+        return <div key={i} style={{position: 'absolute', left: x, top: y, width: size, height: size, borderRadius: '50%', background: c, opacity: 0.55 * tw, boxShadow: `0 0 ${size * 2.5}px ${c}`}} />;
+      })}
+    </AbsoluteFill>
+  );
+};
+
+// خلفية full-bleed متحركة (للانترو والأوترو): drift + zoom + نبضة الإيقاع
+const FullBackground: React.FC<{src: string; frames: number; dim?: number}> = ({src, frames, dim = 0}) => {
+  const f = useCurrentFrame();
+  const enter = interpolate(f, [0, 12], [0, 1], {...clamp, easing: ease});
+  const scale = interpolate(f, [0, frames], [1.1, 1.28]) * (1.3 - 0.3 * enter) * (1 + 0.012 * beatPulse(f));
+  const x = Math.sin(f / 45) * 18;
+  const rot = Math.sin(f / 70) * 1.2;
+  const flash = interpolate(f, [0, 2, 10], [0.85, 0.5, 0], clamp);
+  return (
+    <AbsoluteFill style={{background: theme.bg, overflow: 'hidden'}}>
+      <Img src={staticFile(src)} style={{width: '100%', height: '100%', objectFit: 'cover',
+        transform: `translateX(${x}px) scale(${scale}) rotate(${rot}deg)`, filter: `blur(${(1 - enter) * 26}px) brightness(${1 - dim}) saturate(1.15)`}} />
+      <AbsoluteFill style={{background: 'linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 26%, rgba(0,0,0,0) 48%, rgba(0,0,0,0.85) 80%)'}} />
+      <Particles />
       <AbsoluteFill style={{background: 'white', opacity: flash, mixBlendMode: 'screen'}} />
+    </AbsoluteFill>
+  );
+};
+
+// مشهد الخبر: الصورة كرت ثلاثي الأبعاد يطير ويدخل بلفة، يتمايل، وعليه لمعة وglitch
+// وورا الكرت نفس الصورة مضببة تتحرك (parallax)
+const CardBackground: React.FC<{src: string; frames: number; idx: number}> = ({src, frames, idx}) => {
+  const f = useCurrentFrame();
+  const {fps} = useVideoConfig();
+  const dir = idx % 2 === 0 ? 1 : -1; // كل خبر يدخل من جهة
+  const enter = spring({frame: f, fps, config: {damping: 14, stiffness: 90, mass: 0.9}});
+  const exit = interpolate(f, [frames - 8, frames], [0, 1], {...clamp, easing: Easing.in(Easing.cubic)});
+  const beat = beatPulse(f);
+  const rotY = (1 - enter) * 70 * dir + Math.sin(f / 38) * 7 + exit * -40 * dir;
+  const rotX = (1 - enter) * -18 + Math.cos(f / 47) * 4;
+  const tx = (1 - enter) * 700 * dir + exit * -900 * dir;
+  const ty = Math.sin(f / 30) * 10;
+  const cardScale = (0.82 + 0.18 * enter) * (1 + 0.018 * beat);
+  const inner = interpolate(f, [0, frames], [1.05, 1.22]);
+  const panX = interpolate(f, [0, frames], [-30, 30]) * dir;
+  // glitch: ظلال حمرا وزرقا تتباعد أول الدخول وعلى كل ضربة قوية
+  const g = Math.max(interpolate(f, [0, 10], [22, 0], clamp), f % (BEAT * 4) < 3 ? 10 : 0);
+  // لمعة تمشي على الكرت
+  const sweep = interpolate(f, [8, 34], [-120, 220], clamp);
+  return (
+    <AbsoluteFill style={{background: theme.bg, overflow: 'hidden'}}>
+      <Img src={staticFile(src)} style={{position: 'absolute', width: '100%', height: '100%', objectFit: 'cover',
+        transform: `scale(${1.35 + 0.05 * beat}) translateX(${-panX * 1.5}px)`, filter: 'blur(38px) brightness(0.45) saturate(1.4)'}} />
+      <Particles count={26} />
+      <div style={{position: 'absolute', top: 240, left: 80, width: 920, height: 1120, perspective: 1600}}>
+        <div style={{width: '100%', height: '100%', borderRadius: 44, overflow: 'hidden', position: 'relative',
+          transform: `translate(${tx}px, ${ty}px) rotateY(${rotY}deg) rotateX(${rotX}deg) scale(${cardScale})`,
+          boxShadow: `0 40px 90px rgba(0,0,0,0.7), 0 0 ${40 + 40 * beat}px ${theme.violet}88`,
+          border: '3px solid rgba(255,255,255,0.22)',
+          filter: g > 0.5 ? `drop-shadow(${g}px 0 0 rgba(255,40,90,0.75)) drop-shadow(${-g}px 0 0 rgba(0,220,255,0.75))` : undefined}}>
+          <Img src={staticFile(src)} style={{width: '100%', height: '100%', objectFit: 'cover', transform: `scale(${inner}) translateX(${panX}px)`}} />
+          <div style={{position: 'absolute', top: 0, bottom: 0, left: `${sweep}%`, width: '35%',
+            background: 'linear-gradient(100deg, transparent, rgba(255,255,255,0.45), transparent)', transform: 'skewX(-18deg)'}} />
+        </div>
+      </div>
+      {/* تدرج تحت عشان العنوان يقرا فوق طرف الكرت */}
+      <AbsoluteFill style={{background: 'linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0) 18%, rgba(0,0,0,0) 52%, rgba(0,0,0,0.92) 78%)'}} />
     </AbsoluteFill>
   );
 };
@@ -112,13 +181,19 @@ const News: React.FC<{s: NewsScene; idx: number; total: number}> = ({s, idx, tot
             خبر {idx} من {total}
           </span>
         </div>
-        <div style={{fontSize: 108, fontWeight: 1000, lineHeight: 1.15, textShadow: glow(theme.violet)}}>
+        <div style={{fontSize: 108, fontWeight: 1000, lineHeight: 1.15, textShadow: glow(theme.violet),
+          transform: `scale(${1 + 0.5 * (1 - spring({frame: f - 10, fps, config: {damping: 10, stiffness: 140}}))})`, transformOrigin: 'right bottom'}}>
           <Words text={s.title} delay={10} stagger={4} />
         </div>
         <div style={{marginTop: 26, fontSize: 52, fontWeight: 700, lineHeight: 1.45, color: theme.dim, opacity: card, transform: `translateY(${(1 - card) * 30}px)`,
           borderRight: `8px solid ${theme.cyan}`, paddingRight: 26}}>
           {s.sub}
         </div>
+      </div>
+      {/* رقم الخبر كبير وشفاف فوق يسار الكرت */}
+      <div style={{position: 'absolute', top: 280, left: 110, fontSize: 220, fontWeight: 1000, color: 'transparent', WebkitTextStroke: '3px rgba(255,255,255,0.55)',
+        fontFamily: 'Cairo', direction: 'ltr', opacity: tagIn, transform: `translateY(${(1 - tagIn) * -60}px)`, textShadow: `0 0 30px ${theme.cyan}66`}}>
+        {String(idx).padStart(2, '0')}
       </div>
       {/* شريط تقدم الخبر */}
       <div style={{position: 'absolute', bottom: 470, right: 70, left: 70, height: 8, borderRadius: 4, background: 'rgba(255,255,255,0.15)'}}>
@@ -173,7 +248,7 @@ export const AiNews: React.FC<{ep: Episode; voice: boolean}> = ({ep, voice}) => 
         const idx = s.kind === 'news' ? ++n : 0;
         return (
           <Sequence key={i} from={starts[i]} durationInFrames={frames}>
-            <Background src={s.image} frames={frames} />
+            {s.kind === 'hook' ? <FullBackground src={s.image} frames={frames} /> : <CardBackground src={s.image} frames={frames} idx={idx} />}
             {s.kind === 'hook' ? <Hook s={s} /> : <News s={s} idx={idx} total={news} />}
             {voice && s.voice ? (
               <Sequence from={s.kind === 'hook' ? 8 : 6}>
@@ -185,7 +260,7 @@ export const AiNews: React.FC<{ep: Episode; voice: boolean}> = ({ep, voice}) => 
         );
       })}
       <Sequence from={outroStart} durationInFrames={Math.round(ep.outro.dur * FPS)}>
-        <Background src={ep.outro.image} frames={Math.round(ep.outro.dur * FPS)} dim={0.2} />
+        <FullBackground src={ep.outro.image} frames={Math.round(ep.outro.dur * FPS)} dim={0.2} />
         <Outro />
         {voice && ep.outro.voice ? (
           <Sequence from={6}>
