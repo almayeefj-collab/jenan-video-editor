@@ -16,8 +16,8 @@ export const ep02: Episode = {
   scenes: [
     {kind: 'hook', image: 'ainews/brand/intro.jpg', dur: 5,
       title: 'آخر أخبار أدوات الـ AI', sub: 'مع جنان المعييف'},
-    {kind: 'news', image: `${D}/s1.jpg`, dur: 7.7, tag: 'ChatGPT',
-      title: 'صوت أطبع في ChatGPT', sub: 'موديل صوت جديد GPT-Live، ونطقه أحسن بلغات كثيرة'},
+    {kind: 'news', image: `${D}/s1.jpg`, dur: 8.1, tag: 'ChatGPT',
+      title: 'صوت جديد في ChatGPT', sub: 'اسمه GPT-Live: يتكلم بشكل طبيعي أكثر ونطقه أوضح'},
     {kind: 'news', image: `${D}/s2.jpg`, dur: 8.1, tag: 'Claude',
       title: 'أدوات Claude ببلاش', sub: 'المستندات والعروض والتصاميم صارت لكل الخطط حتى المجانية'},
     {kind: 'news', image: `${D}/s3.jpg`, dur: 8.1, tag: 'Manus',
