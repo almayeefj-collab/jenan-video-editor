@@ -1,0 +1,487 @@
+<title>اختيار الأصح</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@500;700&family=Readex+Pro:wght@400;500;600&display=swap">
+<style>
+/* Layout: one centered game column; a Kuwait-flag band on top, a towers skyline anchors the start and end screens */
+:root {
+  --bg: #F2F5F1;
+  --surface: #FFFFFF;
+  --ink: #13201A;
+  --muted: #5A6B61;
+  --line: #D5DFD8;
+  --green: #00753A;
+  --red: #C8102E;
+  --black: #111;
+  --gold: #A87400;
+  --ok-bg: #E2F2E8;
+  --bad-bg: #FBE5E8;
+  --shadow: 0 1px 2px rgba(19,32,26,.06), 0 8px 24px rgba(19,32,26,.07);
+  --f-display: "Reem Kufi", "Readex Pro", "Segoe UI", Tahoma, sans-serif;
+  --f-body: "Readex Pro", "Segoe UI", Tahoma, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0B1410; --surface: #14211B; --ink: #E8F0EB; --muted: #9AAEA2; --line: #26392F;
+    --green: #33C27A; --red: #FF5C70; --black: #000; --gold: #E2B24A; --ok-bg: #123424; --bad-bg: #3A1820;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0B1410; --surface: #14211B; --ink: #E8F0EB; --muted: #9AAEA2; --line: #26392F;
+  --green: #33C27A; --red: #FF5C70; --black: #000; --gold: #E2B24A; --ok-bg: #123424; --bad-bg: #3A1820;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { min-height: 100%; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--f-body); font-size: 16px; line-height: 1.7;
+  direction: rtl;
+}
+.flag {
+  height: 8px; position: relative;
+  background: linear-gradient(to bottom, #00753A 0 33.3%, #FFFFFF 33.3% 66.6%, #C8102E 66.6%);
+  box-shadow: 0 1px 0 var(--line);
+}
+.flag::before {
+  content: ""; position: absolute; inset: 0 auto 0 0; width: 34px; background: #111;
+  clip-path: polygon(0 0, 100% 33.3%, 100% 66.6%, 0 100%);
+}
+.wrap {
+  max-width: 720px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 40px;
+  display: flex; flex-direction: column; gap: 20px;
+}
+header.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.brand { display: flex; flex-direction: column; }
+.brand b { font-family: var(--f-display); font-size: 1.5rem; line-height: 1.2; color: var(--red); font-weight: 700; }
+.brand span { font-size: .85rem; color: var(--muted); }
+.hud { display: flex; gap: 8px; align-items: center; }
+.pill {
+  display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px;
+  background: var(--surface); border: 1px solid var(--line); font-size: .9rem; font-variant-numeric: tabular-nums;
+}
+.pill strong { color: var(--green); font-weight: 600; }
+.icon-btn {
+  width: 36px; height: 36px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface);
+  color: var(--ink); cursor: pointer; display: grid; place-items: center; font-size: 1rem;
+}
+.rounds { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.round { display: flex; flex-direction: column; gap: 6px; font-size: .8rem; color: var(--muted); }
+.round i { display: block; height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; position: relative; }
+.round i::after { content: ""; position: absolute; inset: 0 0 0 auto; width: var(--p, 0%); background: var(--green); transition: width .4s ease; }
+.round.active { color: var(--ink); font-weight: 500; }
+
+.screen { display: flex; flex-direction: column; gap: 18px; animation: rise .35s ease both; }
+@keyframes rise { from { transform: translateY(8px); opacity: .4; } to { transform: none; opacity: 1; } }
+h1, h2 { font-family: var(--f-display); font-weight: 700; line-height: 1.3; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(2.2rem, 7vw, 3.4rem); color: var(--red); }
+h2 { font-size: clamp(1.25rem, 4vw, 1.6rem); }
+p { margin: 0; }
+.lead { color: var(--muted); max-width: 60ch; }
+.eyebrow { font-size: .8rem; letter-spacing: .02em; color: var(--green); font-weight: 600; }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; box-shadow: var(--shadow); }
+
+.how { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.how div { border-top: 3px solid var(--green); padding-top: 10px; font-size: .9rem; color: var(--muted); }
+.how div:nth-child(2) { border-color: var(--ink); }
+.how div:nth-child(3) { border-color: var(--red); }
+.how b { display: block; color: var(--ink); font-weight: 600; font-size: 1rem; }
+
+.btn {
+  font: inherit; font-weight: 600; border: 0; cursor: pointer; border-radius: 12px; padding: 12px 22px;
+  background: var(--green); color: #fff; align-self: flex-start; transition: transform .1s ease, filter .15s;
+}
+.btn:hover { filter: brightness(1.08); }
+.btn:active { transform: scale(.98); }
+.btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+
+.skyline { color: var(--muted); opacity: .45; width: 100%; height: auto; display: block; }
+
+/* Round 1: ordering */
+.pool { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+.step {
+  font: inherit; text-align: right; cursor: pointer; padding: 14px 16px; border-radius: 12px;
+  background: var(--surface); border: 1px solid var(--line); color: var(--ink);
+  display: flex; flex-direction: column; gap: 2px; transition: border-color .15s, transform .1s;
+}
+.step:hover { border-color: var(--green); }
+.step b { font-weight: 600; }
+.step small { color: var(--muted); font-size: .85rem; line-height: 1.5; }
+.step.used { display: none; }
+.step.shake { animation: shake .35s; border-color: var(--red); }
+@keyframes shake { 25% { transform: translateX(-6px); } 50% { transform: translateX(6px); } 75% { transform: translateX(-3px); } }
+.track { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.track li {
+  display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: center;
+  padding: 10px 12px; border-radius: 12px; border: 1px dashed var(--line); min-height: 52px; color: var(--muted);
+}
+.track li.filled { border-style: solid; border-color: var(--green); background: var(--ok-bg); color: var(--ink); animation: rise .3s ease both; }
+.track .n {
+  width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center;
+  font-family: var(--f-display); font-weight: 700; background: var(--line); color: var(--ink);
+}
+.track li.filled .n { background: var(--green); color: #fff; }
+
+/* Round 2 & 3: questions */
+.qmeta { display: flex; justify-content: space-between; align-items: center; color: var(--muted); font-size: .9rem; font-variant-numeric: tabular-nums; }
+.opts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.opt {
+  font: inherit; text-align: right; cursor: pointer; padding: 14px 16px; border-radius: 12px; min-height: 58px;
+  background: var(--surface); border: 1.5px solid var(--line); color: var(--ink); transition: border-color .15s, background .15s;
+  display: flex; align-items: center; gap: 10px;
+}
+.opt:hover:not(:disabled) { border-color: var(--green); }
+.opt:disabled { cursor: default; }
+.opt .k {
+  flex: none; width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center;
+  background: var(--bg); border: 1px solid var(--line); font-size: .85rem; font-weight: 600;
+}
+.opt.right { border-color: var(--green); background: var(--ok-bg); }
+.opt.right .k { background: var(--green); color: #fff; border-color: var(--green); }
+.opt.wrong { border-color: var(--red); background: var(--bad-bg); }
+.opt.wrong .k { background: var(--red); color: #fff; border-color: var(--red); }
+.opt.dim { opacity: .55; }
+.tf { grid-template-columns: 1fr 1fr; }
+.tf .opt { justify-content: center; font-family: var(--f-display); font-size: 1.4rem; font-weight: 700; min-height: 80px; }
+
+.feedback { border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; border: 1px solid; }
+.feedback.ok { background: var(--ok-bg); border-color: var(--green); }
+.feedback.no { background: var(--bad-bg); border-color: var(--red); }
+.feedback .verdict { font-weight: 600; }
+.feedback.ok .verdict { color: var(--green); }
+.feedback.no .verdict { color: var(--red); }
+.cite {
+  align-self: flex-start; font-size: .78rem; padding: 2px 10px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--surface); color: var(--muted);
+}
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.streak { color: var(--gold); font-weight: 600; font-size: .9rem; }
+
+/* End */
+.result { display: grid; grid-template-columns: auto 1fr; gap: 24px; align-items: center; }
+.stamp {
+  width: 150px; height: 150px; border-radius: 50%; display: grid; place-items: center; text-align: center;
+  border: 5px double currentColor; transform: rotate(-12deg); font-family: var(--f-display); font-weight: 700;
+  line-height: 1.2; padding: 10px; animation: stamp .5s cubic-bezier(.2,1.6,.4,1) both .15s;
+}
+.stamp.pass { color: var(--green); }
+.stamp.mid { color: var(--gold); }
+.stamp.fail { color: var(--red); }
+.stamp big { display: block; font-size: 1.6rem; }
+.stamp small { display: block; font-size: .8rem; font-family: var(--f-body); font-weight: 500; }
+@keyframes stamp { from { transform: rotate(-12deg) scale(2.2); opacity: 0; } to { transform: rotate(-12deg) scale(1); opacity: 1; } }
+.score-big { font-family: var(--f-display); font-size: 3rem; line-height: 1; font-variant-numeric: tabular-nums; }
+.score-big span { font-size: 1.2rem; color: var(--muted); }
+.breakdown { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.breakdown div { display: flex; flex-direction: column; font-size: .85rem; color: var(--muted); border-inline-start: 3px solid var(--line); padding-inline-start: 10px; }
+.breakdown b { color: var(--ink); font-size: 1.15rem; font-variant-numeric: tabular-nums; }
+.recap { margin: 0; padding: 0; list-style: none; counter-reset: s; display: flex; flex-direction: column; gap: 8px; }
+.recap li { counter-increment: s; display: grid; grid-template-columns: 28px 1fr; gap: 10px; align-items: baseline; }
+.recap li::before {
+  content: counter(s); width: 26px; height: 26px; border-radius: 50%; background: var(--green); color: #fff;
+  display: grid; place-items: center; font-size: .85rem; font-weight: 600;
+}
+.note { font-size: .8rem; color: var(--muted); }
+#confetti { position: fixed; inset: 0; pointer-events: none; z-index: 20; width: 100%; height: 100%; }
+
+@media (max-width: 560px) {
+  .opts { grid-template-columns: 1fr; }
+  .tf { grid-template-columns: 1fr 1fr; }
+  .how, .breakdown { grid-template-columns: 1fr; }
+  .result { grid-template-columns: 1fr; justify-items: start; }
+  .stamp { width: 130px; height: 130px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+
+<div class="flag" aria-hidden="true"></div>
+<main class="wrap">
+  <header class="top">
+    <div class="brand"><b>اختيار الأصح</b><span>كيف يُختار الوزراء في دولة الكويت؟</span></div>
+    <div class="hud">
+      <span class="pill">النقاط <strong id="score">0</strong></span>
+      <button class="icon-btn" id="mute" type="button" aria-label="كتم الصوت" title="الصوت">🔊</button>
+    </div>
+  </header>
+
+  <div class="rounds" id="rounds" aria-label="مراحل اللعبة">
+    <div class="round" data-r="0"><span>١ · رتّب الخطوات</span><i></i></div>
+    <div class="round" data-r="1"><span>٢ · اختر الأصح</span><i></i></div>
+    <div class="round" data-r="2"><span>٣ · صح أم خطأ</span><i></i></div>
+  </div>
+
+  <section id="stage" aria-live="polite"></section>
+</main>
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<script>
+(() => {
+  const $ = (s, el = document) => el.querySelector(s);
+  const stage = $('#stage');
+  const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const AR = n => String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+
+  // ---------- Content (based on the Constitution of the State of Kuwait, 1962) ----------
+  const STEPS = [
+    { t: 'المشاورات التقليدية', d: 'يجري سمو الأمير المشاورات التقليدية قبل اختيار رئيس الوزراء' },
+    { t: 'تعيين رئيس مجلس الوزراء', d: 'يصدر أمر أميري بتعيين رئيس مجلس الوزراء' },
+    { t: 'ترشيح الوزراء', d: 'رئيس مجلس الوزراء يرشح من يرى فيهم الثقة والكفاءة ويرفع أسماءهم للأمير' },
+    { t: 'مرسوم أميري بالتشكيل', d: 'يوافق الأمير ويصدر مرسوم بتعيين الوزراء' },
+    { t: 'أداء اليمين الدستورية', d: 'يؤدي الوزراء اليمين أمام الأمير قبل مباشرة أعمالهم' },
+  ];
+
+  const MCQ = [
+    { q: 'من يعيّن رئيس مجلس الوزراء في الكويت؟', a: 'سمو أمير البلاد', w: ['رئيس مجلس الأمة', 'أعضاء مجلس الأمة بالتصويت', 'المحكمة الدستورية'],
+      e: 'يعيّن الأمير رئيس مجلس الوزراء بعد المشاورات التقليدية، ويعفيه من منصبه.', c: 'المادة ٥٦' },
+    { q: 'ماذا يسبق تعيين رئيس مجلس الوزراء؟', a: 'المشاورات التقليدية', w: ['انتخابات عامة', 'استفتاء شعبي', 'تصويت داخل مجلس الوزراء'],
+      e: 'نص الدستور على أن التعيين يكون «بعد المشاورات التقليدية» التي يجريها الأمير.', c: 'المادة ٥٦' },
+    { q: 'من يرشّح أسماء الوزراء؟', a: 'رئيس مجلس الوزراء', w: ['رئيس مجلس الأمة', 'النواب المنتخبون', 'ولي العهد'],
+      e: 'الأمير يعيّن الوزراء «بناءً على ترشيح رئيس مجلس الوزراء»، وليس رئيس مجلس الأمة.', c: 'المادة ٥٦' },
+    { q: 'بأي أداة يتم تعيين الوزراء رسمياً؟', a: 'مرسوم أميري', w: ['قرار وزاري', 'قانون يقره مجلس الأمة', 'تعميم من مجلس الوزراء'],
+      e: 'بعد ترشيح رئيس الوزراء يوافق الأمير، ويصدر بالتشكيل مرسوم أميري.', c: 'المادة ٥٦' },
+    { q: 'من أين يُختار الوزراء؟', a: 'من أعضاء مجلس الأمة ومن غيرهم', w: ['من النواب المنتخبين فقط', 'من خارج مجلس الأمة فقط', 'من موظفي الدولة فقط'],
+      e: 'الدستور يجيز تعيين الوزراء من أعضاء مجلس الأمة ومن غيرهم.', c: 'المادة ٥٦' },
+    { q: 'ما الحد الأقصى لعدد الوزراء؟', a: 'ثلث عدد أعضاء مجلس الأمة', w: ['نصف عدد أعضاء مجلس الأمة', 'لا يوجد حد أقصى', 'ربع عدد أعضاء مجلس الأمة'],
+      e: 'لا يزيد عدد الوزراء جميعاً على ثلث عدد أعضاء مجلس الأمة، أي ١٦ وزيراً كحد أقصى لمجلس من ٥٠ نائباً.', c: 'المادة ٥٦' },
+    { q: 'أي من هذه الشروط مطلوب في الوزير؟', a: 'أن يكون كويتي الجنسية بصفة أصلية', w: ['أن يحمل شهادة الدكتوراه', 'ألا يقل عمره عن ٤٠ سنة', 'أن يكون عضواً سابقاً في مجلس الأمة'],
+      e: 'يُشترط في الوزير شروط عضو مجلس الأمة: كويتي بصفة أصلية، ناخب، لا يقل عمره عن ٣٠ سنة ميلادية، ويجيد القراءة والكتابة بالعربية.', c: 'المادتان ١٢٥ و٨٢' },
+    { q: 'أمام من يؤدي الوزير اليمين قبل مباشرة عمله؟', a: 'أمام الأمير', w: ['أمام رئيس مجلس الأمة', 'أمام المحكمة الدستورية', 'أمام رئيس مجلس الوزراء'],
+      e: 'يؤدي رئيس مجلس الوزراء والوزراء اليمين أمام الأمير قبل تولي صلاحياتهم.', c: 'المادة ١٢٦' },
+  ];
+
+  const TF = [
+    { s: 'رئيس مجلس الأمة هو من يرشّح الوزراء.', v: false,
+      e: 'خطأ شائع. الترشيح من اختصاص رئيس مجلس الوزراء، ثم يعيّنهم الأمير بمرسوم.', c: 'المادة ٥٦' },
+    { s: 'يجوز أن يكون الوزير من خارج أعضاء مجلس الأمة.', v: true,
+      e: 'يُعيَّن الوزراء من أعضاء مجلس الأمة ومن غيرهم.', c: 'المادة ٥٦' },
+    { s: 'يكفي أن يبلغ الوزير ٢٥ سنة من عمره.', v: false,
+      e: 'لا يقل عمر الوزير عن ٣٠ سنة ميلادية، مثل عضو مجلس الأمة.', c: 'المادتان ١٢٥ و٨٢' },
+    { s: 'الوزراء غير المنتخبين يصبحون أعضاء في مجلس الأمة بحكم وظائفهم.', v: true,
+      e: 'يُعتبر الوزراء غير المنتخبين أعضاءً في مجلس الأمة بحكم وظائفهم.', c: 'المادة ٨٠' },
+    { s: 'يمكن أن يتكوّن مجلس الوزراء من ٢٠ وزيراً.', v: false,
+      e: 'الحد الأقصى ثلث أعضاء مجلس الأمة، أي ١٦ وزيراً.', c: 'المادة ٥٦' },
+    { s: 'الأمير يملك إعفاء الوزراء من مناصبهم.', v: true,
+      e: 'كما يعيّن الأمير الوزراء فإنه يعفيهم من مناصبهم بناءً على ترشيح رئيس مجلس الوزراء.', c: 'المادة ٥٦' },
+  ];
+
+  const PTS = 10, BONUS = 5, PENALTY = 3;
+  const MAX = STEPS.length * PTS + MCQ.length * PTS + TF.length * PTS;
+
+  // ---------- Sound ----------
+  let muted = false, ctx = null;
+  try { muted = localStorage.getItem('asah-muted') === '1'; } catch (e) {}
+  const muteBtn = $('#mute');
+  const syncMute = () => { muteBtn.textContent = muted ? '🔇' : '🔊'; muteBtn.setAttribute('aria-label', muted ? 'تشغيل الصوت' : 'كتم الصوت'); };
+  syncMute();
+  muteBtn.onclick = () => { muted = !muted; syncMute(); try { localStorage.setItem('asah-muted', muted ? '1' : '0'); } catch (e) {} };
+  function tone(freqs, dur = .12, type = 'sine') {
+    if (muted) return;
+    try {
+      ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
+      freqs.forEach((f, i) => {
+        const o = ctx.createOscillator(), g = ctx.createGain(), t = ctx.currentTime + i * dur;
+        o.type = type; o.frequency.value = f;
+        g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.18, t + .02); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+        o.connect(g).connect(ctx.destination); o.start(t); o.stop(t + dur + .02);
+      });
+    } catch (e) {}
+  }
+  const sGood = () => tone([660, 880]);
+  const sBad = () => tone([220, 165], .14, 'triangle');
+  const sWin = () => tone([523, 659, 784, 1046], .13);
+
+  // ---------- State ----------
+  let S;
+  function reset() { S = { score: 0, streak: 0, got: [0, 0, 0], round: -1 }; setScore(0); setRound(-1); progress(0, 0); progress(1, 0); progress(2, 0); }
+  function setScore(v) { S.score = Math.max(0, v); $('#score').textContent = AR(S.score); }
+  function setRound(r) { S.round = r; document.querySelectorAll('.round').forEach(el => el.classList.toggle('active', +el.dataset.r === r)); }
+  function progress(r, frac) { $(`.round[data-r="${r}"] i`).style.setProperty('--p', (frac * 100) + '%'); }
+  function render(html) { stage.innerHTML = `<div class="screen">${html}</div>`; window.scrollTo({ top: 0, behavior: 'smooth' }); }
+
+  const SKY = `<svg class="skyline" viewBox="0 0 400 90" aria-hidden="true" fill="currentColor">
+    <rect x="0" y="86" width="400" height="4"/>
+    <rect x="20" y="52" width="26" height="34"/><rect x="50" y="38" width="18" height="48"/><rect x="72" y="60" width="30" height="26"/>
+    <rect x="300" y="44" width="22" height="42"/><rect x="326" y="58" width="34" height="28"/><rect x="364" y="34" width="16" height="52"/>
+    <path d="M250 86 L256 14 L262 10 L268 86 Z"/>
+    <rect x="183" y="6" width="3" height="80"/><circle cx="184.5" cy="44" r="12"/><circle cx="184.5" cy="26" r="6.5"/>
+    <rect x="212" y="26" width="2.6" height="60"/><circle cx="213.3" cy="54" r="8.5"/>
+    <rect x="152" y="34" width="2" height="52"/>
+    <rect x="118" y="66" width="20" height="20"/><path d="M118 66 A10 10 0 0 1 138 66 Z"/>
+  </svg>`;
+
+  // ---------- Screens ----------
+  function start() {
+    reset();
+    render(`
+      <span class="eyebrow">لعبة تفاعلية عن نظام الحكم في الكويت</span>
+      <h1>اختيار الأصح</h1>
+      <p class="lead">من يعيّن رئيس الوزراء؟ ومن يرشّح الوزراء؟ وما الحد الأقصى لعددهم؟ اختبر معلوماتك في ثلاث مراحل، وتعلّم مع كل إجابة ما يقوله الدستور الكويتي.</p>
+      <div class="how">
+        <div><b>رتّب الخطوات</b>خمس خطوات من المشاورات حتى اليمين الدستورية</div>
+        <div><b>اختر الأصح</b>${AR(MCQ.length)} أسئلة، ومكافأة على الإجابات المتتالية</div>
+        <div><b>صح أم خطأ</b>${AR(TF.length)} عبارات، بعضها أخطاء شائعة</div>
+      </div>
+      <button class="btn" id="go" type="button">ابدأ اللعب</button>
+      ${SKY}`);
+    $('#go').onclick = () => { tone([523, 784]); roundOrder(); };
+  }
+
+  function roundOrder() {
+    setRound(0);
+    let next = 0;
+    const order = shuffle(STEPS.map((s, i) => i));
+    render(`
+      <span class="eyebrow">المرحلة الأولى</span>
+      <h2>رتّب خطوات تشكيل الحكومة</h2>
+      <p class="lead">اضغط على البطاقات بالترتيب الصحيح، من أول خطوة إلى آخر خطوة.</p>
+      <ol class="track" id="track">${STEPS.map((_, i) => `<li><span class="n">${AR(i + 1)}</span><span>؟</span></li>`).join('')}</ol>
+      <div class="pool" id="pool">${order.map(i => `<button type="button" class="step" data-i="${i}"><b>${STEPS[i].t}</b><small>${STEPS[i].d}</small></button>`).join('')}</div>
+      <div id="after"></div>`);
+    const slots = [...document.querySelectorAll('#track li')];
+    $('#pool').addEventListener('click', ev => {
+      const b = ev.target.closest('.step'); if (!b || b.classList.contains('used')) return;
+      const i = +b.dataset.i;
+      if (i === next) {
+        sGood(); b.classList.add('used');
+        const li = slots[next]; li.classList.add('filled');
+        li.lastElementChild.innerHTML = `<b>${STEPS[i].t}</b><br><small style="color:var(--muted)">${STEPS[i].d}</small>`;
+        setScore(S.score + PTS); S.got[0]++; next++; progress(0, next / STEPS.length);
+        if (next === STEPS.length) {
+          $('#after').innerHTML = `<div class="feedback ok"><span class="verdict">أحسنت! هذا هو التسلسل الدستوري</span>
+            <span>الأمير يعيّن رئيس الوزراء، ورئيس الوزراء يرشّح الوزراء، ثم يصدر المرسوم الأميري ويؤدون اليمين.</span>
+            <span class="cite">المادتان ٥٦ و١٢٦</span></div>
+            <button class="btn" id="nx" type="button" style="margin-top:14px">المرحلة الثانية</button>`;
+          $('#nx').onclick = () => roundMCQ(0);
+          $('#nx').focus();
+        }
+      } else {
+        sBad(); setScore(S.score - PENALTY);
+        b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake');
+      }
+    });
+  }
+
+  let mcqSet = [];
+  function roundMCQ(i) {
+    if (i === 0) { setRound(1); mcqSet = shuffle(MCQ); S.streak = 0; }
+    if (i >= mcqSet.length) return roundTF(0);
+    const q = mcqSet[i], opts = shuffle([q.a, ...q.w]), keys = ['أ', 'ب', 'ج', 'د'];
+    render(`
+      <div class="qmeta"><span class="eyebrow">المرحلة الثانية · اختر الأصح</span><span>${AR(i + 1)} / ${AR(mcqSet.length)}</span></div>
+      <h2>${q.q}</h2>
+      <div class="opts" id="opts">${opts.map((o, k) => `<button type="button" class="opt" data-o="${k}"><span class="k">${keys[k]}</span><span>${o}</span></button>`).join('')}</div>
+      <div id="after"></div>`);
+    const btns = [...document.querySelectorAll('#opts .opt')];
+    btns.forEach(b => b.onclick = () => {
+      const pick = opts[+b.dataset.o], ok = pick === q.a;
+      btns.forEach(x => { x.disabled = true; const v = opts[+x.dataset.o]; if (v === q.a) x.classList.add('right'); else if (x === b) x.classList.add('wrong'); else x.classList.add('dim'); });
+      let gained = 0;
+      if (ok) { S.streak++; gained = PTS + (S.streak >= 2 ? BONUS : 0); S.got[1]++; sGood(); } else { S.streak = 0; sBad(); }
+      setScore(S.score + gained); progress(1, (i + 1) / mcqSet.length);
+      feedback(ok, q.e, q.c, ok && S.streak >= 2 ? `سلسلة ${AR(S.streak)} إجابات صحيحة · +${AR(BONUS)} مكافأة` : '',
+        i + 1 < mcqSet.length ? 'السؤال التالي' : 'المرحلة الثالثة', () => roundMCQ(i + 1));
+    });
+  }
+
+  let tfSet = [];
+  function roundTF(i) {
+    if (i === 0) { setRound(2); tfSet = shuffle(TF); }
+    if (i >= tfSet.length) return finish();
+    const q = tfSet[i];
+    render(`
+      <div class="qmeta"><span class="eyebrow">المرحلة الثالثة · صح أم خطأ</span><span>${AR(i + 1)} / ${AR(tfSet.length)}</span></div>
+      <div class="card"><h2>${q.s}</h2></div>
+      <div class="opts tf" id="opts">
+        <button type="button" class="opt" data-v="1">صح ✓</button>
+        <button type="button" class="opt" data-v="0">خطأ ✗</button>
+      </div>
+      <div id="after"></div>`);
+    const btns = [...document.querySelectorAll('#opts .opt')];
+    btns.forEach(b => b.onclick = () => {
+      const pick = b.dataset.v === '1', ok = pick === q.v;
+      btns.forEach(x => { x.disabled = true; const v = x.dataset.v === '1'; if (v === q.v) x.classList.add('right'); else x.classList.add(x === b ? 'wrong' : 'dim'); });
+      if (ok) { S.got[2]++; setScore(S.score + PTS); sGood(); } else sBad();
+      progress(2, (i + 1) / tfSet.length);
+      feedback(ok, q.e, q.c, '', i + 1 < tfSet.length ? 'العبارة التالية' : 'النتيجة', () => roundTF(i + 1));
+    });
+  }
+
+  function feedback(ok, text, cite, extra, label, onNext) {
+    $('#after').innerHTML = `<div class="feedback ${ok ? 'ok' : 'no'}">
+        <span class="verdict">${ok ? 'إجابة صحيحة' : 'إجابة غير صحيحة'}</span>
+        <span>${text}</span>
+        <div class="row"><span class="cite">الدستور الكويتي · ${cite}</span>${extra ? `<span class="streak">${extra}</span>` : ''}</div>
+      </div>
+      <button class="btn" id="nx" type="button" style="margin-top:14px">${label}</button>`;
+    $('#nx').onclick = onNext; $('#nx').focus({ preventScroll: true });
+  }
+
+  function finish() {
+    setRound(-1);
+    const correct = S.got[0] + S.got[1] + S.got[2], total = STEPS.length + MCQ.length + TF.length;
+    const pct = correct / total;
+    const tier = pct >= .8 ? ['pass', 'مُعتمد', 'خبير دستوري'] : pct >= .5 ? ['mid', 'جيد', 'قريب من الاعتماد'] : ['fail', 'أعد المحاولة', 'تحتاج مراجعة'];
+    render(`
+      <span class="eyebrow">النتيجة النهائية</span>
+      <div class="result">
+        <div class="stamp ${tier[0]}" role="img" aria-label="${tier[1]}"><div><big>${tier[1]}</big><small>${tier[2]}</small></div></div>
+        <div style="display:flex;flex-direction:column;gap:10px;min-width:0">
+          <div class="score-big">${AR(S.score)} <span>نقطة</span></div>
+          <p class="lead">أجبت إجابة صحيحة عن ${AR(correct)} من ${AR(total)}. أعلى مجموع بدون أخطاء هو ${AR(MAX)} نقطة، وتضيف الإجابات المتتالية في المرحلة الثانية نقاطاً إضافية.</p>
+        </div>
+      </div>
+      <div class="breakdown">
+        <div>رتّب الخطوات<b>${AR(S.got[0])} / ${AR(STEPS.length)}</b></div>
+        <div>اختر الأصح<b>${AR(S.got[1])} / ${AR(MCQ.length)}</b></div>
+        <div>صح أم خطأ<b>${AR(S.got[2])} / ${AR(TF.length)}</b></div>
+      </div>
+      <div class="card" style="display:flex;flex-direction:column;gap:12px">
+        <h2>الخلاصة: كيف يُختار الوزراء؟</h2>
+        <ol class="recap">
+          <li>يجري الأمير المشاورات التقليدية، ثم يعيّن رئيس مجلس الوزراء بأمر أميري.</li>
+          <li>يرشّح رئيس مجلس الوزراء من يرى فيهم الثقة والكفاءة، من أعضاء مجلس الأمة ومن غيرهم.</li>
+          <li>تُرفع الأسماء إلى الأمير للموافقة، ويصدر بذلك مرسوم أميري.</li>
+          <li>يؤدي الوزراء اليمين أمام الأمير، ولا يزيد عددهم على ثلث أعضاء مجلس الأمة.</li>
+        </ol>
+        <p class="note">المرجع: دستور دولة الكويت لعام ١٩٦٢، المواد ٥٦ و٨٠ و٨٢ و١٢٥ و١٢٦.</p>
+      </div>
+      <div class="row"><button class="btn" id="again" type="button">العب مرة أخرى</button></div>
+      ${SKY}`);
+    $('#again').onclick = start;
+    if (pct >= .5) { sWin(); confetti(); }
+  }
+
+  // ---------- Confetti in the flag colors ----------
+  function confetti() {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const cv = $('#confetti'), c = cv.getContext('2d'), dpr = window.devicePixelRatio || 1;
+    const W = cv.width = innerWidth * dpr, H = cv.height = innerHeight * dpr;
+    const cols = ['#00753A', '#C8102E', '#FFFFFF', '#111111', '#E2B24A'];
+    const ps = Array.from({ length: 140 }, () => ({
+      x: Math.random() * W, y: -Math.random() * H * .5, vx: (Math.random() - .5) * 3 * dpr, vy: (2 + Math.random() * 3) * dpr,
+      r: (4 + Math.random() * 5) * dpr, a: Math.random() * 6, va: (Math.random() - .5) * .3, col: cols[Math.floor(Math.random() * cols.length)],
+    }));
+    let t = 0;
+    (function frame() {
+      c.clearRect(0, 0, W, H);
+      ps.forEach(p => { p.x += p.vx; p.y += p.vy; p.a += p.va;
+        c.save(); c.translate(p.x, p.y); c.rotate(p.a); c.fillStyle = p.col; c.strokeStyle = 'rgba(0,0,0,.15)';
+        c.fillRect(-p.r, -p.r / 2, p.r * 2, p.r); c.strokeRect(-p.r, -p.r / 2, p.r * 2, p.r); c.restore(); });
+      if (++t < 220) requestAnimationFrame(frame); else c.clearRect(0, 0, W, H);
+    })();
+  }
+
+  start();
+})();
+</script>
