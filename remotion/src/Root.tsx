@@ -9,6 +9,7 @@ import {episodes} from './ainews/episodes';
 import {AiNews2, episode2Frames} from './ainews2/AiNews2';
 import {ep01v2} from './ainews2/episodes/ep01';
 import {ep02v2} from './ainews2/episodes/ep02';
+import {ep04v2} from './ainews2/episodes/ep04';
 import {episodeFrames, FPS as AN_FPS, HEIGHT as AN_H, WIDTH as AN_W} from './ainews/types';
 
 export const RemotionRoot: React.FC = () => {
@@ -16,6 +17,8 @@ export const RemotionRoot: React.FC = () => {
     <>
       {/* أخبار أدوات الذكاء الاصطناعي — حلقة يومية: AiNews01 بالفويس أوفر، AiNews01Music موسيقى بس */}
       {/* الإصدار الثاني — ستايل الموشن جرافيك */}
+      <Composition id="AiNews04v2" component={AiNews2} durationInFrames={episode2Frames(ep04v2, true)} fps={30} width={1080} height={1920} defaultProps={{ep: ep04v2, voice: true}} />
+      <Composition id="AiNews04v2Music" component={AiNews2} durationInFrames={episode2Frames(ep04v2, false)} fps={30} width={1080} height={1920} defaultProps={{ep: ep04v2, voice: false}} />
       <Composition id="AiNews01v2" component={AiNews2} durationInFrames={episode2Frames(ep01v2, true)} fps={30} width={1080} height={1920} defaultProps={{ep: ep01v2, voice: true}} />
       <Composition id="AiNews02v2" component={AiNews2} durationInFrames={episode2Frames(ep02v2, true)} fps={30} width={1080} height={1920} defaultProps={{ep: ep02v2, voice: true}} />
       <Composition id="AiNews02v2Music" component={AiNews2} durationInFrames={episode2Frames(ep02v2, false)} fps={30} width={1080} height={1920} defaultProps={{ep: ep02v2, voice: false}} />
