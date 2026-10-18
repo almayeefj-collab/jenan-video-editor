@@ -6,7 +6,7 @@ import {C, type Episode2, episodeLayout, FPS, INSTAGRAM} from './types';
 const clamp = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
 
 // الختام: «علّق بكلمة ...» + خانة كومنت + تابعوني على الانستغرام
-const Outro: React.FC<{word?: string}> = ({word}) => {
+export const Outro: React.FC<{word?: string}> = ({word}) => {
   const f = useCurrentFrame();
   const {fps} = useVideoConfig();
   const q = (d: number) => spring({frame: f - d, fps, config: {damping: 12, stiffness: 130}});
