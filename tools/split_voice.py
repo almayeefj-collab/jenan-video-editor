@@ -12,7 +12,9 @@ import subprocess
 import sys
 from pathlib import Path
 
-CLEAN = 'highpass=f=90,afftdn=nr=18:nf=-50:tn=1,acompressor=threshold=-20dB:ratio=3:attack=10:release=150:makeup=2,loudnorm=I=-15:TP=-1.5:LRA=9'
+# arnndn = RNNoise (شبكة عصبية مدربة على الكلام): تشيل ضجة الخلفية وأصوات الناس البعيدة
+RNN = (Path(__file__).parent / 'models' / 'rnnoise-sh.rnnn').as_posix()
+CLEAN = f'arnndn=m={RNN}:mix=0.95,highpass=f=90,afftdn=nr=18:nf=-50:tn=1,acompressor=threshold=-20dB:ratio=3:attack=10:release=150:makeup=2,loudnorm=I=-15:TP=-1.5:LRA=9'
 
 
 def run(*args):
