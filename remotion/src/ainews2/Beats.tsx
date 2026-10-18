@@ -94,7 +94,7 @@ const Calendar: React.FC<{day: string; month: string}> = ({day, month}) => {
         <div style={{position: 'absolute', top: 140, left: 0, right: 0, display: 'flex', justifyContent: 'space-around', padding: '0 110px'}}>
           {[0, 1].map((i) => <div key={i} style={{width: 26, height: 26, borderRadius: 13, background: C.ink, marginTop: -13}} />)}
         </div>
-        <div style={{fontSize: 330, fontWeight: 1000, color: C.ink, textAlign: 'center', lineHeight: 1.25, fontFamily: 'Cairo'}}>{day}</div>
+        <div style={{fontSize: Math.min(330, Math.round(820 / Math.max(1, day.length))), fontWeight: 1000, color: C.ink, textAlign: 'center', lineHeight: 1.25, fontFamily: 'Cairo', direction: 'ltr', height: 420, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>{day}</div>
       </div>
     </div>
   );
