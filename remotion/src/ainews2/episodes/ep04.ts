@@ -8,28 +8,28 @@ import type {Episode2} from '../types';
 export const ep04v2: Episode2 = {
   number: 4,
   date: '١٨ أكتوبر ٢٠٢٦',
-  music: 'ainews/ep04/music.mp3',
-  intro: {tag: 'intro', beats: [
+  music: 'ainews/ep04/music-voice.mp3',
+  intro: {tag: 'intro', voice: 'ainews/ep04/v0.mp3', voiceDur: 5.31, beats: [
     {type: 'brand', look: 'dark', dur: 2.6, name: 'آخر أخبار أدوات الـ AI', chip: 'مع جنان المعييف'},
     {type: 'calendar', look: 'light', dur: 2.4, head: '*٤* أخبار اليوم', day: '18', month: 'أكتوبر 2026', foot: 'الحلقة *٤*'},
   ]},
   stories: [
-    {tag: 'Kling', beats: [
+    {tag: 'Kling', voice: 'ainews/ep04/v1.mp3', voiceDur: 11.26, beats: [
       {type: 'brand', look: 'dark', dur: 4.2, name: 'Kling', accent: '4.0', chip: 'موديل فيديو جديد'},
       {type: 'stat', look: 'light', dur: 4.2, head: 'لقطات *لين*', value: '30', unit: 'ثانية', foot: 'ويقبل *15* مرجع'},
     ]},
-    {tag: 'ChatGPT', beats: [
+    {tag: 'ChatGPT', voice: 'ainews/ep04/v2.mp3', voiceDur: 14.27, beats: [
       {type: 'doc', look: 'light', dur: 5.2, head: 'ChatGPT يسوي *Slides*', title: 'Slides', rows: ['من محادثة أو ملف', 'تعديل مع فريقك', 'تصدير PowerPoint']},
       {type: 'chips', look: 'coral', dur: 4.8, head: 'متوفر لمشتركي', chips: ['Pro', 'Business', 'Enterprise']},
     ]},
-    {tag: 'Grok', beats: [
+    {tag: 'Grok', voice: 'ainews/ep04/v3.mp3', voiceDur: 8.45, beats: [
       {type: 'phone', look: 'light', dur: 3.2, head: '*Grok Voice* 3.0', wave: true},
       {type: 'stat', look: 'dark', dur: 3.2, head: 'يرد بأقل من', value: '1', unit: 'ثانية'},
     ]},
-    {tag: 'DeepSeek', beats: [
+    {tag: 'DeepSeek', voice: 'ainews/ep04/v4.mp3', voiceDur: 10.41, beats: [
       {type: 'brand', look: 'dark', dur: 3.8, name: 'DeepSeek', accent: 'V4.1 Flash', chip: 'مفتوح المصدر · MIT'},
       {type: 'chips', look: 'light', dur: 3.6, head: 'يقبل *مليون* توكن', chips: ['بحث مباشر', 'مفتوح', 'MIT']},
     ]},
   ],
-  outro: {dur: 10, word: 'Slides'},
+  outro: {voice: 'ainews/ep04/v5.mp3', dur: 11.7, word: 'Slides'},
 };
