@@ -1,3 +1,4 @@
+import {COVERS, Cover} from './ainews2/Cover';
 import {Composition} from 'remotion';
 import {HelloJenan, helloJenanSchema} from './HelloJenan';
 import {FPS, HEIGHT, totalFrames, WIDTH} from './reel/config';
@@ -19,6 +20,10 @@ export const RemotionRoot: React.FC = () => {
     <>
       {/* أخبار أدوات الذكاء الاصطناعي — حلقة يومية: AiNews01 بالفويس أوفر، AiNews01Music موسيقى بس */}
       {/* الإصدار الثاني — ستايل الموشن جرافيك */}
+      {/* أغلفة الريلز: npx remotion still src/index.ts Cover05 out/cover-ep05.png --frame=89 */}
+      {Object.entries(COVERS).map(([k, p]) => (
+        <Composition key={k} id={`Cover${k}`} component={Cover} durationInFrames={90} fps={30} width={1080} height={1920} defaultProps={{...p, guides: false}} />
+      ))}
       <Composition id="AiNews05v2" component={Tutorial} durationInFrames={tutorialFrames(ep05, true)} fps={30} width={1080} height={1920} defaultProps={{ep: ep05, voice: true}} />
       <Composition id="AiNews05v2Music" component={Tutorial} durationInFrames={tutorialFrames(ep05, false)} fps={30} width={1080} height={1920} defaultProps={{ep: ep05, voice: false}} />
       <Composition id="AiNews04v2" component={AiNews2} durationInFrames={episode2Frames(ep04v2, true)} fps={30} width={1080} height={1920} defaultProps={{ep: ep04v2, voice: true}} />

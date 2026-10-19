@@ -76,3 +76,9 @@ python3 tools/split_voice.py <التسجيل> remotion/public/ainews/epNN/script
 
 #ذكاء_اصطناعي #الذكاء_الاصطناعي #AI #<أدوات الحلقة> #أدوات_الذكاء_الاصطناعي #تقنية #الكويت #الخليج
 ```
+
+## غلاف الريل
+
+أضف الحلقة في `COVERS` داخل `remotion/src/ainews2/Cover.tsx` (عنوان ≤ ٤ كلمات مع `*كلمة*` مرجانية + أسماء الأدوات)، ثم:
+`npx remotion still src/index.ts CoverNN out/cover-epNN.png --frame=89`.
+كل العناصر داخل المربع الآمن (y من 420 لين 1500) عشان ما تنقص في شبكة البروفايل (3:4) ولا تغطيها أزرار الريل.
