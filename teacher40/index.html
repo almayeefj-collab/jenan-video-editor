@@ -118,6 +118,7 @@ input.code{font-family:var(--f-mono);letter-spacing:.3em;text-align:center;direc
 .in{animation:rise .4s ease both}
 @keyframes rise{from{transform:translateY(8px);opacity:.3}to{transform:none;opacity:1}}
 .art{display:block;width:100%;height:auto;border-radius:16px}
+.art.photo{aspect-ratio:16/9;object-fit:cover;background:var(--panel-2)}
 .strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
 @media (max-width:760px){.strip{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .strip figure{margin:0;display:flex;flex-direction:column;gap:6px;min-width:0}
@@ -2536,7 +2537,16 @@ var qrcode = function() {
 <text x="160" y="100" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-weight="700" font-size="26" fill="#5FE0EC">AI</text>
 <g fill="#5FE0EC"><circle class="blink" cx="40" cy="40" r="8"/><circle class="blink" cx="40" cy="90" r="8"/><circle class="blink" cx="40" cy="140" r="8"/><circle class="blink" cx="280" cy="40" r="8"/><circle class="blink" cx="280" cy="90" r="8"/><circle class="blink" cx="280" cy="140" r="8"/></g>
 </svg>`];
-  const artNode=i=>{const d=document.createElement("div");d.innerHTML=ART[i];return d.firstElementChild};
+  // realistic stage photos (generated images hosted on the Higgsfield CDN); the drawings above are the fallback if a photo fails to load
+  const CDN="https://d8j0ntlcm91z4.cloudfront.net/user_3GsDi0wu7tA8JT936TNQ4zqCJ42/";
+  const PHOTOS=["hf_20261019_160252_4befc61c-8f2a-449a-80ce-a78890458656","hf_20261019_160251_418a1bdb-b5d2-4789-9d61-78540a20083d",
+    "hf_20261019_160252_af380795-0289-49d1-b302-1a01014196f5","hf_20261019_160252_84d7b406-eea9-4f54-8151-1c3fa80c8d25"];
+  const PHOTO_ALT=["قطار بخاري ومصنع بمداخن","خط إنتاج ومصابيح كهربائية","حاسوب وإنترنت في التسعينيات","شريحة ذكاء اصطناعي مضيئة"];
+  const photoUrl=i=>CDN+PHOTOS[i]+"_min.webp";
+  const svgNode=i=>{const d=document.createElement("div");d.innerHTML=ART[i];return d.firstElementChild};
+  const artNode=i=>{const img=document.createElement("img");img.className="art photo";img.alt=PHOTO_ALT[i];img.decoding="async";
+    let tried=false;img.onerror=()=>{if(!tried){tried=true;img.src=CDN+PHOTOS[i]+".png";return}img.replaceWith(svgNode(i))};img.src=photoUrl(i);return img};
+  const preloadPhotos=()=>PHOTOS.forEach((_,i)=>{const im=new Image();im.src=photoUrl(i)});
 
   /* ================= sound: generated music + effects ================= */
   const Sound={ctx:null,master:null,music:null,on:false,timer:null,step:0,next:0,level:.5,
@@ -2654,7 +2664,7 @@ var qrcode = function() {
       const codeIn=el("input",{type:"text",id:"pcode",class:"code",inputmode:"numeric",maxlength:"4",placeholder:"0000",value:P.code||""});
       const nameIn=el("input",{type:"text",id:"pname",maxlength:"30",placeholder:"مثال: أ. سارة",value:P.name||""});
       const msg=el("p",{class:"err"});
-      const go=()=>{Sound.init();Sound.resume();const c=codeIn.value.replace(/\D/g,""),n=nameIn.value.trim();if(c.length!==4){msg.textContent="اكتب رمز اللعبة المكوّن من 4 أرقام.";return codeIn.focus()}if(!n){msg.textContent="اكتب اسمك.";return nameIn.focus()}
+      const go=()=>{Sound.init();Sound.resume();preloadPhotos();const c=codeIn.value.replace(/\D/g,""),n=nameIn.value.trim();if(c.length!==4){msg.textContent="اكتب رمز اللعبة المكوّن من 4 أرقام.";return codeIn.focus()}if(!n){msg.textContent="اكتب اسمك.";return nameIn.focus()}
         P.code=c;P.name=n;saveP();pStatus="connecting";renderPlayer();connectHost()};
       nameIn.onkeydown=e=>{if(e.key==="Enter")go()};
       paint([top,el("div",{class:"card in"},[el("span",{class:"eyebrow",text:"أهلًا بك في التحدّي"}),el("h1",{text:"انضم إلى اللعبة"}),
@@ -2720,6 +2730,7 @@ var qrcode = function() {
   const gameMsg=()=>({t:"game",phase:H.phase,epoch:H.epoch});
   function broadcast(){for(const c of conns.keys())if(c.open)try{c.send(gameMsg())}catch(e){}}
   function startHost(){
+    preloadPhotos();
     if(hPeer)try{hPeer.destroy()}catch(e){}
     hStatus="connecting";renderHost();
     hPeer=new Peer(PREFIX+H.code,peerOpts());
