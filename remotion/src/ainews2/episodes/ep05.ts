@@ -1,9 +1,10 @@
-import {PROMPT, TASK, type TutorialEp} from '../Tutorial';
+import {TASK, type TutorialEp} from '../Tutorial';
 
 // الحلقة ٥ — ١٩ أكتوبر ٢٠٢٦ — حلقة شرح بشكل تسجيل شاشة (لابتوب + ماوس)
 // الخطوات والنصوص من إنفوجرافيك جنان (public/ainews/ep05/ref/): ١ ربط Canva، ٢ ملف Canva، ٣ رفع PDF، ٥ الجدولة
 // (الخطوة ٤ ما كانت في الصور، فالجدولة صارت الخطوة ٤ بالحلقة). السكربت: public/ainews/ep05/script.txt
-// الخطوة ٣ و ٤: الصوت مقطّع على جملها مع نفَس بينها، و clickAt = ثانية ما تقول جنان الكلمة (سكجولد، نيو تاسك، سيف تاسك...)
+// الخطوة ٣ و ٤: صوت جنان متصل بدون سكتات، كل شاشة على جملتها، و clickAt = ثانية ما تقول الكلمة (إرفاق، سكجولد، نيو تاسك، ويكلي، سيف تاسك)
+// الشاشات اللي ما قالتها بالصوت (ظهور الملفات، كتابة البرومبت، طريقة الإعداد) انشالت
 
 export const ep05: TutorialEp = {
   number: 5,
@@ -29,19 +30,16 @@ export const ep05: TutorialEp = {
       {screen: 'canvaFile', dur: 1.3, caption: 'تأكدي من محتوى الملف', to: [1470, 50], click: true, zoom: [960, 400, 1.35]},
       {screen: 'canvaShare', dur: 1.96, caption: 'انسخي رابط الملف (اختياري)', to: [1360, 240], click: true, zoom: [1250, 220, 1.7]},
     ]},
-    {head: 'رفع خطة المنهج والكتاب *PDF*', voice: 'ainews/ep05/v3.mp3', voiceDur: 8.93, shots: [
-      {screen: 'chat', dur: 5.8, clickAt: 5.5, caption: 'اضغطي على زر إرفاق الملفات', to: [445, 900], click: true, zoom: [700, 800, 1.6]},
-      {screen: 'attach', dur: 0.9, clickAt: 0.5, caption: 'اختاري Upload files', to: [600, 490], click: true, zoom: [700, 600, 1.6]},
-      {screen: 'uploaded', dur: 0.8, caption: 'تأكدي من ظهور الملفات في المحادثة', to: [900, 700], zoom: [960, 700, 1.5]},
-      {screen: 'prompt', dur: 1.63, caption: 'اكتبي التعليمات لـ Claude', type: PROMPT, to: [1460, 880], click: true, zoom: [960, 760, 1.5]},
+    {head: 'رفع خطة المنهج والكتاب *PDF*', voice: 'ainews/ep05/v3.mp3', voiceDur: 6.5, shots: [
+      {screen: 'chat', dur: 5.75, clickAt: 5.45, caption: 'اضغطي على زر إرفاق الملفات', to: [445, 900], click: true, zoom: [700, 800, 1.6]},
+      {screen: 'attach', dur: 0.95, clickAt: 0.35, caption: 'اختاري Upload files', to: [600, 490], click: true, zoom: [700, 600, 1.6]},
     ]},
-    {head: 'جدولة التحضير *الأسبوعي*', voice: 'ainews/ep05/v4.mp3', voiceDur: 15.0, shots: [
-      {screen: 'app', dur: 4.4, clickAt: 4.1, caption: 'من القائمة الجانبية اختاري Scheduled', to: [160, 420], click: true, zoom: [420, 450, 1.8]},
-      {screen: 'scheduled', dur: 1.8, clickAt: 1.3, caption: 'اضغطي New task', to: [965, 510], click: true, zoom: [965, 450, 1.6]},
-      {screen: 'newTask', dur: 0.8, clickAt: 0.5, caption: 'اختاري طريقة الإعداد', to: [850, 355], click: true, zoom: [880, 450, 1.4]},
-      {screen: 'repeat', dur: 3.4, clickAt: 0.7, caption: 'اختاري Weekly وحددي يوم الأحد والساعة', to: [530, 485], click: true, zoom: [820, 500, 1.4]},
-      {screen: 'details', dur: 2.7, caption: 'اكتبي التعليمات لـ Claude', type: TASK, to: [880, 600], zoom: [880, 520, 1.4]},
-      {screen: 'review', dur: 2.1, clickAt: 0.8, caption: 'راجعي التفاصيل واضغطي Save task', to: [880, 795], click: true, zoom: [880, 560, 1.4]},
+    {head: 'جدولة التحضير *الأسبوعي*', voice: 'ainews/ep05/v4.mp3', voiceDur: 11.66, shots: [
+      {screen: 'app', dur: 4.29, clickAt: 3.95, caption: 'من القائمة الجانبية اختاري Scheduled', to: [160, 420], click: true, zoom: [420, 450, 1.8]},
+      {screen: 'scheduled', dur: 1.24, clickAt: 0.9, caption: 'اضغطي New task', to: [965, 510], click: true, zoom: [965, 450, 1.6]},
+      {screen: 'repeat', dur: 3.46, clickAt: 0.66, caption: 'اختاري Weekly وحددي يوم الأحد والساعة', to: [530, 485], click: true, zoom: [820, 500, 1.4]},
+      {screen: 'details', dur: 1.43, caption: 'اكتبي التعليمات لـ Claude', type: TASK, to: [880, 600], zoom: [880, 520, 1.4]},
+      {screen: 'review', dur: 1.44, clickAt: 0.75, caption: 'راجعي التفاصيل واضغطي Save task', to: [880, 795], click: true, zoom: [880, 560, 1.4]},
     ]},
   ],
   final: {image: 'ainews/ep05/notification.jpg', head: 'وكل أحد *يوصلك* الإشعار', dur: 4.8, voice: 'ainews/ep05/v5.mp3', voiceDur: 4.37, dropAt: 1.5},
