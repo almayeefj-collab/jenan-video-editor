@@ -38,7 +38,7 @@ export type TutorialEp = {
   intro: {beats: Beat[]; voice?: string; voiceDur?: number};
   steps: TutStep[];
   // مشهد أخير: جوال ينزل فيه الإشعار الحقيقي (صورة من جوال جنان)
-  final?: {image: string; head: string; dur: number; voice?: string; voiceDur?: number};
+  final?: {image: string; head: string; dur: number; voice?: string; voiceDur?: number; dropAt?: number}; // dropAt: ثانية نزول الإشعار (لما تقول «يوصلك الإشعار»)
   outro: {voice?: string; dur: number; word?: string};
 };
 
@@ -438,11 +438,11 @@ const Laptop: React.FC<{laid: Laid[]; f: number}> = ({laid, f}) => {
 };
 
 // ───────── مشهد الإشعار ─────────
-const NotifyScene: React.FC<{image: string; head: string}> = ({image, head}) => {
+const NotifyScene: React.FC<{image: string; head: string; drop: number}> = ({image, head, drop: dropF}) => {
   const f = useCurrentFrame();
   const {fps} = useVideoConfig();
   const ph = spring({frame: f, fps, config: {damping: 14, stiffness: 100}});
-  const drop = spring({frame: f - 14, fps, config: {damping: 11, stiffness: 140}});
+  const drop = spring({frame: f - dropF, fps, config: {damping: 11, stiffness: 140}});
   const glow = 0.5 + 0.5 * Math.sin(f / 8);
   return (
     <AbsoluteFill>
@@ -521,6 +521,7 @@ const StepScene: React.FC<{ep: TutorialEp; laid: Laid[]; stepStarts: number[]}> 
 
 export const Tutorial: React.FC<{ep: TutorialEp; voice: boolean}> = ({ep, voice}) => {
   const {introBeats, laid, stepStarts, finalStart, outroStart, total} = layoutTutorial(ep, voice);
+  const dropF = ep.final ? Math.round((voice && ep.final.dropAt ? ep.final.dropAt : 0.47) * FPS) : 0;
   const {fps} = useVideoConfig();
   const bed = voice ? 0.12 : 0.5;
   let t = 0;
@@ -542,9 +543,9 @@ export const Tutorial: React.FC<{ep: TutorialEp; voice: boolean}> = ({ep, voice}
       </Sequence>
       {ep.final ? (
         <Sequence from={finalStart} durationInFrames={outroStart - finalStart}>
-          <NotifyScene image={ep.final.image} head={ep.final.head} />
-          <Sequence from={16} layout="none"><Audio src={staticFile('sfx/notify.wav')} volume={0.9} /></Sequence>
-          <Sequence from={40} layout="none"><Audio src={staticFile('sfx/notify.wav')} volume={0.75} /></Sequence>
+          <NotifyScene image={ep.final.image} head={ep.final.head} drop={dropF} />
+          <Sequence from={dropF + 2} layout="none"><Audio src={staticFile('sfx/notify.wav')} volume={0.9} /></Sequence>
+          <Sequence from={dropF + 26} layout="none"><Audio src={staticFile('sfx/notify.wav')} volume={0.75} /></Sequence>
           <Audio src={staticFile('sfx/whoosh.wav')} volume={0.4} />
           {voice && ep.final.voice ? <Sequence from={4}><Audio src={staticFile(ep.final.voice)} /></Sequence> : null}
         </Sequence>
