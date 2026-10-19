@@ -43,6 +43,6 @@ export const ep05: TutorialEp = {
       {screen: 'review', dur: 2.04, clickAt: 1.43, caption: 'راجعي التفاصيل واضغطي Save task', to: [880, 795], click: true, zoom: [880, 560, 1.4]},
     ]},
   ],
-  final: {image: 'ainews/ep05/notification.jpg', head: 'وكل أحد *يوصلك* الإشعار', dur: 6.4, voice: 'ainews/ep05/v5.mp3', voiceDur: 6.02, dropAt: 1.5},
+  final: {image: 'ainews/ep05/notification.jpg', head: 'وكل أحد *يوصلك* الإشعار', dur: 9.7, voice: 'ainews/ep05/v5.mp3', voiceDur: 9.26, dropAt: 1.0},
   outro: {voice: 'ainews/ep05/v6.mp3', dur: 8.5, word: 'تحضير'},
 };
