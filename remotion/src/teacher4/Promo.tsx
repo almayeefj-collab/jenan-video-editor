@@ -24,17 +24,17 @@ type Pair = {
 
 const PAIRS: Pair[] = [
   {step: 1, year: 1784, from: 1700, accent: GOLD,
-    ind: {img: 'teacher4/clips/c1.mp4', label: 'الثورة الصناعية الأولى', title: 'البخار', line: 'الآلة تعمل بدل اليد'},
-    tch: {img: 'teacher4/clips/c5.mp4', title: 'ناقل المعرفة', line: 'سبورة وطباشير… والطالب يحفظ'}},
+    ind: {img: 'teacher4/clips/s1.mp4', label: 'الثورة الصناعية الأولى', title: 'البخار', line: 'الآلة تعمل بدل اليد'},
+    tch: {img: 'teacher4/clips/s5.mp4', title: 'ناقل المعرفة', line: 'سبورة وطباشير… والطالب يحفظ'}},
   {step: 2, year: 1870, from: 1784, accent: '#F2C94C',
-    ind: {img: 'teacher4/clips/c2.mp4', label: 'الثورة الصناعية الثانية', title: 'الكهرباء', line: 'خطوط إنتاج ضخمة'},
-    tch: {img: 'teacher4/clips/c6.mp4', title: 'مستخدم الوسائل', line: 'جهاز العرض والصوت والصورة'}},
+    ind: {img: 'teacher4/clips/s2.mp4', label: 'الثورة الصناعية الثانية', title: 'الكهرباء', line: 'خطوط إنتاج ضخمة'},
+    tch: {img: 'teacher4/clips/s6.mp4', title: 'مستخدم الوسائل', line: 'جهاز العرض والصوت والصورة'}},
   {step: 3, year: 1969, from: 1870, accent: '#6B9BFF',
-    ind: {img: 'teacher4/clips/c3.mp4', label: 'الثورة الصناعية الثالثة', title: 'الحاسوب', line: 'الأتمتة والمعلومات'},
-    tch: {img: 'teacher4/clips/c7.mp4', title: 'المعلم الرقمي', line: 'سبورة تفاعلية ومنصات وإنترنت'}},
+    ind: {img: 'teacher4/clips/s3.mp4', label: 'الثورة الصناعية الثالثة', title: 'الحاسوب', line: 'الأتمتة والمعلومات'},
+    tch: {img: 'teacher4/clips/s7.mp4', title: 'المعلم الرقمي', line: 'سبورة تفاعلية ومنصات وإنترنت'}},
   {step: 4, year: null, from: 1969, accent: CYAN,
-    ind: {img: 'teacher4/clips/c4.mp4', label: 'الثورة الصناعية الرابعة', title: 'الذكاء الاصطناعي', line: 'آلات تتعلّم وتقرّر'},
-    tch: {img: 'teacher4/clips/c8.mp4', title: 'المصمّم والقائد', line: 'يقود التقنية… ولا تقوده'}},
+    ind: {img: 'teacher4/clips/s4.mp4', label: 'الثورة الصناعية الرابعة', title: 'الذكاء الاصطناعي', line: 'آلات تتعلّم وتقرّر'},
+    tch: {img: 'teacher4/clips/s8.mp4', title: 'المصمّم والقائد', line: 'يقود التقنية… ولا تقوده'}},
 ];
 
 type Scene = {kind: 'hook' | 'intro' | 'answer' | 'qualities' | 'outro'; sec: number} | {kind: 'pair'; pair: Pair; sec: number};
@@ -57,16 +57,20 @@ const useReveal = (delay: number, dur = 16, dy = 40) => {
 };
 const useExit = (total: number) => interpolate(useCurrentFrame(), [total - T - 10, total - T + 2], [1, 0], clamp);
 
-// مقطع فيديو متحرك (مولّد بـ Kling، 5 ثواني) يُبطّأ ليغطي المشهد، مع اقتراب بطيء
+// مقطع فيديو متحرك (مولّد بـ Kling، 5 ثواني) يُبطّأ ليغطي ظهوره في المشهد، مع اقتراب بطيء.
+// المقاطع sN.mp4 هي cN.mp4 بعد رفعها لـ 60 إطار بالـ motion interpolation عشان البطء يبان ناعم:
+//   ffmpeg -i cN.mp4 -vf "minterpolate=fps=60:mi_mode=mci:mc_mode=aobmc:me_mode=bidir:vsbmc=1" -crf 16 -an sN.mp4
 const CLIP_SEC = 5;
-const Ken: React.FC<{src: string; total: number; dir?: 1 | -1; grade?: string; blur?: number}> = ({src, total, dir = 1, grade, blur = 0}) => {
+const Ken: React.FC<{src: string; total: number; dir?: 1 | -1; grade?: string; blur?: number; from?: number}> = ({src, total, dir = 1, grade, blur = 0, from = 0}) => {
   const f = useCurrentFrame();
   const s = interpolate(f, [0, total], [1.02, 1.1]);
   const x = interpolate(f, [0, total], [0, 1 * dir]);
-  const rate = Math.min(1, (CLIP_SEC * PROMO_FPS - 2) / total);
+  const rate = Math.min(1, (CLIP_SEC * PROMO_FPS - 3) / (total - from));
   return (
     <AbsoluteFill style={{overflow: 'hidden', background: INK}}>
-      <OffthreadVideo src={staticFile(src)} muted playbackRate={rate} style={{width: '100%', height: '100%', objectFit: 'cover', transform: `scale(${s}) translateX(${x}%)`, filter: `${grade ?? ''} blur(${blur}px)`}} />
+      <Sequence from={from} layout="none">
+        <OffthreadVideo src={staticFile(src)} muted playbackRate={rate} style={{width: '100%', height: '100%', objectFit: 'cover', transform: `scale(${s}) translateX(${x}%)`, filter: `${grade ?? ''} blur(${blur}px)`}} />
+      </Sequence>
     </AbsoluteFill>
   );
 };
@@ -246,7 +250,7 @@ const PairScene: React.FC<{p: Pair; total: number}> = ({p, total}) => {
       {/* المعلم: يدخل من اليسار */}
       <div style={{position: 'absolute', top: 0, left: 0, width: 960, height: 1080, overflow: 'hidden', transform: `translateX(${interpolate(sp, [0, 1], [-960, 0])}px)`}}>
         <div style={{position: 'absolute', top: 0, left: -480, width: 1920, height: 1080}}>
-          <Ken src={p.tch.img} total={total} grade={p.step === 1 ? 'sepia(0.25) contrast(1.08)' : 'contrast(1.08) saturate(1.12)'} />
+          <Ken src={p.tch.img} total={total} from={SPLIT - 6} grade={p.step === 1 ? 'sepia(0.25) contrast(1.08)' : 'contrast(1.08) saturate(1.12)'} />
         </div>
         <AbsoluteFill style={{background: 'linear-gradient(to top, rgba(4,8,18,0.92), rgba(4,8,18,0.1) 55%)'}} />
         <div style={{position: 'absolute', bottom: 140, right: 70, left: 60, opacity: exit}}>
@@ -340,7 +344,7 @@ const Qualities: React.FC<{total: number}> = ({total}) => {
   ];
   return (
     <AbsoluteFill style={{direction: 'rtl'}}>
-      <Ken src="teacher4/clips/c8.mp4" total={total} blur={8} grade="brightness(0.45) saturate(1.2)" />
+      <Ken src="teacher4/clips/s8.mp4" total={total} blur={8} grade="brightness(0.45) saturate(1.2)" />
       <AbsoluteFill style={{background: 'linear-gradient(to bottom, rgba(6,11,22,0.6), rgba(6,11,22,0.85))'}} />
       <AbsoluteFill style={{alignItems: 'center', justifyContent: 'center', gap: 60, opacity: exit}}>
         <div style={{fontFamily, fontSize: 84, fontWeight: 900, color: '#fff', ...useReveal(2)}}>
@@ -375,7 +379,7 @@ const Outro: React.FC<{total: number}> = ({total}) => {
   const fadeOut = interpolate(f, [total - 30, total], [0, 1], clamp);
   return (
     <AbsoluteFill style={{direction: 'rtl'}}>
-      <Ken src="teacher4/clips/c9.mp4" total={total} dir={-1} grade="contrast(1.06) saturate(1.12)" />
+      <Ken src="teacher4/clips/s9.mp4" total={total} dir={-1} grade="contrast(1.06) saturate(1.12)" />
       <AbsoluteFill style={{background: 'linear-gradient(to left, rgba(4,8,18,0.92), rgba(4,8,18,0.55) 45%, transparent 75%)'}} />
       <Particles color={GOLD} n={26} />
       <AbsoluteFill style={{justifyContent: 'center', paddingRight: 130}}>
