@@ -28,13 +28,13 @@ export const ep05: TutorialEp = {
       {screen: 'canvaFile', dur: 3, caption: 'تأكدي من محتوى الملف', to: [1470, 50], click: true, zoom: [960, 400, 1.35]},
       {screen: 'canvaShare', dur: 2.8, caption: 'انسخي رابط الملف (اختياري)', to: [1360, 240], click: true, zoom: [1250, 220, 1.7]},
     ]},
-    {head: 'رفع خطة المنهج والكتاب *PDF*', voice: 'ainews/ep05/v3.mp3', voiceDur: 8.76, shots: [
+    {head: 'رفع خطة المنهج والكتاب *PDF*', voice: 'ainews/ep05/v3.mp3', voiceDur: 6.52, shots: [
       {screen: 'chat', dur: 2.6, caption: 'اضغطي على زر إرفاق الملفات', to: [445, 900], click: true, zoom: [700, 800, 1.6]},
       {screen: 'attach', dur: 2.4, caption: 'اختاري Upload files', to: [600, 490], click: true, zoom: [700, 600, 1.6]},
       {screen: 'uploaded', dur: 2.6, caption: 'تأكدي من ظهور الملفات في المحادثة', to: [900, 700], zoom: [960, 700, 1.5]},
       {screen: 'prompt', dur: 5, caption: 'اكتبي التعليمات لـ Claude', type: PROMPT, to: [1460, 880], click: true, zoom: [960, 760, 1.5]},
     ]},
-    {head: 'جدولة التحضير *الأسبوعي*', voice: 'ainews/ep05/v4.mp3', voiceDur: 9.46, shots: [
+    {head: 'جدولة التحضير *الأسبوعي*', voice: 'ainews/ep05/v4.mp3', voiceDur: 11.7, shots: [
       {screen: 'app', dur: 2.4, caption: 'من القائمة الجانبية اختاري Scheduled', to: [160, 420], click: true, zoom: [420, 450, 1.8]},
       {screen: 'scheduled', dur: 2.6, caption: 'اضغطي New task', to: [965, 510], click: true, zoom: [965, 450, 1.6]},
       {screen: 'newTask', dur: 2.6, caption: 'اختاري طريقة الإعداد', to: [850, 355], click: true, zoom: [880, 450, 1.4]},
