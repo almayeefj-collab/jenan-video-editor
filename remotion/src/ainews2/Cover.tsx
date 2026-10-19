@@ -64,6 +64,7 @@ export const Cover: React.FC<CoverProps & {guides?: boolean}> = ({number, title,
 export const COVERS: Record<string, CoverProps> = {
   '01': {number: 1, title: '*GPT-6* وصل', tools: ['ChatGPT', 'Gemini 4']},
   '02': {number: 2, title: 'صوت ChatGPT *الجديد*', tools: ['ChatGPT', 'Claude', 'Manus', 'Meta']},
+  '03': {number: 3, title: 'Shortcuts يذكّرك *بالبصمة*', tools: ['Shortcuts', 'تطبيق وزارة التربية'], tag: 'تذكير بصمة التواجد'},
   '04': {number: 4, title: 'ChatGPT يسوي *Slides*', tools: ['Kling 4.0', 'Grok', 'DeepSeek']},
   '05': {number: 5, title: 'Claude يحضّر *دروسك*', tools: ['Claude', 'Canva'], tag: 'شرح خطوة بخطوة'},
 };
