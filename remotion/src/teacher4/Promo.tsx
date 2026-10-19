@@ -34,7 +34,7 @@ const PAIRS: Pair[] = [
     tch: {img: 'teacher4/clips/s7.mp4', title: 'المعلم الرقمي', line: 'سبورة تفاعلية ومنصات وإنترنت'}},
   {step: 4, year: null, from: 1969, accent: CYAN,
     ind: {img: 'teacher4/clips/s4.mp4', label: 'الثورة الصناعية الرابعة', title: 'الذكاء الاصطناعي', line: 'آلات تتعلّم وتقرّر'},
-    tch: {img: 'teacher4/clips/s8.mp4', title: 'المصمّم والقائد', line: 'يقود التقنية… ولا تقوده'}},
+    tch: {img: 'teacher4/clips/s10.mp4', title: 'معه مساعد ذكي', line: 'يحضّر ويصحّح… والمعلم يتفرّغ لطلابه'}},
 ];
 
 type Scene = {kind: 'hook' | 'intro' | 'answer' | 'qualities' | 'outro'; sec: number} | {kind: 'pair'; pair: Pair; sec: number};
@@ -220,6 +220,39 @@ const Hud: React.FC<{color: string}> = ({color}) => {
   );
 };
 
+// إشعارات «المساعد الذكي» تنزل على لابتوب المعلم (المعلم 4.0 = الذكاء الاصطناعي مساعد شخصي، مو روبوت)
+const NOTES: [string, string][] = [
+  ['تحضير درس الغد جاهز ✓', 'خطة الدرس + 3 أنشطة حسب مستوى كل طالب'],
+  ['تم تصحيح الاختبار القصير', '3 طلاب يحتاجون دعمًا في الكسور… جهّزت لهم تمارين'],
+];
+const Notifications: React.FC<{at: number; exit: number}> = ({at, exit}) => {
+  const f = useCurrentFrame();
+  const {fps} = useVideoConfig();
+  return (
+    <div style={{position: 'absolute', top: 54, left: 44, width: 600, display: 'flex', flexDirection: 'column', gap: 16, direction: 'rtl', opacity: exit}}>
+      {NOTES.map(([title, body], i) => {
+        const sp = spring({frame: f - at - i * 50, fps, config: {damping: 15, mass: 0.8}});
+        return (
+          <div key={i} style={{
+            display: 'flex', gap: 18, alignItems: 'center', padding: '18px 22px', borderRadius: 26,
+            background: 'rgba(250,251,255,0.92)', boxShadow: '0 18px 40px -12px rgba(0,0,0,0.55)', backdropFilter: 'blur(12px)',
+            opacity: sp, transform: `translateY(${interpolate(sp, [0, 1], [-70, 0])}px) scale(${interpolate(sp, [0, 1], [0.92, 1])})`,
+          }}>
+            <div style={{width: 64, height: 64, flexShrink: 0, borderRadius: 16, display: 'grid', placeItems: 'center', fontSize: 34, background: 'linear-gradient(135deg, #6A4DF4, #22D3EE)'}}>✨</div>
+            <div style={{flex: 1, minWidth: 0}}>
+              <div style={{display: 'flex', justifyContent: 'space-between', fontFamily, fontSize: 22, color: '#6B7393', fontWeight: 600}}>
+                <span>المساعد الذكي</span><span>الآن</span>
+              </div>
+              <div style={{fontFamily, fontSize: 32, fontWeight: 800, color: '#141B3D', lineHeight: 1.3}}>{title}</div>
+              <div style={{fontFamily, fontSize: 24, fontWeight: 500, color: '#3D4566', lineHeight: 1.35}}>{body}</div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
 const PairScene: React.FC<{p: Pair; total: number}> = ({p, total}) => {
   const f = useCurrentFrame();
   const {fps} = useVideoConfig();
@@ -271,14 +304,14 @@ const PairScene: React.FC<{p: Pair; total: number}> = ({p, total}) => {
       }}>
         <Glitch size={70} color={p.accent} font={numberFamily} on={ai && f % 40 < 6}>{`${p.step}.0`}</Glitch>
       </div>
-      {ai ? <Hud color={CYAN} /> : null}
-      {ai ? <Particles color={CYAN} n={36} /> : null}
+      {ai ? <Notifications at={SPLIT + 40} exit={exit} /> : null}
       <div style={{opacity: exit}}><Steps step={p.step} accent={p.accent} /></div>
       {sfx('cinematic-boom.wav', 2, 0.4)}
       {Array.from({length: 8}, (_, i) => sfx('tick.wav', 8 + i * 5, 0.25, 4))}
       {sfx('swoosh-up.wav', SPLIT, 0.5)}
       {sfx('impact.wav', SPLIT + 18, 0.45)}
-      {ai ? sfx('shimmer.wav', SPLIT + 30, 0.35) : null}
+      {ai ? sfx('pop.wav', SPLIT + 40, 0.5) : null}
+      {ai ? sfx('pop.wav', SPLIT + 90, 0.5) : null}
     </AbsoluteFill>
   );
 };
@@ -344,7 +377,7 @@ const Qualities: React.FC<{total: number}> = ({total}) => {
   ];
   return (
     <AbsoluteFill style={{direction: 'rtl'}}>
-      <Ken src="teacher4/clips/s8.mp4" total={total} blur={8} grade="brightness(0.45) saturate(1.2)" />
+      <Ken src="teacher4/clips/s11.mp4" total={total} blur={8} grade="brightness(0.45) saturate(1.2)" />
       <AbsoluteFill style={{background: 'linear-gradient(to bottom, rgba(6,11,22,0.6), rgba(6,11,22,0.85))'}} />
       <AbsoluteFill style={{alignItems: 'center', justifyContent: 'center', gap: 60, opacity: exit}}>
         <div style={{fontFamily, fontSize: 84, fontWeight: 900, color: '#fff', ...useReveal(2)}}>
