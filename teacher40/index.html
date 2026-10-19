@@ -11,7 +11,7 @@
 /* Layout: two faces of one page. Host = projector dashboard (lobby with join code → race lanes + leaderboard → podium). Player = phone-first single column (code + name → wait → four stages → finish). */
 :root{
   color-scheme:dark;
-  --space:#0A0F2C; --panel:#141B45; --panel-2:#1C2558; --ink:#EEF1FF; --muted:#A2AAD6; --line:#2C3670;
+  --space:#1B2556; --panel:#26326E; --panel-2:#303D80; --ink:#F2F4FF; --muted:#BAC2E8; --line:#46549A;
   --sun:#FFB547; --sun-ink:#1F1300; --good:#4FD69C; --bad:#FF6B7A;
   --p1:#D08455; --p2:#F2C94C; --p3:#6B9BFF; --p4:#5FE0EC;
   --f-display:"Reem Kufi","IBM Plex Sans Arabic",system-ui,sans-serif;
@@ -20,7 +20,7 @@
 }
 *{box-sizing:border-box}
 html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-body{margin:0;background:radial-gradient(1200px 600px at 50% -10%,#1B2560 0%,transparent 70%) fixed,var(--space);color:var(--ink);font-family:var(--f-body);font-size:clamp(16px,1.5vw,20px);line-height:1.65;min-height:100vh}
+body{margin:0;background:radial-gradient(1200px 600px at 50% -10%,#3A4AA0 0%,transparent 70%) fixed,var(--space);color:var(--ink);font-family:var(--f-body);font-size:clamp(16px,1.5vw,20px);line-height:1.65;min-height:100vh}
 .wrap{max-width:1180px;margin:0 auto;padding-inline:clamp(16px,3.5vw,44px);padding-block:20px 48px;display:flex;flex-direction:column;gap:20px}
 .wrap.narrow{max-width:640px}
 h1,h2,h3{margin:0;line-height:1.3;text-wrap:balance}
@@ -2567,7 +2567,7 @@ var qrcode = function() {
     "hf_20261019_160252_af380795-0289-49d1-b302-1a01014196f5","hf_20261019_160252_84d7b406-eea9-4f54-8151-1c3fa80c8d25"];
   const PHOTO_ALT=["قطار بخاري ومصنع بمداخن","خط إنتاج ومصابيح كهربائية","حاسوب وإنترنت في التسعينيات","شريحة ذكاء اصطناعي مضيئة"];
   const photoUrl=i=>CDN+PHOTOS[i]+"_min.webp";
-  const svgNode=i=>{const d=document.createElement("div");d.innerHTML=ART[i];return d.firstElementChild};
+  const svgNode=i=>{const d=document.createElement("div");d.innerHTML=ART[i];const g=d.firstElementChild;g.setAttribute("preserveAspectRatio","xMidYMid slice");return g};
   const artNode=i=>{const img=document.createElement("img");img.className="art photo";img.alt=PHOTO_ALT[i];img.decoding="async";
     let tried=false;img.onerror=()=>{if(!tried){tried=true;img.src=CDN+PHOTOS[i]+".png";return}img.replaceWith(svgNode(i))};img.src=photoUrl(i);return img};
   const preloadPhotos=()=>PHOTOS.forEach((_,i)=>{const im=new Image();im.src=photoUrl(i)});
