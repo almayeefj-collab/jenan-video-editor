@@ -16,10 +16,10 @@ export const Outro: React.FC<{word?: string}> = ({word}) => {
       <Backdrop look="light" />
       {word ? (
         <>
-          <div style={{position: 'absolute', top: 230, left: 40, right: 40}}><Kinetic text="علّق بكلمة" look="light" size={96} /></div>
-          <div style={{position: 'absolute', top: 360, width: '100%', textAlign: 'center', fontSize: Math.min(230, Math.round(1500 / Math.max(1, word.length))), fontWeight: 1000, color: C.coral,
+          <div style={{position: 'absolute', top: 170, left: 40, right: 40}}><Kinetic text="علّق بكلمة" look="light" size={96} /></div>
+          <div style={{position: 'absolute', top: 300, width: '100%', textAlign: 'center', lineHeight: 1.2, fontSize: Math.min(230, Math.round(1500 / Math.max(1, word.length))), fontWeight: 1000, color: C.coral,
             transform: `scale(${q(10)})`}}>{word}</div>
-          <div style={{position: 'absolute', top: 700, left: 90, right: 90, height: 120, borderRadius: 60, background: C.paper, display: 'flex', alignItems: 'center',
+          <div style={{position: 'absolute', top: 650, left: 90, right: 90, height: 120, borderRadius: 60, background: C.paper, display: 'flex', alignItems: 'center',
             justifyContent: 'space-between', padding: '0 26px', boxShadow: '0 20px 50px rgba(40,25,20,0.18)', opacity: q(20)}}>
             <Spark size={70} />
             <span style={{flex: 1, fontSize: 50, fontWeight: 800, padding: '0 24px'}}>{typed}<span style={{opacity: f % 20 < 10 ? 1 : 0}}>|</span></span>
@@ -30,11 +30,11 @@ export const Outro: React.FC<{word?: string}> = ({word}) => {
         </>
       ) : null}
       {!word ? <div style={{position: 'absolute', top: 300, left: 40, right: 40}}><Kinetic text="تبون الأخبار *أول بأول؟*" look="light" size={100} /></div> : null}
-      <div style={{position: 'absolute', top: word ? 860 : 560, width: '100%', textAlign: 'center', fontSize: 64, fontWeight: 900, opacity: q(24)}}>
+      <div style={{position: 'absolute', top: word ? 830 : 560, width: '100%', textAlign: 'center', fontSize: 64, fontWeight: 900, opacity: q(24)}}>
         تابعوني على الانستغرام
       </div>
       {/* صورة جنان: دائرة مرجانية وراها، وتطلع من تحت */}
-      <div style={{position: 'absolute', top: word ? 1000 : 720, left: 0, right: 0, height: 760, display: 'flex', justifyContent: 'center'}}>
+      <div style={{position: 'absolute', top: word ? 960 : 720, left: 0, right: 0, height: 760, display: 'flex', justifyContent: 'center'}}>
         <div style={{position: 'absolute', top: 30, width: 560, height: 560, borderRadius: '50%', background: C.coral, transform: `scale(${q(26)})`,
           boxShadow: '0 30px 70px rgba(232,115,90,0.4)'}} />
         <Img src={staticFile('ainews/brand/jenan.png')} style={{position: 'absolute', top: 0, height: 760,
