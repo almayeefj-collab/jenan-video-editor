@@ -1,0 +1,30 @@
+# Downloads the media listed in media/fetch-list.txt ("<url> <path>" per line) and commits it to the branch.
+# Exists because the cloud editing environment cannot reach the AI-generation CDNs directly.
+# Runs only when media/fetch-list.txt changes.
+name: fetch-media
+on:
+  push:
+    paths: ['media/fetch-list.txt']
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download
+        run: |
+          while read -r url path; do
+            [ -z "$url" ] && continue
+            case "$path" in remotion/public/*|media/*) ;; *) echo "skip $path"; continue;; esac
+            mkdir -p "$(dirname "$path")"
+            curl -fsSL --retry 3 -o "$path" "$url"
+            ls -la "$path"
+          done < media/fetch-list.txt
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add -A media remotion/public
+          git commit -m "Fetch generated media" || exit 0
+          git push
