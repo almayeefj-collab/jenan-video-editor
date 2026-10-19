@@ -222,29 +222,29 @@ const Hud: React.FC<{color: string}> = ({color}) => {
 
 // إشعارات «المساعد الذكي» تنزل على لابتوب المعلم (المعلم 4.0 = الذكاء الاصطناعي مساعد شخصي، مو روبوت)
 const NOTES: [string, string][] = [
-  ['تحضير درس الغد جاهز ✓', 'خطة الدرس + 3 أنشطة حسب مستوى كل طالب'],
-  ['تم تصحيح الاختبار القصير', '3 طلاب يحتاجون دعمًا في الكسور… جهّزت لهم تمارين'],
+  ['تحضير درس الغد جاهز ✓', 'خطة الدرس + أنشطة لكل مستوى'],
+  ['تم تصحيح الاختبار القصير', '3 طلاب يحتاجون دعمًا… جهّزت لهم تمارين'],
 ];
 const Notifications: React.FC<{at: number; exit: number}> = ({at, exit}) => {
   const f = useCurrentFrame();
   const {fps} = useVideoConfig();
   return (
-    <div style={{position: 'absolute', top: 54, left: 44, width: 600, display: 'flex', flexDirection: 'column', gap: 16, direction: 'rtl', opacity: exit}}>
+    <div style={{position: 'absolute', top: 50, left: 530, width: 400, display: 'flex', flexDirection: 'column', gap: 14, direction: 'rtl', opacity: exit}}>
       {NOTES.map(([title, body], i) => {
         const sp = spring({frame: f - at - i * 50, fps, config: {damping: 15, mass: 0.8}});
         return (
           <div key={i} style={{
-            display: 'flex', gap: 18, alignItems: 'center', padding: '18px 22px', borderRadius: 26,
+            display: 'flex', gap: 14, alignItems: 'center', padding: '14px 16px', borderRadius: 22,
             background: 'rgba(250,251,255,0.92)', boxShadow: '0 18px 40px -12px rgba(0,0,0,0.55)', backdropFilter: 'blur(12px)',
             opacity: sp, transform: `translateY(${interpolate(sp, [0, 1], [-70, 0])}px) scale(${interpolate(sp, [0, 1], [0.92, 1])})`,
           }}>
-            <div style={{width: 64, height: 64, flexShrink: 0, borderRadius: 16, display: 'grid', placeItems: 'center', fontSize: 34, background: 'linear-gradient(135deg, #6A4DF4, #22D3EE)'}}>✨</div>
+            <div style={{width: 52, height: 52, flexShrink: 0, borderRadius: 14, display: 'grid', placeItems: 'center', fontSize: 28, background: 'linear-gradient(135deg, #6A4DF4, #22D3EE)'}}>✨</div>
             <div style={{flex: 1, minWidth: 0}}>
-              <div style={{display: 'flex', justifyContent: 'space-between', fontFamily, fontSize: 22, color: '#6B7393', fontWeight: 600}}>
+              <div style={{display: 'flex', justifyContent: 'space-between', fontFamily, fontSize: 18, color: '#6B7393', fontWeight: 600}}>
                 <span>المساعد الذكي</span><span>الآن</span>
               </div>
-              <div style={{fontFamily, fontSize: 32, fontWeight: 800, color: '#141B3D', lineHeight: 1.3}}>{title}</div>
-              <div style={{fontFamily, fontSize: 24, fontWeight: 500, color: '#3D4566', lineHeight: 1.35}}>{body}</div>
+              <div style={{fontFamily, fontSize: 26, fontWeight: 800, color: '#141B3D', lineHeight: 1.3}}>{title}</div>
+              <div style={{fontFamily, fontSize: 19, fontWeight: 500, color: '#3D4566', lineHeight: 1.4}}>{body}</div>
             </div>
           </div>
         );
