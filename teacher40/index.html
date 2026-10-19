@@ -119,6 +119,30 @@ input.code{font-family:var(--f-mono);letter-spacing:.3em;text-align:center;direc
 @keyframes rise{from{transform:translateY(8px);opacity:.3}to{transform:none;opacity:1}}
 .art{display:block;width:100%;height:auto;border-radius:16px}
 .art.photo{aspect-ratio:16/9;object-fit:cover;background:var(--panel-2)}
+/* player: all four photos together */
+.collage{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;border-radius:20px;overflow:hidden}
+.tile{position:relative;min-width:0;margin:0}
+.tile .art{border-radius:0;width:100%;height:100%;aspect-ratio:4/3;object-fit:cover}
+.tile::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(6,9,30,.85),rgba(6,9,30,0) 60%)}
+.tile figcaption{position:absolute;inset-inline:10px;bottom:8px;z-index:1;display:flex;flex-direction:column;line-height:1.25}
+.tile figcaption b{font-family:var(--f-mono);font-size:1.15em;color:var(--c)}
+.tile figcaption span{font-size:.75em;color:#EEF1FF}
+.tile .tick{position:absolute;top:8px;inset-inline-start:8px;z-index:1;width:26px;height:26px;border-radius:50%;background:var(--good);color:#06221A;display:grid;place-items:center;font-weight:700;font-size:.85em}
+.journey{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;align-items:end}
+.jstep{position:relative;border-radius:12px;overflow:hidden;border:2px solid transparent;transition:transform .3s}
+.jstep .art{border-radius:0;aspect-ratio:1/1;object-fit:cover}
+.jstep b{position:absolute;bottom:4px;inset-inline:0;text-align:center;font-family:var(--f-mono);font-size:.75em;color:#fff;text-shadow:0 1px 3px #000}
+.jstep.todo{filter:grayscale(1) brightness(.45)}
+.jstep.done{border-color:var(--good)}
+.jstep.done::after{content:"✓";position:absolute;top:3px;inset-inline-start:5px;color:var(--good);font-weight:700;text-shadow:0 1px 3px #000}
+.jstep.now{border-color:var(--c);transform:translateY(-4px);box-shadow:0 6px 18px -6px var(--c)}
+.hero{position:relative;border-radius:16px;overflow:hidden;margin:-4px 0 0}
+.hero .art{border-radius:0;aspect-ratio:16/10}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(6,9,30,.92) 0%,rgba(6,9,30,.2) 55%,rgba(6,9,30,0))}
+.hero .cap{position:absolute;inset-inline:14px;bottom:12px;z-index:1;display:flex;gap:12px;align-items:center}
+.hero .cap h2{color:#fff;font-size:clamp(1.3rem,5.5vw,1.8rem)}
+.hero .cap p{color:#D6DBF5;font-size:.85em}
+.hero .badge{width:54px;height:54px;font-size:1em}
 .strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
 @media (max-width:760px){.strip{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .strip figure{margin:0;display:flex;flex-direction:column;gap:6px;min-width:0}
@@ -2667,7 +2691,7 @@ var qrcode = function() {
       const go=()=>{Sound.init();Sound.resume();preloadPhotos();const c=codeIn.value.replace(/\D/g,""),n=nameIn.value.trim();if(c.length!==4){msg.textContent="اكتب رمز اللعبة المكوّن من 4 أرقام.";return codeIn.focus()}if(!n){msg.textContent="اكتب اسمك.";return nameIn.focus()}
         P.code=c;P.name=n;saveP();pStatus="connecting";renderPlayer();connectHost()};
       nameIn.onkeydown=e=>{if(e.key==="Enter")go()};
-      paint([top,el("div",{class:"card in"},[el("span",{class:"eyebrow",text:"أهلًا بك في التحدّي"}),el("h1",{text:"انضم إلى اللعبة"}),
+      paint([top,el("div",{class:"collage"},STAGES.map((s,i)=>el("figure",{class:"tile",style:`--c:${s.c}`},[artNode(i),el("figcaption",{},[el("b",{text:s.v}),el("span",{text:s.rev})])]))),el("div",{class:"card in"},[el("span",{class:"eyebrow",text:"أهلًا بك في التحدّي"}),el("h1",{text:"انضم إلى اللعبة"}),
         params.get("join")?null:el("label",{},[el("span",{text:"رمز اللعبة (على شاشة المقدّم)"}),codeIn]),
         el("label",{},[el("span",{text:"اسمك"}),nameIn]),msg,el("div",{class:"actions"},[btn("انضم ←",go,"btn big")])])],true);
       return;
@@ -2678,15 +2702,15 @@ var qrcode = function() {
         el("div",{class:"actions"},[btn("تغيير الرمز أو الاسم",()=>{P.name="";saveP();if(pConn)try{pConn.close()}catch(e){};renderPlayer()},"btn ghost small")])])],true);return;
     }
     if(G.phase==="lobby"){
-      paint([top,el("div",{class:"card in"},[el("span",{class:"eyebrow",text:"تم الانضمام ✓"}),el("h1",{text:`أهلًا ${P.name}`}),el("p",{class:"muted",text:"انظر إلى الشاشة: اسمك ظاهر الآن. انتظر حتى يضغط المقدّم «ابدأ» وستظهر لك المرحلة الأولى تلقائيًا."})])],true);return;
+      paint([top,el("div",{class:"collage"},STAGES.map((s,i)=>el("figure",{class:"tile",style:`--c:${s.c}`},[artNode(i),el("figcaption",{},[el("b",{text:s.v}),el("span",{text:s.rev})])]))),el("div",{class:"card in"},[el("span",{class:"eyebrow",text:"تم الانضمام ✓"}),el("h1",{text:`أهلًا ${P.name}`}),el("p",{class:"muted",text:"انظر إلى الشاشة: اسمك ظاهر الآن. انتظر حتى يضغط المقدّم «ابدأ» وستظهر لك المرحلة الأولى تلقائيًا."})])],true);return;
     }
     if(P.done||G.phase==="over"){playerFinish(top);return}
     const st=STAGES[P.si];
-    const bar=el("div",{class:"mini"},STAGES.map((s,i)=>el("span",{class:i<=P.si?"on":"",style:`--c:${s.c}`})));
+    const bar=el("div",{class:"journey","aria-label":"مراحل الرحلة"},STAGES.map((s,i)=>el("div",{class:"jstep "+(i<P.si?"done":i===P.si?"now":"todo"),style:`--c:${s.c}`},[artNode(i),el("b",{text:s.v})])));
     const head=el("div",{class:"topbar"},[el("span",{class:"eyebrow",text:`${st.name} من 4`}),el("span",{class:"score-chip",html:`<span class="num">${P.score}</span> نقطة`})]);
     const card=el("div",{class:"card in",style:`--c:${st.c}`});
     if(P.step===0){
-      card.append(head,artNode(P.si),el("div",{class:"era-head"},[el("div",{class:"badge",text:st.v}),el("div",{},[el("h2",{text:st.rev}),el("p",{class:"muted",text:st.years})])]));
+      card.append(head,el("div",{class:"hero"},[artNode(P.si),el("div",{class:"cap"},[el("div",{class:"badge",text:st.v}),el("div",{},[el("h2",{text:st.rev}),el("p",{text:st.years})])])]));
       if(st.hidden)card.append(el("p",{class:"notice",text:"معلومات هذه المرحلة مخفية! أجب عن سؤاليها لتكشف سرّ اسم الورشة."}));
       else card.append(el("div",{class:"fact"},[el("h3",{text:"ماذا حدث في العالم؟"}),el("ul",{},st.world.map(x=>el("li",{text:x})))]),el("div",{class:"fact"},[el("h3",{text:`وكيف كانت المدرسة؟ (${st.edu})`}),el("ul",{},st.school.map(x=>el("li",{text:x})))]));
       const fxKey=P.epoch+"-"+P.si;if(lastFx!==fxKey){lastFx=fxKey;Sound.stageFx(P.si)}
@@ -2712,7 +2736,7 @@ var qrcode = function() {
   }
   function playerFinish(top){
     const st=STAGES[3];
-    paint([top,el("div",{class:"card in",style:`--c:${st.c}`},[
+    paint([top,el("div",{class:"collage"},STAGES.map((s,i)=>el("figure",{class:"tile",style:`--c:${s.c}`},[el("span",{class:"tick",text:"✓"}),artNode(i),el("figcaption",{},[el("b",{text:s.v}),el("span",{text:s.rev})])]))),el("div",{class:"card in",style:`--c:${st.c}`},[
       el("span",{class:"eyebrow",text:P.done?"وصلت إلى خط النهاية ✓":"انتهى وقت التحدّي"}),
       el("h1",{html:`نتيجتك <span class="num" style="color:var(--sun)">${P.score}</span> نقطة`}),
       el("h2",{html:'سُمّيت «معلم <span class="num">4.0</span>» نسبةً إلى الثورة الصناعية الرابعة والتعليم 4.0'}),
