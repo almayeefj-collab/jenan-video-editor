@@ -3,7 +3,7 @@
 import {linearTiming, TransitionSeries} from '@remotion/transitions';
 import React, {Fragment} from 'react';
 import {
-  AbsoluteFill, Audio, Easing, Img, interpolate, random, Sequence, spring, staticFile, useCurrentFrame, useVideoConfig,
+  AbsoluteFill, Audio, Easing, interpolate, OffthreadVideo, random, Sequence, spring, staticFile, useCurrentFrame, useVideoConfig,
 } from 'remotion';
 import {fontFamily, numberFamily} from '../reel/font';
 import {zoomBlur} from '../reel/zoomBlur';
@@ -24,17 +24,17 @@ type Pair = {
 
 const PAIRS: Pair[] = [
   {step: 1, year: 1784, from: 1700, accent: GOLD,
-    ind: {img: 'teacher4/ind1.jpg', label: 'الثورة الصناعية الأولى', title: 'البخار', line: 'الآلة تعمل بدل اليد'},
-    tch: {img: 'teacher4/t1.jpg', title: 'ناقل المعرفة', line: 'سبورة وطباشير… والطالب يحفظ'}},
+    ind: {img: 'teacher4/clips/c1.mp4', label: 'الثورة الصناعية الأولى', title: 'البخار', line: 'الآلة تعمل بدل اليد'},
+    tch: {img: 'teacher4/clips/c5.mp4', title: 'ناقل المعرفة', line: 'سبورة وطباشير… والطالب يحفظ'}},
   {step: 2, year: 1870, from: 1784, accent: '#F2C94C',
-    ind: {img: 'teacher4/ind2.jpg', label: 'الثورة الصناعية الثانية', title: 'الكهرباء', line: 'خطوط إنتاج ضخمة'},
-    tch: {img: 'teacher4/t2.jpg', title: 'مستخدم الوسائل', line: 'جهاز العرض والصوت والصورة'}},
+    ind: {img: 'teacher4/clips/c2.mp4', label: 'الثورة الصناعية الثانية', title: 'الكهرباء', line: 'خطوط إنتاج ضخمة'},
+    tch: {img: 'teacher4/clips/c6.mp4', title: 'مستخدم الوسائل', line: 'جهاز العرض والصوت والصورة'}},
   {step: 3, year: 1969, from: 1870, accent: '#6B9BFF',
-    ind: {img: 'teacher4/ind3.jpg', label: 'الثورة الصناعية الثالثة', title: 'الحاسوب', line: 'الأتمتة والمعلومات'},
-    tch: {img: 'teacher4/t3.jpg', title: 'المعلم الرقمي', line: 'سبورة تفاعلية ومنصات وإنترنت'}},
+    ind: {img: 'teacher4/clips/c3.mp4', label: 'الثورة الصناعية الثالثة', title: 'الحاسوب', line: 'الأتمتة والمعلومات'},
+    tch: {img: 'teacher4/clips/c7.mp4', title: 'المعلم الرقمي', line: 'سبورة تفاعلية ومنصات وإنترنت'}},
   {step: 4, year: null, from: 1969, accent: CYAN,
-    ind: {img: 'teacher4/ind4.jpg', label: 'الثورة الصناعية الرابعة', title: 'الذكاء الاصطناعي', line: 'آلات تتعلّم وتقرّر'},
-    tch: {img: 'teacher4/t4.jpg', title: 'المصمّم والقائد', line: 'يقود التقنية… ولا تقوده'}},
+    ind: {img: 'teacher4/clips/c4.mp4', label: 'الثورة الصناعية الرابعة', title: 'الذكاء الاصطناعي', line: 'آلات تتعلّم وتقرّر'},
+    tch: {img: 'teacher4/clips/c8.mp4', title: 'المصمّم والقائد', line: 'يقود التقنية… ولا تقوده'}},
 ];
 
 type Scene = {kind: 'hook' | 'intro' | 'answer' | 'qualities' | 'outro'; sec: number} | {kind: 'pair'; pair: Pair; sec: number};
@@ -57,13 +57,16 @@ const useReveal = (delay: number, dur = 16, dy = 40) => {
 };
 const useExit = (total: number) => interpolate(useCurrentFrame(), [total - T - 10, total - T + 2], [1, 0], clamp);
 
+// مقطع فيديو متحرك (مولّد بـ Kling، 5 ثواني) يُبطّأ ليغطي المشهد، مع اقتراب بطيء
+const CLIP_SEC = 5;
 const Ken: React.FC<{src: string; total: number; dir?: 1 | -1; grade?: string; blur?: number}> = ({src, total, dir = 1, grade, blur = 0}) => {
   const f = useCurrentFrame();
-  const s = interpolate(f, [0, total], [1.05, 1.18]);
-  const x = interpolate(f, [0, total], [0, 2 * dir]);
+  const s = interpolate(f, [0, total], [1.02, 1.1]);
+  const x = interpolate(f, [0, total], [0, 1 * dir]);
+  const rate = Math.min(1, (CLIP_SEC * PROMO_FPS - 2) / total);
   return (
-    <AbsoluteFill style={{overflow: 'hidden'}}>
-      <Img src={staticFile(src)} style={{width: '100%', height: '100%', objectFit: 'cover', transform: `scale(${s}) translateX(${x}%)`, filter: `${grade ?? ''} blur(${blur}px)`}} />
+    <AbsoluteFill style={{overflow: 'hidden', background: INK}}>
+      <OffthreadVideo src={staticFile(src)} muted playbackRate={rate} style={{width: '100%', height: '100%', objectFit: 'cover', transform: `scale(${s}) translateX(${x}%)`, filter: `${grade ?? ''} blur(${blur}px)`}} />
     </AbsoluteFill>
   );
 };
@@ -163,7 +166,7 @@ const Intro: React.FC<{total: number}> = ({total}) => {
   const words = ['من', 'البخار…', 'إلى', 'الذكاء', 'الاصطناعي'];
   return (
     <AbsoluteFill>
-      <Ken src="teacher4/intro.jpg" total={total} grade="contrast(1.08) saturate(1.1)" />
+      <Ken src="teacher4/clips/c0.mp4" total={total} grade="contrast(1.08) saturate(1.1)" />
       <AbsoluteFill style={{background: 'linear-gradient(to top, rgba(4,8,18,0.9), rgba(4,8,18,0.2) 60%)'}} />
       <AbsoluteFill style={{justifyContent: 'flex-end', alignItems: 'center', paddingBottom: 130, direction: 'rtl', opacity: exit}}>
         <div style={{display: 'flex', gap: 26}}>
@@ -337,7 +340,7 @@ const Qualities: React.FC<{total: number}> = ({total}) => {
   ];
   return (
     <AbsoluteFill style={{direction: 'rtl'}}>
-      <Ken src="teacher4/t4.jpg" total={total} blur={8} grade="brightness(0.45) saturate(1.2)" />
+      <Ken src="teacher4/clips/c8.mp4" total={total} blur={8} grade="brightness(0.45) saturate(1.2)" />
       <AbsoluteFill style={{background: 'linear-gradient(to bottom, rgba(6,11,22,0.6), rgba(6,11,22,0.85))'}} />
       <AbsoluteFill style={{alignItems: 'center', justifyContent: 'center', gap: 60, opacity: exit}}>
         <div style={{fontFamily, fontSize: 84, fontWeight: 900, color: '#fff', ...useReveal(2)}}>
@@ -372,7 +375,7 @@ const Outro: React.FC<{total: number}> = ({total}) => {
   const fadeOut = interpolate(f, [total - 30, total], [0, 1], clamp);
   return (
     <AbsoluteFill style={{direction: 'rtl'}}>
-      <Ken src="teacher4/outro.jpg" total={total} dir={-1} grade="contrast(1.06) saturate(1.12)" />
+      <Ken src="teacher4/clips/c9.mp4" total={total} dir={-1} grade="contrast(1.06) saturate(1.12)" />
       <AbsoluteFill style={{background: 'linear-gradient(to left, rgba(4,8,18,0.92), rgba(4,8,18,0.55) 45%, transparent 75%)'}} />
       <Particles color={GOLD} n={26} />
       <AbsoluteFill style={{justifyContent: 'center', paddingRight: 130}}>
