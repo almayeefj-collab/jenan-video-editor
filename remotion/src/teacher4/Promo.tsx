@@ -31,10 +31,10 @@ const PAIRS: Pair[] = [
     tch: {img: 'teacher4/clips/s6.mp4', title: 'مستخدم الوسائل', line: 'جهاز العرض والصوت والصورة'}},
   {step: 3, year: 1969, from: 1870, accent: '#6B9BFF',
     ind: {img: 'teacher4/clips/s3.mp4', label: 'الثورة الصناعية الثالثة', title: 'الحاسوب', line: 'الأتمتة والمعلومات'},
-    tch: {img: 'teacher4/clips/s7.mp4', title: 'المعلم الرقمي', line: 'سبورة تفاعلية ومنصات وإنترنت'}},
+    tch: {img: 'teacher4/clips/s12.mp4', title: 'المعلم الرقمي', line: 'سبورة تفاعلية وعرض رقمي للدرس'}},
   {step: 4, year: null, from: 1969, accent: CYAN,
     ind: {img: 'teacher4/clips/s4.mp4', label: 'الثورة الصناعية الرابعة', title: 'الذكاء الاصطناعي', line: 'آلات تتعلّم وتقرّر'},
-    tch: {img: 'teacher4/clips/s10.mp4', title: 'معه مساعد ذكي', line: 'يحضّر ويصحّح… والمعلم يتفرّغ لطلابه'}},
+    tch: {img: 'teacher4/clips/s13.mp4', title: 'معه مساعد ذكي', line: 'يحضّر ويصحّح… والمعلم يتفرّغ لطلابه'}},
 ];
 
 type Scene = {kind: 'hook' | 'intro' | 'answer' | 'qualities' | 'outro'; sec: number} | {kind: 'pair'; pair: Pair; sec: number};
@@ -229,7 +229,7 @@ const Notifications: React.FC<{at: number; exit: number}> = ({at, exit}) => {
   const f = useCurrentFrame();
   const {fps} = useVideoConfig();
   return (
-    <div style={{position: 'absolute', top: 50, left: 530, width: 400, display: 'flex', flexDirection: 'column', gap: 14, direction: 'rtl', opacity: exit}}>
+    <div style={{position: 'absolute', top: 50, left: 40, width: 400, display: 'flex', flexDirection: 'column', gap: 14, direction: 'rtl', opacity: exit}}>
       {NOTES.map(([title, body], i) => {
         const sp = spring({frame: f - at - i * 50, fps, config: {damping: 15, mass: 0.8}});
         return (
@@ -377,7 +377,7 @@ const Qualities: React.FC<{total: number}> = ({total}) => {
   ];
   return (
     <AbsoluteFill style={{direction: 'rtl'}}>
-      <Ken src="teacher4/clips/s11.mp4" total={total} blur={8} grade="brightness(0.45) saturate(1.2)" />
+      <Ken src="teacher4/clips/s14.mp4" total={total} blur={8} grade="brightness(0.45) saturate(1.2)" />
       <AbsoluteFill style={{background: 'linear-gradient(to bottom, rgba(6,11,22,0.6), rgba(6,11,22,0.85))'}} />
       <AbsoluteFill style={{alignItems: 'center', justifyContent: 'center', gap: 60, opacity: exit}}>
         <div style={{fontFamily, fontSize: 84, fontWeight: 900, color: '#fff', ...useReveal(2)}}>
