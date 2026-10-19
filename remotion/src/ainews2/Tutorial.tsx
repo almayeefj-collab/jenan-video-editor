@@ -24,6 +24,7 @@ export type Shot = {
   caption: string; // سطر الشرح تحت (من الإنفوجرافيك)
   to?: [number, number]; // وين يروح الماوس
   click?: boolean; // يضغط في آخر الحركة
+  clickAt?: number; // ثانية الضغطة داخل الشوت (لما تقول جنان الكلمة) — الماوس يوصل قبلها بشوي
   zoom?: [number, number, number]; // [x, y, scale] الكاميرا داخل الشاشة
   type?: string; // نص ينكتب في هالشوت
   open?: boolean; // اللابتوب ينفتح في بداية هالشوت
@@ -378,6 +379,9 @@ const Cursor: React.FC<{x: number; y: number; press: number}> = ({x, y, press}) 
 
 type Laid = {shot: Shot; start: number; frames: number; step: number};
 
+// فريم الضغطة داخل الشوت (لو محدد clickAt) — يتمدد مع الشوت لو انمد على طول الصوت
+const clickFrame = (l: Laid) => (l.shot.clickAt === undefined ? null : Math.round((l.shot.clickAt / l.shot.dur) * l.frames));
+
 const Laptop: React.FC<{laid: Laid[]; f: number}> = ({laid, f}) => {
   const i = Math.max(0, laid.findIndex((l) => f >= l.start && f < l.start + l.frames));
   const cur = laid[i];
@@ -390,10 +394,13 @@ const Laptop: React.FC<{laid: Laid[]; f: number}> = ({laid, f}) => {
   };
   const from = prevTo(i);
   const to = cur.shot.to ?? from;
-  const mv = interpolate(p, [0.08, 0.55], [0, 1], {...clamp, easing: ease});
+  const cf = clickFrame(cur);
+  const mv = cf === null ? interpolate(p, [0.08, 0.55], [0, 1], {...clamp, easing: ease})
+    : interpolate(lf, [Math.max(0, cf - 22), Math.max(1, cf - 3)], [0, 1], {...clamp, easing: ease});
   const cx = from[0] + (to[0] - from[0]) * mv;
   const cy = from[1] + (to[1] - from[1]) * mv;
-  const press = cur.shot.click ? interpolate(p, [0.62, 0.7, 0.86], [0, 1, 0], clamp) : 0;
+  const press = !cur.shot.click ? 0 : cf === null ? interpolate(p, [0.62, 0.7, 0.86], [0, 1, 0], clamp)
+    : interpolate(lf, [cf - 2, cf + 1, cf + 7], [0, 1, 0], clamp);
   // الكاميرا
   const zPrev = i > 0 ? laid[i - 1].shot.zoom ?? [VW / 2, VH / 2, 1] : [VW / 2, VH / 2, 1];
   const zCur = cur.shot.zoom ?? [VW / 2, VH / 2, 1];
@@ -553,7 +560,7 @@ export const Tutorial: React.FC<{ep: TutorialEp; voice: boolean}> = ({ep, voice}
       {laid.map((l, li) => (
         <Sequence key={`s${li}`} from={l.start} durationInFrames={l.frames} layout="none">
           {l.shot.click ? (
-            <Sequence from={Math.round(l.frames * 0.62)} layout="none"><Audio src={staticFile('sfx/key1.wav')} volume={0.7} /></Sequence>
+            <Sequence from={Math.max(0, (clickFrame(l) ?? Math.round(l.frames * 0.62)) - 2)} layout="none"><Audio src={staticFile('sfx/key1.wav')} volume={0.7} /></Sequence>
           ) : null}
           {li === 0 || laid[li - 1].step !== l.step ? <Audio src={staticFile('sfx/whoosh.wav')} volume={0.35} /> : null}
         </Sequence>
