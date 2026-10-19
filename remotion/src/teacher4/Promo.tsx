@@ -25,7 +25,7 @@ type Pair = {
 const PAIRS: Pair[] = [
   {step: 1, year: 1784, from: 1700, accent: GOLD,
     ind: {img: 'teacher4/clips/s1.mp4', label: 'الثورة الصناعية الأولى', title: 'البخار', line: 'الآلة تعمل بدل اليد'},
-    tch: {img: 'teacher4/clips/s5.mp4', title: 'ناقل المعرفة', line: 'سبورة وطباشير… والطالب يحفظ'}},
+    tch: {img: 'teacher4/clips/s15.mp4', title: 'ناقل المعرفة', line: 'سبورة وطباشير… والطالب يحفظ'}},
   {step: 2, year: 1870, from: 1784, accent: '#F2C94C',
     ind: {img: 'teacher4/clips/s2.mp4', label: 'الثورة الصناعية الثانية', title: 'الكهرباء', line: 'خطوط إنتاج ضخمة'},
     tch: {img: 'teacher4/clips/s6.mp4', title: 'مستخدم الوسائل', line: 'جهاز العرض والصوت والصورة'}},
