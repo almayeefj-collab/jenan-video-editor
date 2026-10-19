@@ -37,6 +37,8 @@ export type TutorialEp = {
   music: string;
   intro: {beats: Beat[]; voice?: string; voiceDur?: number};
   steps: TutStep[];
+  // مشهد أخير: جوال ينزل فيه الإشعار الحقيقي (صورة من جوال جنان)
+  final?: {image: string; head: string; dur: number; voice?: string; voiceDur?: number};
   outro: {voice?: string; dur: number; word?: string};
 };
 
@@ -435,6 +437,33 @@ const Laptop: React.FC<{laid: Laid[]; f: number}> = ({laid, f}) => {
   );
 };
 
+// ───────── مشهد الإشعار ─────────
+const NotifyScene: React.FC<{image: string; head: string}> = ({image, head}) => {
+  const f = useCurrentFrame();
+  const {fps} = useVideoConfig();
+  const ph = spring({frame: f, fps, config: {damping: 14, stiffness: 100}});
+  const drop = spring({frame: f - 14, fps, config: {damping: 11, stiffness: 140}});
+  const glow = 0.5 + 0.5 * Math.sin(f / 8);
+  return (
+    <AbsoluteFill>
+      <Backdrop look="dark" />
+      <div style={{position: 'absolute', top: 210, left: 40, right: 40}}><Kinetic text={head} look="dark" size={90} /></div>
+      <div style={{position: 'absolute', left: 140, top: 520, width: 800, height: 1220, borderRadius: 100, background: '#0E0C0B', padding: 22, boxSizing: 'border-box',
+        boxShadow: `0 40px 90px rgba(0,0,0,0.6), 0 0 ${60 * glow}px rgba(232,115,90,0.35)`, transform: `translateY(${(1 - ph) * 900}px)`}}>
+        <div style={{width: '100%', height: '100%', borderRadius: 80, overflow: 'hidden', position: 'relative',
+          background: 'linear-gradient(160deg,#3B2A6E 0%,#1C1630 45%,#2A1E18 100%)'}}>
+          <div style={{position: 'absolute', top: 24, left: '50%', width: 220, height: 60, marginLeft: -110, borderRadius: 30, background: '#000'}} />
+          <div style={{position: 'absolute', top: 140, width: '100%', textAlign: 'center', color: 'white', fontFamily: 'Cairo', fontSize: 150, fontWeight: 300}}>7:00</div>
+          <div style={{position: 'absolute', top: 340, width: '100%', textAlign: 'center', color: 'rgba(255,255,255,0.8)', fontFamily, fontSize: 40, fontWeight: 700}}>الأحد</div>
+          <Img src={staticFile(image)} style={{position: 'absolute', left: 20, top: 460, width: 716, borderRadius: 30,
+            transform: `translateY(${(1 - drop) * -500}px) scale(${0.9 + 0.1 * drop})`, opacity: Math.min(1, drop * 1.6),
+            boxShadow: '0 20px 40px rgba(0,0,0,0.5)'}} />
+        </div>
+      </div>
+    </AbsoluteFill>
+  );
+};
+
 // ───────── الحلقة ─────────
 export const layoutTutorial = (ep: TutorialEp, voice: boolean) => {
   const introBase = ep.intro.beats.reduce((a, b) => a + b.dur, 0);
@@ -453,8 +482,10 @@ export const layoutTutorial = (ep: TutorialEp, voice: boolean) => {
       t += frames;
     });
   });
+  const finalStart = t;
+  if (ep.final) t += Math.round((voice && ep.final.voiceDur ? Math.max(ep.final.dur, ep.final.voiceDur + 0.4) : ep.final.dur) * FPS);
   const outroStart = t;
-  return {introBeats, laid, stepStarts, outroStart, total: t + Math.round(ep.outro.dur * FPS)};
+  return {introBeats, laid, stepStarts, finalStart, outroStart, total: t + Math.round(ep.outro.dur * FPS)};
 };
 
 export const tutorialFrames = (ep: TutorialEp, voice: boolean) => layoutTutorial(ep, voice).total;
@@ -489,7 +520,7 @@ const StepScene: React.FC<{ep: TutorialEp; laid: Laid[]; stepStarts: number[]}> 
 };
 
 export const Tutorial: React.FC<{ep: TutorialEp; voice: boolean}> = ({ep, voice}) => {
-  const {introBeats, laid, stepStarts, outroStart, total} = layoutTutorial(ep, voice);
+  const {introBeats, laid, stepStarts, finalStart, outroStart, total} = layoutTutorial(ep, voice);
   const {fps} = useVideoConfig();
   const bed = voice ? 0.12 : 0.5;
   let t = 0;
@@ -506,9 +537,18 @@ export const Tutorial: React.FC<{ep: TutorialEp; voice: boolean}> = ({ep, voice}
         );
       })}
       {voice && ep.intro.voice ? <Sequence from={4}><Audio src={staticFile(ep.intro.voice)} /></Sequence> : null}
-      <Sequence from={laid[0].start} durationInFrames={outroStart - laid[0].start}>
+      <Sequence from={laid[0].start} durationInFrames={finalStart - laid[0].start}>
         <StepScene ep={ep} laid={laid} stepStarts={stepStarts} />
       </Sequence>
+      {ep.final ? (
+        <Sequence from={finalStart} durationInFrames={outroStart - finalStart}>
+          <NotifyScene image={ep.final.image} head={ep.final.head} />
+          <Sequence from={16} layout="none"><Audio src={staticFile('sfx/notify.wav')} volume={0.9} /></Sequence>
+          <Sequence from={40} layout="none"><Audio src={staticFile('sfx/notify.wav')} volume={0.75} /></Sequence>
+          <Audio src={staticFile('sfx/whoosh.wav')} volume={0.4} />
+          {voice && ep.final.voice ? <Sequence from={4}><Audio src={staticFile(ep.final.voice)} /></Sequence> : null}
+        </Sequence>
+      ) : null}
       {laid.map((l, li) => (
         <Sequence key={`s${li}`} from={l.start} durationInFrames={l.frames} layout="none">
           {l.shot.click ? (

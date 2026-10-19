@@ -43,5 +43,6 @@ export const ep05: TutorialEp = {
       {screen: 'review', dur: 3, caption: 'راجعي التفاصيل واضغطي Save task', to: [880, 795], click: true, zoom: [880, 560, 1.4]},
     ]},
   ],
+  final: {image: 'ainews/ep05/notification.jpg', head: 'وكل أحد *يوصلك* الإشعار', dur: 4.5},
   outro: {dur: 10, word: 'تحضير'},
 };
