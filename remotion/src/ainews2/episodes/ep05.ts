@@ -7,13 +7,13 @@ import {PROMPT, TASK, type TutorialEp} from '../Tutorial';
 export const ep05: TutorialEp = {
   number: 5,
   date: '١٩ أكتوبر ٢٠٢٦',
-  music: 'ainews/ep05/music.mp3',
-  intro: {beats: [
+  music: 'ainews/ep05/music-voice.mp3',
+  intro: {voice: 'ainews/ep05/v0.mp3', voiceDur: 7.75, beats: [
     {type: 'brand', look: 'dark', dur: 2.8, name: 'آخر أخبار أدوات الـ AI', chip: 'مع جنان المعييف'},
     {type: 'chips', look: 'coral', dur: 3.2, head: 'Claude يحضّر *دروسك*', chips: ['كل أسبوع', 'تلقائي', 'PDF جاهز'], foot: 'الحلقة *٥*'},
   ]},
   steps: [
-    {head: 'ربط *Canva* مع Claude', shots: [
+    {head: 'ربط *Canva* مع Claude', voice: 'ainews/ep05/v1.mp3', voiceDur: 16.01, shots: [
       {screen: 'welcome', dur: 3.2, open: true, caption: 'افتحي حسابك في Claude AI', to: [800, 700], click: true},
       {screen: 'app', dur: 2.4, caption: 'انتقلي إلى الإعدادات', to: [150, 935], click: true, zoom: [420, 780, 1.8]},
       {screen: 'userMenu', dur: 2.4, caption: 'انتقلي إلى الإعدادات', to: [200, 700], click: true, zoom: [420, 720, 1.8]},
@@ -22,19 +22,19 @@ export const ep05: TutorialEp = {
       {screen: 'canvaLogin', dur: 2.6, caption: 'سجّلي الدخول بحساب Canva', to: [800, 482], click: true, zoom: [800, 470, 1.6]},
       {screen: 'connected', dur: 2.6, caption: 'تأكدي من ظهور Canva ضمن التطبيقات المتصلة', to: [900, 440], zoom: [820, 340, 1.6]},
     ]},
-    {head: 'الوصول إلى ملف *Canva* المحفوظ', shots: [
+    {head: 'الوصول إلى ملف *Canva* المحفوظ', voice: 'ainews/ep05/v2.mp3', voiceDur: 11.4, shots: [
       {screen: 'canvaHome', dur: 2.8, caption: 'افتحي حسابك في Canva واختاري Projects', to: [140, 260], click: true, zoom: [420, 300, 1.8]},
       {screen: 'canvaProjects', dur: 2.8, caption: 'اختاري الملف المحفوظ', to: [620, 520], click: true, zoom: [640, 500, 1.5]},
       {screen: 'canvaFile', dur: 3, caption: 'تأكدي من محتوى الملف', to: [1470, 50], click: true, zoom: [960, 400, 1.35]},
       {screen: 'canvaShare', dur: 2.8, caption: 'انسخي رابط الملف (اختياري)', to: [1360, 240], click: true, zoom: [1250, 220, 1.7]},
     ]},
-    {head: 'رفع خطة المنهج والكتاب *PDF*', shots: [
+    {head: 'رفع خطة المنهج والكتاب *PDF*', voice: 'ainews/ep05/v3.mp3', voiceDur: 8.76, shots: [
       {screen: 'chat', dur: 2.6, caption: 'اضغطي على زر إرفاق الملفات', to: [445, 900], click: true, zoom: [700, 800, 1.6]},
       {screen: 'attach', dur: 2.4, caption: 'اختاري Upload files', to: [600, 490], click: true, zoom: [700, 600, 1.6]},
       {screen: 'uploaded', dur: 2.6, caption: 'تأكدي من ظهور الملفات في المحادثة', to: [900, 700], zoom: [960, 700, 1.5]},
       {screen: 'prompt', dur: 5, caption: 'اكتبي التعليمات لـ Claude', type: PROMPT, to: [1460, 880], click: true, zoom: [960, 760, 1.5]},
     ]},
-    {head: 'جدولة التحضير *الأسبوعي*', shots: [
+    {head: 'جدولة التحضير *الأسبوعي*', voice: 'ainews/ep05/v4.mp3', voiceDur: 9.46, shots: [
       {screen: 'app', dur: 2.4, caption: 'من القائمة الجانبية اختاري Scheduled', to: [160, 420], click: true, zoom: [420, 450, 1.8]},
       {screen: 'scheduled', dur: 2.6, caption: 'اضغطي New task', to: [965, 510], click: true, zoom: [965, 450, 1.6]},
       {screen: 'newTask', dur: 2.6, caption: 'اختاري طريقة الإعداد', to: [850, 355], click: true, zoom: [880, 450, 1.4]},
@@ -43,6 +43,6 @@ export const ep05: TutorialEp = {
       {screen: 'review', dur: 3, caption: 'راجعي التفاصيل واضغطي Save task', to: [880, 795], click: true, zoom: [880, 560, 1.4]},
     ]},
   ],
-  final: {image: 'ainews/ep05/notification.jpg', head: 'وكل أحد *يوصلك* الإشعار', dur: 4.5},
-  outro: {dur: 10, word: 'تحضير'},
+  final: {image: 'ainews/ep05/notification.jpg', head: 'وكل أحد *يوصلك* الإشعار', dur: 4.5, voice: 'ainews/ep05/v5.mp3', voiceDur: 4.37},
+  outro: {voice: 'ainews/ep05/v6.mp3', dur: 10, word: 'تحضير'},
 };
