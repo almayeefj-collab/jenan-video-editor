@@ -1,4 +1,4 @@
-// فيديو تذكير «بصمة التواجد» — فتح تطبيق وزارة التربية بالأمر الصوتي (سيري)
+// فيديو تذكير «بصمة التواجد» — فتح تطبيق وزارة التربية باختصار Shortcuts وتذكير بصوتج
 // المدة الكلية ١٧ ثانية. الأوقات بالفريمات على ٣٠ فريم/ثانية
 
 export const FPS = 30;
@@ -24,6 +24,6 @@ export const totalFrames = () => 510; // ١٧ ثانية
 
 // لحظات داخل المقطع (ثواني من المقطع الأصلي) محوّلة لفريم على الخط الزمني
 export const atSource = (sec: number) => PHONE_IN + Math.round((sec - FOOTAGE_FROM) * FPS);
-export const SPEECH = [atSource(3.75), atSource(9.15)] as const; // الأمر الصوتي
-export const SIRI = atSource(9.3); // توهج سيري على الشاشة
+export const SPEECH = [atSource(3.75), atSource(9.15)] as const; // التذكير بصوتج
+export const RUN = atSource(9.3); // الاختصار يشتغل ويفتح التطبيق (توهج حول الجوال)
 export const APP_OPEN = atSource(10.6); // يفتح تطبيق وزارة التربية

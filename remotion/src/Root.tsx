@@ -14,7 +14,7 @@ export const RemotionRoot: React.FC = () => {
       <Composition id="TeachersReel" component={Reel} durationInFrames={totalFrames()} fps={FPS} width={WIDTH} height={HEIGHT} />
       {/* ورشة المعلم 4.0 — من الثورة الصناعية الأولى إلى المعلم 4.0 */}
       <Composition id="Teacher4" component={Teacher4} durationInFrames={t4Frames()} fps={T4_FPS} width={T4_W} height={T4_H} />
-      {/* تذكير بصمة التواجد — فتح تطبيق وزارة التربية بالأمر الصوتي (١٧ ثانية) */}
+      {/* تذكير بصمة التواجد — فتح تطبيق وزارة التربية باختصار Shortcuts (١٧ ثانية) */}
       <Composition id="AttendanceReminder" component={Attendance} durationInFrames={atFrames()} fps={AT_FPS} width={AT_W} height={AT_H} />
       {/* أفقي 16:9 */}
       <Composition

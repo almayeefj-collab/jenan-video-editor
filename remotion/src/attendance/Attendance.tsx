@@ -2,7 +2,7 @@ import {useAudioData, visualizeAudio} from '@remotion/media-utils';
 import {AbsoluteFill, Audio, Easing, interpolate, OffthreadVideo, Sequence, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {fontFamily} from '../reel/font';
 import {
-  APP_OPEN, CLIP, FOOTAGE_FROM, FPS, GOLD, GOLD_DEEP, GREEN, INK, OUTRO_START, PHONE_IN, SCREEN, SIRI, SKY, SPEECH, totalFrames, VOICE,
+  APP_OPEN, CLIP, FOOTAGE_FROM, FPS, GOLD, GOLD_DEEP, GREEN, INK, OUTRO_START, PHONE_IN, SCREEN, RUN, SKY, SPEECH, totalFrames, VOICE,
 } from './config';
 
 const clamp = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
@@ -76,7 +76,7 @@ const MicIcon: React.FC<{size: number; color?: string}> = ({size, color = INK}) 
   </svg>
 );
 
-// موجة صوت حية تتحرك مع صوت الأمر الصوتي
+// موجة صوت حية تتحرك مع صوت التذكير
 const VoiceWave: React.FC = () => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
@@ -111,7 +111,7 @@ const Phone: React.FC = () => {
   const tilt = (1 - rise) * 28 - drop * 18;
   // zoom خفيف وقت ما يفتح التطبيق
   const push = interpolate(frame, [APP_OPEN - 6, APP_OPEN + 40], [1, 1.025], {...clamp, easing: ease});
-  const siri = interpolate(frame, [SIRI - 8, SIRI + 4, APP_OPEN, APP_OPEN + 12], [0, 1, 1, 0], clamp);
+  const glow = interpolate(frame, [RUN - 8, RUN + 4, APP_OPEN, APP_OPEN + 12], [0, 1, 1, 0], clamp);
   const hue = (frame * 6) % 360;
   // لمعة على الزجاج لحظة ما يستقر الجوال
   const sweep = interpolate(frame, [PHONE_IN + 16, PHONE_IN + 40], [-60, 160], clamp);
@@ -120,10 +120,10 @@ const Phone: React.FC = () => {
   return (
     <div style={{position: 'absolute', top: PHONE_TOP, left: (1080 - W) / 2, width: W, height: H, perspective: 2000}}>
       <div style={{position: 'absolute', inset: 0, transform: `translateY(${y}px) rotateX(${tilt}deg) scale(${push})`, transformOrigin: '50% 75%'}}>
-        {/* توهج سيري */}
+        {/* توهج تشغيل الاختصار */}
         <div
           style={{
-            position: 'absolute', inset: -26, borderRadius: 110, opacity: siri,
+            position: 'absolute', inset: -26, borderRadius: 110, opacity: glow,
             background: `conic-gradient(from ${hue}deg, #FF6FD8, #7A5CFF, #3EC5FF, #FFB86B, #FF6FD8)`, filter: 'blur(30px)',
           }}
         />
@@ -252,7 +252,7 @@ const Intro: React.FC = () => {
   );
 };
 
-// شارة «أمر صوتي» وقت الكلام
+// شارة «تذكير بصوتج» وقت الكلام
 const VoiceChip: React.FC = () => {
   const frame = useCurrentFrame();
   const on = interpolate(frame, [SPEECH[0] - 4, SPEECH[0] + 6, SPEECH[1], SPEECH[1] + 10], [0, 1, 1, 0], clamp);
@@ -266,7 +266,7 @@ const VoiceChip: React.FC = () => {
       }}
     >
       <MicIcon size={38} />
-      <span style={{color: INK, fontSize: 34, fontWeight: 900}}>أمر صوتي</span>
+      <span style={{color: INK, fontSize: 34, fontWeight: 900}}>تذكير بصوتج</span>
     </div>
   );
 };
@@ -306,7 +306,7 @@ const Outro: React.FC = () => {
 
 export const Attendance: React.FC = () => {
   const total = totalFrames();
-  // الموسيقى: عالية في الانترو والأوترو، وتنخفض تحت الأمر الصوتي
+  // الموسيقى: عالية في الانترو والأوترو، وتنخفض تحت صوت التذكير
   const music = (f: number) =>
     interpolate(f, [0, 6, SPEECH[0] - 12, SPEECH[0], SPEECH[1] + 4, SPEECH[1] + 18, total - 30, total], [0, 0.75, 0.75, 0.12, 0.12, 0.6, 0.6, 0], clamp);
   return (
@@ -317,12 +317,12 @@ export const Attendance: React.FC = () => {
       <Title />
       <Phone />
       <VoiceChip />
-      <StepCard n="١" title="افتحي التطبيق بصوتج" sub="قولي الأمر لسيري… بدون ما تدورين عليه" from={SPEECH[0] - 6} to={SIRI + 8}>
+      <StepCard n="١" title="اختصار يذكّرج بصوتج" sub="من تطبيق الاختصارات Shortcuts" from={SPEECH[0] - 6} to={RUN + 8}>
         <div style={{marginTop: 8}}>
           <VoiceWave />
         </div>
       </StepCard>
-      <StepCard n="٢" title="يفتح تطبيق وزارة التربية" sub="وبصمة التواجد مربوطة مباشرة بالوزارة" from={APP_OPEN - 4} to={PHONE_IN + CLIP - 4} />
+      <StepCard n="٢" title="ويفتح لج تطبيق وزارة التربية" sub="مباشرة… عشان تسجلين بصمة التواجد" from={APP_OPEN - 4} to={PHONE_IN + CLIP - 4} />
       <Outro />
 
       <Audio src={staticFile('music/background.wav')} volume={music} />
@@ -330,7 +330,7 @@ export const Attendance: React.FC = () => {
       <Sequence from={22} durationInFrames={45}><Audio src={staticFile('sfx/riser.wav')} volume={0.3} /></Sequence>
       <Sequence from={PHONE_IN - 4} durationInFrames={30}><Audio src={staticFile('sfx/swoosh-up.wav')} volume={0.6} /></Sequence>
       <Sequence from={SPEECH[0] - 6} durationInFrames={12}><Audio src={staticFile('sfx/pop.wav')} volume={0.4} /></Sequence>
-      <Sequence from={SIRI - 4} durationInFrames={60}><Audio src={staticFile('sfx/shimmer.wav')} volume={0.35} /></Sequence>
+      <Sequence from={RUN - 4} durationInFrames={60}><Audio src={staticFile('sfx/shimmer.wav')} volume={0.35} /></Sequence>
       <Sequence from={APP_OPEN - 4} durationInFrames={12}><Audio src={staticFile('sfx/pop.wav')} volume={0.45} /></Sequence>
       <Sequence from={OUTRO_START} durationInFrames={30}><Audio src={staticFile('sfx/swoosh-down.wav')} volume={0.55} /></Sequence>
       <Sequence from={OUTRO_START + 34} durationInFrames={36}><Audio src={staticFile('sfx/impact.wav')} volume={0.45} /></Sequence>
