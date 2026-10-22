@@ -7,11 +7,14 @@ import {FPS as T4_FPS, HEIGHT as T4_H, totalFrames as t4Frames, WIDTH as T4_W} f
 import {Teacher4} from './teacher4/Teacher4';
 import {FPS as C46_FPS, HEIGHT as C46_H, totalFrames as c46Frames, WIDTH as C46_W} from './conference46/config';
 import {Recommendations46} from './conference46/Recommendations';
+import {FPS as NB_FPS, HEIGHT as NB_H, NotebookPromo, totalFrames as nbFrames, WIDTH as NB_W} from './notebook/Notebook';
 import {FPS as C46B_FPS, HEIGHT as C46B_H, Recommendations46V2, totalFrames as c46bFrames, WIDTH as C46B_W} from './conference46/v2/Recommendations2';
 
 export const RemotionRoot: React.FC = () => {
   return (
     <>
+      {/* دفتر متابعة ١٢ علمي ٨ — المعلمة جنان المعييف (مصمم بـ Claude Code) */}
+      <Composition id="NotebookPromo" component={NotebookPromo} durationInFrames={nbFrames()} fps={NB_FPS} width={NB_W} height={NB_H} />
       {/* ريل مستقبل التعليم بكلمة — جمعية المعلمين الكويتية */}
       <Composition id="TeachersReel" component={Reel} durationInFrames={totalFrames()} fps={FPS} width={WIDTH} height={HEIGHT} />
       {/* أبرز 15 توصية للمؤتمر التربوي السادس والأربعين — موشن جرافيك عمودي */}
