@@ -10,13 +10,13 @@ export const FPS = 30;
 export const WIDTH = 1080;
 export const HEIGHT = 1920;
 const BAR = 69; // 2.3 ثانية = بار واحد على 104.35 BPM (نفس tools/compose_formal.py)
-export const INTRO = 5 * BAR;
+export const INTRO = 4 * BAR;
 export const SLOT = 4 * BAR;
 export const OUTRO = 4 * BAR;
 const VO_DELAY = 14;
 // مدة كل مقطع صوتي بالفريمات (vo00 انترو، vo01..vo15 التوصيات، vo16 الختام)
-const VO_SEC = [9.8, 6.64, 6.95, 7.29, 6.92, 6.95, 5.69, 5.09, 7.05, 6.27, 5.93, 6.11, 7.52, 7.31, 6.48, 8.36, 6.82];
-const INTRO_VO_AT = 40;
+const VO_SEC = [4.55, 6.64, 6.95, 7.29, 6.92, 6.95, 5.69, 5.09, 7.05, 6.27, 5.93, 6.11, 7.52, 7.31, 6.48, 8.36, 6.82];
+const INTRO_VO_AT = 30;
 // مجلد ملفات التعليق الصوتي داخل public — يتغير بـ --props='{"voice":"c46/vo2"}'، وفاضي = بدون تعليق
 const VOICE: string = (getInputProps() as {voice?: string}).voice ?? 'c46/vo';
 const Vo: React.FC<{n: number}> = ({n}) => (VOICE ? <Audio src={staticFile(`${VOICE}/vo${String(n).padStart(2, '0')}.mp3`)} volume={1} /> : null);
@@ -339,17 +339,17 @@ const Intro: React.FC = () => {
   const f = useCurrentFrame();
   const {fps} = useVideoConfig();
   const exit = 1 - pr(f, INTRO - 44, 20);
-  const num = spring({frame: f - 150, fps, config: {damping: 11}});
-  const count = Math.round(interpolate(f, [150, 200], [1, 15], {...clamp, easing: out}));
+  const num = spring({frame: f - 110, fps, config: {damping: 11}});
+  const count = Math.round(interpolate(f, [110, 150], [1, 15], {...clamp, easing: out}));
   return (
     <AbsoluteFill style={{direction: 'rtl', fontFamily, textAlign: 'center'}}>
       <div style={{position: 'absolute', top: 1150, left: 40, right: 40, opacity: exit}}>
-        <div style={{fontSize: 64, fontWeight: 900, color: '#fff', textShadow: '0 0 40px rgba(127,230,242,.35)', ...reveal(f, 80, 20)}}>أبرز توصيات المؤتمر</div>
+        <div style={{fontSize: 64, fontWeight: 900, color: '#fff', textShadow: '0 0 40px rgba(127,230,242,.35)', ...reveal(f, 40, 20)}}>أبرز توصيات المؤتمر</div>
         <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 24, marginTop: 40}}>
           <div style={{width: 150, height: 150, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: `radial-gradient(circle at 35% 30%, #ffd796, ${C.gold} 45%, ${C.gold2})`, boxShadow: '0 0 0 10px rgba(246,182,91,.18), 0 14px 40px rgba(232,138,44,.5)', transform: `scale(${num})`}}>
             <span style={{fontFamily: numberFamily, fontSize: 88, fontWeight: 900, color: '#3b1d02', fontVariantNumeric: 'lining-nums'}}>{count}</span>
           </div>
-          <div style={{textAlign: 'right', ...reveal(f, 158)}}>
+          <div style={{textAlign: 'right', ...reveal(f, 118)}}>
             <div style={{fontSize: 54, fontWeight: 900, color: '#fff'}}>توصية استراتيجية</div>
             <div style={{fontSize: 32, fontWeight: 700, color: C.cyan}}>الأكثر أثرًا وقابلية للتنفيذ</div>
           </div>
@@ -361,7 +361,6 @@ const Intro: React.FC = () => {
       </Sequence>
       <Sfx at={4} src="cinematic-boom" v={0.4} dur={FPS * 3} />
       <Sfx at={40} src="shimmer" v={0.3} />
-      <Sfx at={150} src="impact" v={0.3} />
       <Sfx at={INTRO - 44} src="swoosh-up" v={0.4} dur={20} />
     </AbsoluteFill>
   );
