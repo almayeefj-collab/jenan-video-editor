@@ -5,6 +5,8 @@
     recs   : مقطع لكل توصية، يبدأ بضربة brass + تيمباني + صنج، والشدة تزيد تدريجياً
     outro  : كورد ختامي كبير يتلاشى
 
+--style soft: نسخة هادئة (بيانو ووتريات ممتدة) بدون الضربات بين المشاهد.
+
 الاستخدام:
     python tools/compose_formal.py --sf2 GeneralUser-GS.sf2 --bpm 96 --intro 6 --recs 15 --rec-bars 3 --outro 4 \
         -o remotion/public/music/formal.wav
@@ -31,6 +33,9 @@ CH = {
     'basses': (6, 43),  # Contrabass
     'spicc': (7, 45),  # Pizzicato Strings
     'drums': (9, 0),
+    # آلات النسخة الهادئة (--style soft)
+    'piano': (8, 0),  # Acoustic Grand Piano
+    'pad': (11, 89),  # Warm Pad
 }
 KICK, CRASH, SUS_CYM = 36, 49, 51
 
@@ -158,6 +163,65 @@ def compose(bpm, intro, recs, rec_bars, outro):
     return s, total_bars * bar + 4.5
 
 
+# النسخة الهادئة: بيانو + وتريات ممتدة + باد دافي، بدون ضربات ولا بيتزيكاتو بين التوصيات
+SOFT_PROG = [
+    ('D', ['D', 'F#', 'A'], ('D', 2)),
+    ('A', ['C#', 'E', 'A'], ('C#', 2)),
+    ('B', ['B', 'D', 'F#'], ('B', 1)),
+    ('G', ['G', 'B', 'D'], ('G', 1)),
+]
+# لحن البيانو لكل جملة (4 بارات): (نوتة، أوكتاف، بداية بالـ beats، طول)
+SOFT_MEL = [
+    [[('A', 5, 0, 2), ('F#', 5, 2, 1), ('E', 5, 3, 1)], [('E', 5, 0, 3), ('C#', 5, 3, 1)], [('D', 5, 0, 2), ('F#', 5, 2, 2)], [('D', 5, 0, 2), ('B', 4, 2, 2)]],
+    [[('D', 5, 0, 1), ('E', 5, 1, 1), ('F#', 5, 2, 2)], [('E', 5, 0, 2), ('A', 4, 2, 2)], [('B', 4, 0, 1), ('D', 5, 1, 1), ('F#', 5, 2, 2)], [('G', 5, 0, 2), ('F#', 5, 2, 1), ('E', 5, 3, 1)]],
+]
+
+
+def compose_soft(bpm, intro, recs, rec_bars, outro):
+    s = Score(bpm)
+    b = s.beat
+    bar = 4 * b
+    body = intro + recs * rec_bars
+    total_bars = body + outro
+    for n in range(body):
+        t0 = n * bar
+        _, tones, (bass, bo) = SOFT_PROG[n % 4]
+        rec_i = (n - intro) // rec_bars if n >= intro else -1
+        # الشدة تكبر بهدوء: انترو خفيف، ثم تزيد مع التوصيات
+        level = 0.45 + 0.25 * min(1, n / max(1, intro)) if rec_i < 0 else 0.7 + 0.3 * rec_i / max(1, recs - 1)
+        for i, nm in enumerate(tones):
+            s.note('strings', t0, bar + b * 0.4, midi(nm, 4), 42 + 30 * level)
+        s.note('pad', t0, bar + b * 0.4, midi(tones[0], 4), 40 + 20 * level)
+        s.note('pad', t0, bar + b * 0.4, midi(tones[2], 4), 36 + 20 * level)
+        if rec_i >= 0 or n >= intro - 2:
+            s.note('basses', t0, bar, midi(bass, bo + 1), 40 + 30 * level)
+        # أربيجيو بيانو ناعم 8ths
+        arp = [midi(bass, bo + 1), midi(tones[2], 3), midi(tones[0], 4), midi(tones[1], 4), midi(tones[2], 4), midi(tones[1], 4), midi(tones[0], 4), midi(tones[2], 3)]
+        for k, key in enumerate(arp):
+            v = (44 + 18 * level) * (1.12 if k % 4 == 0 else 1.0)
+            s.note('piano', t0 + k * b / 2, b * 0.9, key, v)
+        # اللحن يدخل من أول توصية
+        if rec_i >= 0:
+            phrase = SOFT_MEL[(rec_i // 2) % 2]
+            for nm, octv, st, dur in phrase[(n - intro) % 4]:
+                s.note('piano', t0 + st * b, dur * b * 0.95, midi(nm, octv), 50 + 16 * level)
+        if rec_i >= recs // 3:
+            for nm in tones:
+                s.note('choir', t0, bar + b * 0.4, midi(nm, 4), 30 + 25 * level)
+        if rec_i >= 2 * recs // 3:
+            s.note('strings', t0, bar, midi(tones[0], 5), 40 + 25 * level)
+    # الختام: كورد D ممتد يتلاشى
+    t0 = body * bar
+    for i, nm in enumerate(['D', 'F#', 'A']):
+        s.note('strings', t0, bar * outro, midi(nm, 4), 80)
+        s.note('choir', t0, bar * outro, midi(nm, 4), 60)
+        s.note('pad', t0, bar * outro, midi(nm, 4), 55)
+    s.note('basses', t0, bar * outro, midi('D', 2), 70)
+    for k, key in enumerate([midi('D', 3), midi('A', 3), midi('D', 4), midi('F#', 4), midi('A', 4), midi('D', 5)]):
+        s.note('piano', t0 + k * b / 2, bar * 2, key, 66)
+    return s, total_bars * bar + 4.5
+
+
 def render(score, length, sf2):
     syn = tinysoundfont.Synth(samplerate=SR, gain=-6)
     sf = syn.sfload(sf2)
@@ -204,9 +268,11 @@ def main():
     ap.add_argument('--recs', type=int, default=15)
     ap.add_argument('--rec-bars', type=int, default=3)
     ap.add_argument('--outro', type=int, default=4)
+    ap.add_argument('--style', choices=['formal', 'soft'], default='formal')
     ap.add_argument('-o', '--out', required=True)
     a = ap.parse_args()
-    score, length = compose(a.bpm, a.intro, a.recs, a.rec_bars, a.outro)
+    fn = compose_soft if a.style == 'soft' else compose
+    score, length = fn(a.bpm, a.intro, a.recs, a.rec_bars, a.outro)
     audio = reverb(render(score, length, a.sf2))
     audio /= np.abs(audio).max() / 0.89
     fade = int(3 * SR)

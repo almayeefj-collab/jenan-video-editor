@@ -154,7 +154,7 @@ const Footer: React.FC = () => {
         ))}
       </div>
       <div style={{fontSize: 26, fontWeight: 700, color: '#e9f4ff'}}>
-        جمعية المعلمين الكويتية<span style={{color: C.cyan, margin: '0 12px'}}>|</span>4 – 6 أكتوبر 2026<span style={{color: C.cyan, margin: '0 12px'}}>|</span>مركز الشيخ جابر الأحمد الثقافي
+        جمعية المعلمين الكويتية
       </div>
     </div>
   );
@@ -319,7 +319,7 @@ const RecScene: React.FC<{i: number}> = ({i}) => {
       <Sequence from={VO_DELAY}>
         <Vo n={i + 1} />
       </Sequence>
-      <Sfx at={0} src="whoosh" v={0.45} />
+      <Sfx at={0} src="whoosh" v={0.3} />
       <Sfx at={16} src="pop" v={0.3} dur={15} />
       {r.pillars.map((_, k) => (
         <Sfx key={k} at={110 + k * 16} src="pop" v={0.22} dur={15} />
@@ -376,9 +376,6 @@ const Outro: React.FC = () => {
         <div style={{fontSize: 72, fontWeight: 900, color: '#fff', ...reveal(f, 26, 20)}}>جمعية المعلمين الكويتية</div>
         <div style={{fontSize: 46, fontWeight: 800, color: C.gold, marginTop: 8, ...reveal(f, 40)}}>المؤتمر التربوي السادس والأربعون</div>
         <div style={{fontSize: 36, fontWeight: 700, color: C.cyan, marginTop: 12, ...reveal(f, 52)}}>{SLOGAN}</div>
-        <div style={{display: 'inline-block', marginTop: 40, padding: '14px 40px', borderRadius: 999, fontSize: 32, fontWeight: 700, color: '#fff', border: `1.5px solid ${C.cyan}`, background: 'rgba(127,230,242,.1)', ...reveal(f, 66)}}>
-          4 – 6 أكتوبر 2026 · مركز الشيخ جابر الأحمد الثقافي
-        </div>
       </div>
       <AbsoluteFill style={{background: C.deep, opacity: pr(f, OUTRO - 36, 36)}} />
       <Sequence from={OUTRO_VO_AT}>
@@ -427,6 +424,6 @@ export const Recommendations46V2: React.FC = () => (
     <Header />
     <Footer />
     <Logos />
-    <Audio src={staticFile('c46/formal.mp3')} volume={musicVolume} />
+    <Audio src={staticFile('c46/soft.mp3')} volume={musicVolume} />
   </AbsoluteFill>
 );
