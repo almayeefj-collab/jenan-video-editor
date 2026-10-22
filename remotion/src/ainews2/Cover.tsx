@@ -67,4 +67,5 @@ export const COVERS: Record<string, CoverProps> = {
   '03': {number: 3, title: 'Shortcuts يذكّرك *بالبصمة*', tools: ['Shortcuts', 'تطبيق وزارة التربية'], tag: 'تذكير بصمة التواجد'},
   '04': {number: 4, title: 'ChatGPT يسوي *Slides*', tools: ['Kling 4.0', 'Grok', 'DeepSeek']},
   '05': {number: 5, title: 'Claude يحضّر *دروسك*', tools: ['Claude', 'Canva'], tag: 'شرح خطوة بخطوة'},
+  '06': {number: 6, title: 'سويت *دفتر متابعة* لصفي', tools: ['Claude Code'], tag: 'مشروعي'},
 };

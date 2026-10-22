@@ -8,3 +8,4 @@ __pycache__/
 !remotion/public/**
 # لقطات المقابلات ومقاطع الاختبار ما ترفع للمستودع
 remotion/public/footage/
+remotion/public/ainews/ep06/raw/source.mp4
