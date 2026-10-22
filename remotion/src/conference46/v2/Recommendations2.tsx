@@ -15,7 +15,7 @@ export const SLOT = 4 * BAR;
 export const OUTRO = 4 * BAR;
 const VO_DELAY = 14;
 // مدة كل مقطع صوتي بالفريمات (vo00 انترو، vo01..vo15 التوصيات، vo16 الختام)
-const VO_SEC = [4.55, 6.64, 6.95, 7.29, 6.92, 6.95, 5.69, 5.09, 7.05, 6.27, 5.93, 6.11, 7.52, 7.31, 6.48, 8.36, 6.82];
+const VO_SEC = [4.26, 7.08, 7.65, 6.97, 6.84, 7.08, 6.9, 6.58, 6.92, 7.16, 6.92, 6.74, 7.24, 7.63, 7.24, 8.99, 5.8];
 const INTRO_VO_AT = 30;
 // مجلد ملفات التعليق الصوتي داخل public — يتغير بـ --props='{"voice":"c46/vo2"}'، وفاضي = بدون تعليق
 const VOICE: string = (getInputProps() as {voice?: string}).voice ?? 'c46/vo';
