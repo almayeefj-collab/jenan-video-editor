@@ -15,8 +15,8 @@ export const SLOT = 4 * BAR;
 export const OUTRO = 4 * BAR;
 const VO_DELAY = 14;
 // مدة كل مقطع صوتي بالفريمات (vo00 انترو، vo01..vo15 التوصيات، vo16 الختام)
-const VO_SEC = [8.91, 6.4, 6.84, 6.35, 5.64, 6.37, 6.11, 5.56, 6.3, 6.53, 6.27, 6.01, 6.37, 6.92, 6.53, 7.97, 5.72];
-const INTRO_VO_AT = 50;
+const VO_SEC = [9.8, 6.64, 6.95, 7.29, 6.92, 6.95, 5.69, 5.09, 7.05, 6.27, 5.93, 6.11, 7.52, 7.31, 6.48, 8.36, 6.82];
+const INTRO_VO_AT = 40;
 // مجلد ملفات التعليق الصوتي داخل public — يتغير بـ --props='{"voice":"c46/vo2"}'، وفاضي = بدون تعليق
 const VOICE: string = (getInputProps() as {voice?: string}).voice ?? 'c46/vo';
 const Vo: React.FC<{n: number}> = ({n}) => (VOICE ? <Audio src={staticFile(`${VOICE}/vo${String(n).padStart(2, '0')}.mp3`)} volume={1} /> : null);
