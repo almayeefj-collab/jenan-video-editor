@@ -8,3 +8,6 @@ __pycache__/
 !remotion/public/**
 # لقطات المقابلات ومقاطع الاختبار ما ترفع للمستودع
 remotion/public/footage/
+
+# web-sized clips used by the Teacher 4.0 game page
+!teacher40/media/*.mp4
