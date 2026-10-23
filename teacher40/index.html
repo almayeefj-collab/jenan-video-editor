@@ -2552,7 +2552,7 @@ var qrcode = function() {
   function paint(nodes,narrow){$app.className="wrap"+(narrow?" narrow":"");$app.replaceChildren(...nodes.filter(Boolean))}
   const rid=()=>Math.random().toString(36).slice(2,10);
   function peerOpts(){
-    const o={debug:0,config:{iceServers:[{urls:"stun:stun.l.google.com:19302"},{urls:"stun:stun1.l.google.com:19302"},{urls:"stun:global.stun.twilio.com:3478"}]}};
+    const o={debug:0,config:{iceCandidatePoolSize:4,iceServers:[{urls:"stun:stun.l.google.com:19302"},{urls:"stun:stun1.l.google.com:19302"},{urls:"stun:global.stun.twilio.com:3478"}]}};
     const s=params.get("server");if(s){const[h,p]=s.split(":");Object.assign(o,{host:h,port:+p||9000,path:"/",secure:false})}
     return o;
   }
@@ -2686,11 +2686,12 @@ var qrcode = function() {
   let G={phase:"lobby",epoch:null},pPeer=null,pConn=null,pStatus="idle",pErr="",retryT=null;
   const saveP=()=>store.set("t40-player",P);
   const answeredCount=()=>Object.keys(P.answers).length;
-  function sendState(){if(pConn&&pConn.open)pConn.send({t:"state",pid:P.pid,name:P.name.slice(0,30),color:P.color,epoch:P.epoch,si:P.si,n:answeredCount(),score:P.score,done:P.done})}
-  function scheduleRetry(){clearTimeout(retryT);retryT=setTimeout(connectHost,3000)}
+  function sendState(){if(pConn&&pConn.open&&P.name)pConn.send({t:"state",pid:P.pid,name:P.name.slice(0,30),color:P.color,epoch:P.epoch,si:P.si,n:answeredCount(),score:P.score,done:P.done})}
+  function scheduleRetry(){clearTimeout(retryT);retryT=setTimeout(connectHost,1500)}
   function connectHost(){
     clearTimeout(retryT);
-    if(!P.code||!P.name)return;
+    if(!P.code)return;
+    if(pConn&&pConn.open){sendState();return}
     if(!pPeer||pPeer.destroyed){
       pStatus="connecting";pPeer=new Peer(peerOpts());
       pPeer.on("open",()=>connectHost());
@@ -2708,7 +2709,7 @@ var qrcode = function() {
     c.on("data",d=>{if(pConn===c)onGame(d)});
     c.on("close",()=>{if(pConn!==c)return;pStatus="connecting";renderPlayer();scheduleRetry()});
     c.on("error",()=>{if(pConn!==c)return;scheduleRetry()});
-    setTimeout(()=>{if(pConn===c&&!c.open)connectHost()},8000);
+    setTimeout(()=>{if(pConn===c&&!c.open)connectHost()},5000);
   }
   function onGame(d){
     if(!d||typeof d!=="object"||d.t!=="game")return;
@@ -2725,11 +2726,12 @@ var qrcode = function() {
     if(mode!=="player")return;
     const top=playerTop();
     if(!P.name||!P.code){
+      if(document.getElementById("pname"))return;
       const codeIn=el("input",{type:"text",id:"pcode",class:"code",inputmode:"numeric",maxlength:"4",placeholder:"0000",value:P.code||""});
       const nameIn=el("input",{type:"text",id:"pname",maxlength:"30",placeholder:"مثال: أ. سارة",value:P.name||""});
       const msg=el("p",{class:"err"});
       const go=()=>{Sound.init();Sound.resume();preloadPhotos();const c=codeIn.value.replace(/\D/g,""),n=nameIn.value.trim();if(c.length!==4){msg.textContent="اكتب رمز اللعبة المكوّن من 4 أرقام.";return codeIn.focus()}if(!n){msg.textContent="اكتب اسمك.";return nameIn.focus()}
-        P.code=c;P.name=n;saveP();pStatus="connecting";renderPlayer();connectHost()};
+        const ready=pConn&&pConn.open&&P.code===c;P.code=c;P.name=n;saveP();if(!ready)pStatus="connecting";connectHost();renderPlayer()};
       nameIn.onkeydown=e=>{if(e.key==="Enter")go()};
       paint([top,el("div",{class:"collage"},STAGES.map((s,i)=>el("figure",{class:"tile",style:`--c:${s.c}`},[artNode(i),el("figcaption",{},[el("b",{text:s.v}),el("span",{text:s.rev})])]))),el("div",{class:"card in"},[el("span",{class:"eyebrow",text:"أهلًا بك في التحدّي"}),el("h1",{text:"انضم إلى اللعبة"}),
         params.get("join")?null:el("label",{},[el("span",{text:"رمز اللعبة (على شاشة المقدّم)"}),codeIn]),
@@ -2739,7 +2741,7 @@ var qrcode = function() {
     if(pStatus!=="ok"&&G.phase==="lobby"){
       paint([top,el("div",{class:"card in"},[el("span",{class:"eyebrow",text:"رمز اللعبة "+P.code}),el("h2",{text:pStatus==="nohost"?"لم نجد اللعبة بعد":"جاري الاتصال بشاشة المقدّم…"}),
         pErr?el("p",{class:"muted",text:pErr}):el("p",{class:"muted",text:"لحظات… نحاول مرة أخرى تلقائيًا."}),
-        el("div",{class:"actions"},[btn("تغيير الرمز أو الاسم",()=>{P.name="";saveP();if(pConn)try{pConn.close()}catch(e){};renderPlayer()},"btn ghost small")])])],true);return;
+        el("div",{class:"actions"},[btn("تغيير الرمز أو الاسم",()=>{P.name="";saveP();renderPlayer()},"btn ghost small")])])],true);return;
     }
     if(G.phase==="lobby"){
       paint([top,el("div",{class:"collage"},STAGES.map((s,i)=>el("figure",{class:"tile",style:`--c:${s.c}`},[artNode(i),el("figcaption",{},[el("b",{text:s.v}),el("span",{text:s.rev})])]))),el("div",{class:"card in"},[el("span",{class:"eyebrow",text:"تم الانضمام ✓"}),el("h1",{text:`أهلًا ${P.name}`}),el("p",{class:"muted",text:"انظر إلى الشاشة: اسمك ظاهر الآن. انتظر حتى يضغط المقدّم «ابدأ» وستظهر لك المرحلة الأولى تلقائيًا."})])],true);return;
@@ -2941,10 +2943,10 @@ var qrcode = function() {
     paint([el("div",{class:"topbar"},[brand()]),el("div",{class:"card in"},[el("span",{class:"eyebrow",text:"ورشة معلم 4.0"}),el("h1",{text:"من البخار إلى الذكاء الاصطناعي"}),
       el("p",{class:"muted",text:"تحدٍّ من أربع مراحل: كل مرحلة ثورة صناعية غيّرت المدرسة ودور المعلم. من يصل أولًا بأعلى النقاط يكتشف سرّ اسم الورشة ويفوز."})]),
       el("div",{class:"choose"},[
-        el("div",{class:"card"},[el("h2",{text:"أنا معلم مشارك"}),el("label",{},[el("span",{text:"رمز اللعبة"}),codeIn]),btn("انضم ←",()=>{const c=codeIn.value.replace(/\D/g,"");if(c.length!==4)return codeIn.focus();P.code=c;saveP();mode="player";renderPlayer()})]),
+        el("div",{class:"card"},[el("h2",{text:"أنا معلم مشارك"}),el("label",{},[el("span",{text:"رمز اللعبة"}),codeIn]),btn("انضم ←",()=>{const c=codeIn.value.replace(/\D/g,"");if(c.length!==4)return codeIn.focus();P.code=c;saveP();mode="player";renderPlayer();connectHost()})]),
         el("div",{class:"card"},[el("h2",{text:"أنا المقدّم"}),el("p",{class:"muted",text:"اعرض هذه الشاشة على البروجكتر: يظهر رمز اللعبة وأسماء المنضمين ومسار السباق."}),btn("افتح لوحة المقدّم",()=>{store.set("t40-role","host");mode="host";Sound.startMusic();startHost()},"btn ghost")])])]);
   }
-  if(params.get("join")){mode="player";renderPlayer();if(P.name)connectHost()}
+  if(params.get("join")){mode="player";renderPlayer();connectHost()}
   else if(store.get("t40-role",null)==="host"){mode="host";startHost()}
   else if(P.name&&P.code){mode="player";renderPlayer();connectHost()}
   else landing();
