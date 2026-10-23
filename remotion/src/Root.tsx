@@ -3,6 +3,7 @@ import {HelloJenan, helloJenanSchema} from './HelloJenan';
 import {FPS, HEIGHT, totalFrames, WIDTH} from './reel/config';
 import {Reel} from './reel/Reel';
 import {FPS as SD_FPS, HEIGHT as SD_H, SalwaDinner, totalFrames as sdFrames, WIDTH as SD_W} from './salwa/SalwaDinner';
+import {ConferenceInterviews, FPS as CI_FPS, HEIGHT as CI_H, totalFrames as ciFrames, WIDTH as CI_W} from './interviews/ConferenceInterviews';
 import {FPS as T4_FPS, HEIGHT as T4_H, totalFrames as t4Frames, WIDTH as T4_W} from './teacher4/config';
 import {Teacher4} from './teacher4/Teacher4';
 import {FPS as C46_FPS, HEIGHT as C46_H, totalFrames as c46Frames, WIDTH as C46_W} from './conference46/config';
@@ -22,6 +23,8 @@ export const RemotionRoot: React.FC = () => {
       <Composition id="Teacher4" component={Teacher4} durationInFrames={t4Frames()} fps={T4_FPS} width={T4_W} height={T4_H} />
       {/* حفل عشاء نجاح مؤتمر الكويت الدولي الأول للتدريب والتطوير — أ. سلوى الطراروة */}
       <Composition id="SalwaDinner" component={SalwaDinner} durationInFrames={sdFrames()} fps={SD_FPS} width={SD_W} height={SD_H} />
+      {/* أبرز لقاءات مؤتمر الكويت الدولي الأول للتدريب والتطوير — أفقي */}
+      <Composition id="ConferenceInterviews" component={ConferenceInterviews} durationInFrames={ciFrames()} fps={CI_FPS} width={CI_W} height={CI_H} />
       {/* أفقي 16:9 */}
       <Composition
         id="HelloJenan"
