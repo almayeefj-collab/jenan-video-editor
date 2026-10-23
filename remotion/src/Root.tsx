@@ -8,11 +8,14 @@ import {FPS as T4_FPS, HEIGHT as T4_H, totalFrames as t4Frames, WIDTH as T4_W} f
 import {Teacher4} from './teacher4/Teacher4';
 import {FPS as C46_FPS, HEIGHT as C46_H, totalFrames as c46Frames, WIDTH as C46_W} from './conference46/config';
 import {Recommendations46} from './conference46/Recommendations';
+import {AttendanceReminder, FPS as AR_FPS, HEIGHT as AR_H, totalFrames as arFrames, WIDTH as AR_W} from './bassma/AttendanceReminder';
 import {FPS as C46B_FPS, HEIGHT as C46B_H, Recommendations46V2, totalFrames as c46bFrames, WIDTH as C46B_W} from './conference46/v2/Recommendations2';
 
 export const RemotionRoot: React.FC = () => {
   return (
     <>
+      {/* تذكير بصمة التواجد — إنشاء الاختصار يدوياً وربطه بتطبيق وزارة التربية */}
+      <Composition id="AttendanceReminder" component={AttendanceReminder} durationInFrames={arFrames()} fps={AR_FPS} width={AR_W} height={AR_H} />
       {/* ريل مستقبل التعليم بكلمة — جمعية المعلمين الكويتية */}
       <Composition id="TeachersReel" component={Reel} durationInFrames={totalFrames()} fps={FPS} width={WIDTH} height={HEIGHT} />
       {/* أبرز 15 توصية للمؤتمر التربوي السادس والأربعين — موشن جرافيك عمودي */}
