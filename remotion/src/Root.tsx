@@ -23,8 +23,9 @@ export const RemotionRoot: React.FC = () => {
       <Composition id="Teacher4" component={Teacher4} durationInFrames={t4Frames()} fps={T4_FPS} width={T4_W} height={T4_H} />
       {/* حفل عشاء نجاح مؤتمر الكويت الدولي الأول للتدريب والتطوير — أ. سلوى الطراروة */}
       <Composition id="SalwaDinner" component={SalwaDinner} durationInFrames={sdFrames()} fps={SD_FPS} width={SD_W} height={SD_H} />
-      {/* أبرز لقاءات مؤتمر الكويت الدولي الأول للتدريب والتطوير — أفقي */}
-      <Composition id="ConferenceInterviews" component={ConferenceInterviews} durationInFrames={ciFrames()} fps={CI_FPS} width={CI_W} height={CI_H} />
+      {/* أبرز لقاءات مؤتمر الكويت الدولي الأول للتدريب والتطوير — أفقي، جزئين */}
+      <Composition id="ConferenceInterviews1" component={ConferenceInterviews} durationInFrames={ciFrames(1)} fps={CI_FPS} width={CI_W} height={CI_H} defaultProps={{part: 1 as const}} />
+      <Composition id="ConferenceInterviews2" component={ConferenceInterviews} durationInFrames={ciFrames(2)} fps={CI_FPS} width={CI_W} height={CI_H} defaultProps={{part: 2 as const}} />
       {/* أفقي 16:9 */}
       <Composition
         id="HelloJenan"
