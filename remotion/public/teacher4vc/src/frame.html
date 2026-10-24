@@ -1,0 +1,100 @@
+<!doctype html>
+<html dir="rtl"><head><meta charset="utf-8">
+<style>
+@font-face{font-family:Cairo;src:url(Cairo.ttf)}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;background:transparent;overflow:hidden;font-family:Cairo}
+.abs{position:absolute}
+#bg{left:0;top:0}
+#top{left:0;top:0;width:1080px;height:540px;
+  -webkit-mask-image:linear-gradient(#000 96%,transparent)}
+#foot{left:0;top:1795px;width:1080px;height:125px;
+  -webkit-mask-image:linear-gradient(transparent 0,#000 25%)}
+.tilebrd{border:3px solid #2f7bff;border-radius:26px;box-shadow:0 0 24px rgba(47,123,255,.55)}
+.name{bottom:18px;height:54px;padding:0 22px;border-radius:27px;background:rgba(3,14,40,.78);
+  color:#fff;font-size:27px;font-weight:700;display:flex;align-items:center;gap:10px;border:1px solid rgba(120,170,255,.35)}
+.mic{width:30px;height:30px}
+.hdr{left:40px;top:560px;width:1000px;height:62px;display:flex;align-items:center;justify-content:space-between;padding:0 26px;color:#cfe0ff;font-size:25px;font-weight:600}
+.live{display:flex;align-items:center;gap:12px;color:#fff;font-weight:700}
+.btn{width:74px;height:74px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#16295a;border:1px solid rgba(140,180,255,.35)}
+.btn svg{width:36px;height:36px}
+.pill{left:50%;transform:translateX(-50%);top:1362px;height:72px;padding:0 70px;border:3px solid #2f7bff;border-radius:22px;
+  color:#fff;font-size:40px;font-weight:800;display:flex;align-items:center;background:rgba(4,20,60,.6);box-shadow:0 0 22px rgba(47,123,255,.45)}
+.line{top:1398px;height:2px;width:200px}
+#qrcard{left:110px;top:1458px;width:330px;height:330px;background:#fff;border-radius:26px;padding:14px;box-shadow:0 0 40px rgba(47,123,255,.6)}
+#qrcard img{width:100%;height:100%}
+.qtxt{right:90px;top:1485px;width:520px;color:#fff;text-align:right}
+</style></head><body>
+<!-- background with transparent holes for the two video tiles -->
+<svg id="bg" class="abs" width="1080" height="1920">
+  <defs>
+    <radialGradient id="g" cx="50%" cy="45%" r="75%">
+      <stop offset="0" stop-color="#00265e"/><stop offset=".55" stop-color="#001638"/><stop offset="1" stop-color="#000d24"/>
+    </radialGradient>
+    <linearGradient id="panel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0a1f4d"/><stop offset="1" stop-color="#071735"/>
+    </linearGradient>
+  </defs>
+  <path fill-rule="evenodd" fill="url(#g)" d="M0 0H1080V1920H0Z
+    M576 632 h428 a22 22 0 0 1 22 22 v576 a22 22 0 0 1 -22 22 h-428 a22 22 0 0 1 -22 -22 v-576 a22 22 0 0 1 22 -22Z
+    M76 632 h428 a22 22 0 0 1 22 22 v576 a22 22 0 0 1 -22 22 h-428 a22 22 0 0 1 -22 -22 v-576 a22 22 0 0 1 22 -22Z"/>
+  <!-- call window panel (also with holes) -->
+  <path fill-rule="evenodd" fill="url(#panel)" opacity=".92" d="M70 552 h940 a30 30 0 0 1 30 30 v730 a30 30 0 0 1 -30 30 h-940 a30 30 0 0 1 -30 -30 v-730 a30 30 0 0 1 30 -30Z
+    M576 632 h428 a22 22 0 0 1 22 22 v576 a22 22 0 0 1 -22 22 h-428 a22 22 0 0 1 -22 -22 v-576 a22 22 0 0 1 22 -22Z
+    M76 632 h428 a22 22 0 0 1 22 22 v576 a22 22 0 0 1 -22 22 h-428 a22 22 0 0 1 -22 -22 v-576 a22 22 0 0 1 22 -22Z"/>
+  <rect x="40" y="552" width="1000" height="790" rx="30" fill="none" stroke="#2f7bff" stroke-opacity=".55" stroke-width="2"/>
+  <line x1="40" y1="1336" x2="1040" y2="1336" stroke="none"/>
+</svg>
+<img id="top" class="abs" src="top.png">
+
+<div class="hdr abs">
+  <div class="live"><span style="width:16px;height:16px;border-radius:50%;background:#ff3b4e;display:inline-block;box-shadow:0 0 12px #ff3b4e" id="dot"></span>مباشر الآن</div>
+  <div>مكالمة فيديو · ورشة معلم 4.0</div>
+  <div style="display:flex;gap:8px;align-items:center;direction:ltr">
+    <span style="width:6px;height:12px;background:#4ade80;border-radius:2px"></span>
+    <span style="width:6px;height:18px;background:#4ade80;border-radius:2px"></span>
+    <span style="width:6px;height:24px;background:#4ade80;border-radius:2px"></span>
+    <span style="font-size:22px;margin-left:6px">HD</span>
+  </div>
+</div>
+
+<div class="abs tilebrd" style="left:551px;top:629px;width:478px;height:626px"></div>
+<div class="abs tilebrd" style="left:51px;top:629px;width:478px;height:626px;border-color:#5aa0ff"></div>
+
+<div class="abs name" style="right:72px;top:auto;bottom:auto;top:1172px">
+  <svg class="mic" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+  أ. جنان المعيبف
+</div>
+<div class="abs name" style="right:572px;top:1172px">
+  <svg class="mic" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+  مساعد الذكاء الاصطناعي
+</div>
+
+<!-- call controls -->
+<div class="abs" style="left:0;width:1080px;top:1262px;display:flex;justify-content:center;gap:34px;direction:ltr">
+  <div class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></div>
+  <div class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3z"/></svg></div>
+  <div class="btn" style="background:#e5303f;border-color:#ff6b77;width:96px;border-radius:37px"><svg viewBox="0 0 24 24" fill="#fff"><path d="M3 14.5c5-4.7 13-4.7 18 0l-2.3 2.3-3.4-1.6.2-2.6a12 12 0 0 0-7 0l.2 2.6-3.4 1.6z"/></svg></div>
+  <div class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M4 5h16v11H8l-4 4z"/></svg></div>
+  <div class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 4 6"/></svg></div>
+</div>
+
+<!-- evaluation QR -->
+<div class="abs line" style="left:40px;background:linear-gradient(90deg,transparent,#2f7bff)"></div>
+<div class="abs line" style="right:40px;background:linear-gradient(270deg,transparent,#2f7bff)"></div>
+<div class="abs pill">
+  <span style="color:#2f7bff;font-size:34px;margin-left:18px">✦</span>قيّم الورشة<span style="color:#2f7bff;font-size:34px;margin-right:18px">✦</span>
+</div>
+<div id="qrcard" class="abs"><img src="qr.png"></div>
+<div class="abs qtxt">
+  <div style="font-size:50px;font-weight:800;line-height:1.3">رأيك يهمّنا</div>
+  <div style="font-size:31px;line-height:1.6;color:#cfe0ff;margin-top:10px">امسح الباركود بكاميرا الجوال<br>وشاركنا تقييمك للورشة</div>
+  <div style="margin-top:26px;display:flex;align-items:center;gap:14px;font-size:28px;color:#fff;font-weight:700">
+    <span style="display:inline-flex;width:58px;height:58px;border-radius:50%;background:#2f7bff;align-items:center;justify-content:center">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3M7 12h10"/></svg>
+    </span>
+    امسح الآن ←
+  </div>
+</div>
+<img id="foot" class="abs" src="foot.png">
+</body></html>
