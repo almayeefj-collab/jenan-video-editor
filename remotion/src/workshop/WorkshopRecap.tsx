@@ -1,5 +1,5 @@
 // ريل ملخص ورشة «معلم 4.0» — المعلمة جنان المعيبف، ثانوية فاطمة الهاشمية بنات، الأحد 25 أكتوبر 2026
-// الترتيب: البوستر ← التجهيزات ← الحضور (بطاقة الضيوف) ← الورشة مع محاورها ← التفاعل ← الشهادة ← الختام
+// الترتيب: البوستر ← التجهيزات ← الحضور (بطاقة الضيوف) ← الورشة مع محاورها ← التطبيق العملي ← التكريم ← الشهادات ← الختام
 // اللقطات في public/footage/workshop/ (ما ترفع للمستودع)
 import {fade} from '@remotion/transitions/fade';
 import {linearTiming, TransitionSeries} from '@remotion/transitions';
@@ -24,27 +24,29 @@ type Shot =
   | {kind: 'video'; src: string; from: number; dur: number; caption?: Caption; presenter?: boolean}
   | {kind: 'final'; dur: number};
 
-// المحاور من البوستر، كل محور على لقطة من الشرح
+// المحاور تنضاف لاحقاً (caption مع num) على لقطات الشرح
 const SHOTS: Shot[] = [
   {kind: 'poster', dur: 4.2},
-  {kind: 'video', src: '2322.mp4', from: 0, dur: 2.4, caption: {text: 'كل شي جاهز لاستقبالكم'}},
+  {kind: 'video', src: '2322.mp4', from: 0, dur: 2.4},
   {kind: 'video', src: '2327.mp4', from: 0.5, dur: 2.8},
   {kind: 'video', src: '2324.mp4', from: 0, dur: 2.3},
   {kind: 'video', src: '2330.mp4', from: 3.2, dur: 6.6},
   {kind: 'video', src: '2339.mp4', from: 0, dur: 2.9},
   {kind: 'video', src: '2342.mp4', from: 0, dur: 2.9},
   {kind: 'video', src: '2336.mp4', from: 2, dur: 4.2, presenter: true},
-  {kind: 'video', src: '2361.mp4', from: 1, dur: 4, caption: {num: '01', text: 'سبب التسمية: من الثورة الصناعية إلى اليوم'}},
+  {kind: 'video', src: '2361.mp4', from: 1, dur: 4},
   {kind: 'video', src: '2343.mp4', from: 0, dur: 3.2},
-  {kind: 'video', src: '0956.mp4', from: 0, dur: 3.8, caption: {num: '02', text: 'الذكاء الاصطناعي مساعد شخصي للمعلم'}},
-  {kind: 'video', src: '2337.mp4', from: 7, dur: 4, caption: {num: '03', text: 'جدولة الحصص بمساعدة Claude AI'}},
-  {kind: 'video', src: 'jenan_wa.mp4', from: 0.5, dur: 4, caption: {num: '04', text: 'ربط Claude AI مع Canva'}},
+  {kind: 'video', src: '2359.mp4', from: 0.5, dur: 3.8},
+  {kind: 'video', src: '2337.mp4', from: 7, dur: 4},
+  {kind: 'video', src: 'jenan_wa.mp4', from: 0.5, dur: 4},
   {kind: 'video', src: '2356.mp4', from: 0, dur: 2.4, caption: {text: 'تطبيق عملي'}},
-  {kind: 'video', src: '2347.mp4', from: 0.3, dur: 3.6, caption: {num: '05', text: 'تذكير بصمة التواجد وربطها بتطبيق وزارة التربية'}},
+  {kind: 'video', src: '2347.mp4', from: 0.3, dur: 3.6},
   {kind: 'video', src: '2360.mp4', from: 0, dur: 3.1},
-  {kind: 'video', src: '2359.mp4', from: 0, dur: 2.6, caption: {num: '06', text: 'تصميم موقع دفتر متابعة المتعلم الخاص بالمعلم'}},
   {kind: 'video', src: '2340.mp4', from: 2, dur: 3.6},
-  {kind: 'video', src: '2359.mp4', from: 2.4, dur: 3, caption: {text: 'شكراً لكل من حضر وشارك'}},
+  {kind: 'video', src: '2364.mp4', from: 0.4, dur: 3.6},
+  {kind: 'video', src: '2379.mp4', from: 0.3, dur: 6.2, caption: {text: 'تكريم المعلمة جنان المعيبف'}},
+  // الشهادات آخر شي
+  {kind: 'video', src: '0956.mp4', from: 0, dur: 3.95, caption: {text: 'شكراً لكل من حضر وشارك'}},
   {kind: 'final', dur: 6.5},
 ];
 
@@ -168,7 +170,7 @@ const VideoShot: React.FC<{shot: Extract<Shot, {kind: 'video'}>; frames: number}
 const GUESTS = [
   {role: 'مراقب المرحلة الثانوية في منطقة مبارك الكبير التعليمية', name: 'د. مبارك الخشاب'},
   {role: 'الموجه الأول للمواد الاجتماعية', name: 'أ. علي ماتقي'},
-  {role: '', name: 'وموجهو المواد الاجتماعية'},
+  {role: '', name: 'وبحضور موجهين المواد الاجتماعية'},
 ];
 
 const GuestsCard: React.FC<{frames: number}> = ({frames}) => {
