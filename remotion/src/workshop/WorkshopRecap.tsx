@@ -33,8 +33,8 @@ const SHOTS: Shot[] = [
   {kind: 'video', src: '2330.mp4', from: 3.2, dur: 6.6},
   {kind: 'video', src: '2339.mp4', from: 0, dur: 2.9},
   {kind: 'video', src: '2342.mp4', from: 0, dur: 2.9},
-  {kind: 'video', src: '2336.mp4', from: 2, dur: 4.2, presenter: true},
-  {kind: 'video', src: '2361.mp4', from: 1, dur: 4},
+  {kind: 'video', src: '2361.mp4', from: 1, dur: 4, presenter: true},
+  {kind: 'video', src: '2336.mp4', from: 2, dur: 4.2},
   {kind: 'video', src: '2343.mp4', from: 0, dur: 3.2},
   {kind: 'video', src: '2359.mp4', from: 0.5, dur: 3.8},
   {kind: 'video', src: '2337.mp4', from: 7, dur: 4},
@@ -259,7 +259,7 @@ export const WorkshopRecap: React.FC = () => {
       <Sequence from={g0.start + 10} durationInFrames={g1.start + g1.frames - g0.start - 10}>
         <GuestsCard frames={g1.start + g1.frames - g0.start - 10} />
       </Sequence>
-      <Audio src={staticFile('c46/soft.mp3')} volume={musicVolume} />
+      <Audio src={staticFile('music/upbeat.mp3')} volume={musicVolume} />
     </AbsoluteFill>
   );
 };
