@@ -6,6 +6,7 @@ import {FPS as SD_FPS, HEIGHT as SD_H, SalwaDinner, totalFrames as sdFrames, WID
 import {ConferenceInterviews, FPS as CI_FPS, HEIGHT as CI_H, totalFrames as ciFrames, WIDTH as CI_W} from './interviews/ConferenceInterviews';
 import {FPS as T4_FPS, HEIGHT as T4_H, totalFrames as t4Frames, WIDTH as T4_W} from './teacher4/config';
 import {Teacher4} from './teacher4/Teacher4';
+import {FPS as WR_FPS, HEIGHT as WR_H, totalFrames as wrFrames, WIDTH as WR_W, WorkshopRecap} from './workshop/WorkshopRecap';
 import {FPS as C46_FPS, HEIGHT as C46_H, totalFrames as c46Frames, WIDTH as C46_W} from './conference46/config';
 import {Recommendations46} from './conference46/Recommendations';
 import {FPS as C46B_FPS, HEIGHT as C46B_H, Recommendations46V2, totalFrames as c46bFrames, WIDTH as C46B_W} from './conference46/v2/Recommendations2';
@@ -21,6 +22,8 @@ export const RemotionRoot: React.FC = () => {
       <Composition id="Recommendations46V2" component={Recommendations46V2} durationInFrames={c46bFrames()} fps={C46B_FPS} width={C46B_W} height={C46B_H} />
       {/* ورشة المعلم 4.0 — من الثورة الصناعية الأولى إلى المعلم 4.0 */}
       <Composition id="Teacher4" component={Teacher4} durationInFrames={t4Frames()} fps={T4_FPS} width={T4_W} height={T4_H} />
+      {/* ريل ملخص ورشة معلم 4.0 — المعلمة جنان المعيبف، 25 أكتوبر 2026 */}
+      <Composition id="WorkshopRecap" component={WorkshopRecap} durationInFrames={wrFrames()} fps={WR_FPS} width={WR_W} height={WR_H} />
       {/* حفل عشاء نجاح مؤتمر الكويت الدولي الأول للتدريب والتطوير — أ. سلوى الطراروة */}
       <Composition id="SalwaDinner" component={SalwaDinner} durationInFrames={sdFrames()} fps={SD_FPS} width={SD_W} height={SD_H} />
       {/* أبرز لقاءات مؤتمر الكويت الدولي الأول للتدريب والتطوير — أفقي، جزئين */}
