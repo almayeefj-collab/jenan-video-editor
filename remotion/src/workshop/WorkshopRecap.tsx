@@ -21,10 +21,10 @@ const ORANGE = '#F07A1F';
 type Caption = {num?: string; text: string};
 type Shot =
   | {kind: 'poster'; dur: number}
-  | {kind: 'video'; src: string; from: number; dur: number; caption?: Caption; presenter?: boolean}
+  | {kind: 'video'; src: string; from: number; dur: number; caption?: Caption; presenter?: boolean; slim?: number}
   | {kind: 'final'; dur: number};
 
-// المحاور تنضاف لاحقاً (caption مع num) على لقطات الشرح
+// المحاور من البوستر على لقطات الشرح. slim: مط عمودي خفيف للقطات اللي فيها جنان
 const SHOTS: Shot[] = [
   {kind: 'poster', dur: 4.2},
   {kind: 'video', src: '2322.mp4', from: 0, dur: 2.4},
@@ -33,18 +33,18 @@ const SHOTS: Shot[] = [
   {kind: 'video', src: '2330.mp4', from: 3.2, dur: 6.6},
   {kind: 'video', src: '2339.mp4', from: 0, dur: 2.9},
   {kind: 'video', src: '2342.mp4', from: 0, dur: 2.9},
-  {kind: 'video', src: '2361.mp4', from: 1, dur: 4, presenter: true},
-  {kind: 'video', src: '2336.mp4', from: 2, dur: 4.2},
-  {kind: 'video', src: '2343.mp4', from: 0, dur: 3.2},
-  {kind: 'video', src: '2359.mp4', from: 0.5, dur: 3.8},
-  {kind: 'video', src: '2337.mp4', from: 7, dur: 4},
-  {kind: 'video', src: 'jenan_wa.mp4', from: 0.5, dur: 4},
+  {kind: 'video', src: '2361.mp4', from: 1, dur: 4, presenter: true, slim: 1.12},
+  {kind: 'video', src: '2336.mp4', from: 2, dur: 4.2, caption: {num: '01', text: 'سبب التسمية: من الثورة الصناعية إلى اليوم'}},
+  {kind: 'video', src: '2343.mp4', from: 0, dur: 3.2, slim: 1.1, caption: {num: '02', text: 'الذكاء الاصطناعي مساعد شخصي للمعلم'}},
+  {kind: 'video', src: '2359.mp4', from: 0.5, dur: 3.8, slim: 1.1, caption: {num: '03', text: 'جدولة الحصص بمساعدة Claude AI'}},
+  {kind: 'video', src: '2337.mp4', from: 7, dur: 4, slim: 1.12, caption: {num: '04', text: 'ربط Claude AI مع Canva'}},
+  {kind: 'video', src: 'jenan_wa.mp4', from: 0.5, dur: 4, slim: 1.12, caption: {num: '05', text: 'تذكير بصمة التواجد وربطها بتطبيق وزارة التربية'}},
   {kind: 'video', src: '2356.mp4', from: 0, dur: 2.4, caption: {text: 'تطبيق عملي'}},
-  {kind: 'video', src: '2347.mp4', from: 0.3, dur: 3.6},
-  {kind: 'video', src: '2360.mp4', from: 0, dur: 3.1},
-  {kind: 'video', src: '2340.mp4', from: 2, dur: 3.6},
-  {kind: 'video', src: '2364.mp4', from: 0.4, dur: 3.6},
-  {kind: 'video', src: '2379.mp4', from: 0.3, dur: 6.2, caption: {text: 'تكريم المعلمة جنان المعيبف'}},
+  {kind: 'video', src: '2347.mp4', from: 0.3, dur: 3.6, slim: 1.1, caption: {num: '06', text: 'تصميم موقع دفتر متابعة المتعلم الخاص بالمعلم'}},
+  {kind: 'video', src: '2360.mp4', from: 0, dur: 3.1, slim: 1.1},
+  {kind: 'video', src: '2340.mp4', from: 2, dur: 3.6, slim: 1.1},
+  {kind: 'video', src: '2364.mp4', from: 0.4, dur: 3.6, slim: 1.12},
+  {kind: 'video', src: '2379.mp4', from: 0.3, dur: 6.2, slim: 1.12, caption: {text: 'تكريم المعلمة جنان المعيبف'}},
   // الشهادات آخر شي
   {kind: 'video', src: '0956.mp4', from: 0, dur: 3.95, caption: {text: 'شكراً لكل من حضر وشارك'}},
   {kind: 'final', dur: 6.5},
@@ -158,7 +158,7 @@ const VideoShot: React.FC<{shot: Extract<Shot, {kind: 'video'}>; frames: number}
   const scale = interpolate(frame, [0, frames], [1.03, 1.1]);
   return (
     <AbsoluteFill style={{background: NAVY, overflow: 'hidden'}}>
-      <OffthreadVideo src={staticFile(DIR + shot.src)} trimBefore={Math.round(shot.from * FPS)} muted style={{width: '100%', height: '100%', objectFit: 'cover', transform: `scale(${scale})`, filter: GRADE}} />
+      <OffthreadVideo src={staticFile(DIR + shot.src)} trimBefore={Math.round(shot.from * FPS)} muted style={{width: '100%', height: '100%', objectFit: 'cover', transform: `scale(${scale}, ${scale * (shot.slim ?? 1)})`, filter: GRADE}} />
       <Vignette />
       {shot.caption ? <CaptionChip caption={shot.caption} frames={frames} /> : null}
       {shot.presenter ? <PresenterTag frames={frames} /> : null}
@@ -259,7 +259,7 @@ export const WorkshopRecap: React.FC = () => {
       <Sequence from={g0.start + 10} durationInFrames={g1.start + g1.frames - g0.start - 10}>
         <GuestsCard frames={g1.start + g1.frames - g0.start - 10} />
       </Sequence>
-      <Audio src={staticFile('music/upbeat.mp3')} volume={musicVolume} />
+      <Audio src={staticFile('music/inspire.mp3')} volume={musicVolume} />
     </AbsoluteFill>
   );
 };
