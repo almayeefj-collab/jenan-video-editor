@@ -28,6 +28,6 @@ export const ep06: ShowcaseEp = {
     {head: 'التقارير *والتصدير*', voice: 'ainews/ep06/v6.mp3', voiceDur: 6.26, sub: 'تقارير جاهزة للطباعة والمشاركة', from: 57, to: 72, dur: 7,
       points: ['تقرير PDF لكل طالبة', 'كشف الحضور والنقاط CSV', 'يفتح مباشرة في برامج الجداول']},
   ],
-  reveal: {head: 'سويته *بالكامل* باستخدام', code: 'Claude Code', dur: 4, voice: 'ainews/ep06/v7.mp3', voiceDur: 2.47},
+  reveal: {head: 'سويته *بالكامل* باستخدام', code: 'Claude Code', dur: 2.8, voice: 'ainews/ep06/v7.mp3', voiceDur: 2.47},
   outro: {voice: 'ainews/ep06/v8.mp3', dur: 10.0, word: 'دفتر'},
 };
