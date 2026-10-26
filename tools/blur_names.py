@@ -190,7 +190,7 @@ def main():
             src += [k for k in keys if k < i][-2:-1] + [k for k in keys if k > i][1:2]  # احتياط لو OCR فوّت كلمة
             mask = np.zeros((H, W), np.uint8)
             for k in src:
-                if abs(k - i) > 30 or not kf[k]:
+                if abs(k - i) > 16 or not kf[k]:
                     continue
                 M = transform(k, i)
                 if M is None:
