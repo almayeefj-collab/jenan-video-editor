@@ -5,7 +5,8 @@
 واللي بعد، ونغبّش اتحادهم.
 
 الاستخدام:
-    python3 tools/blur_names.py <الفيديو> <مجلد JSON> <الناتج.mp4> <roster.txt>
+    python3 tools/blur_names.py <الفيديو> <مجلد JSON> <الناتج.mp4> <roster.txt> [extra.json]
+extra.json (اختياري): مربعات يدوية للي فات الـ OCR، [{"t": ثانية, "box": [x, y, w, h]}] — تنسحب مع حركة الشاشة.
 roster.txt: سطر لكل طالبة بالاسم الكامل.
 """
 import glob
@@ -112,6 +113,7 @@ def boxes_for(words, first, rest):
 
 def main():
     video, kfdir, outp, roster = sys.argv[1:5]
+    extra = json.load(open(sys.argv[5], encoding='utf-8')) if len(sys.argv) > 5 else []
     first, rest = set(), set()
     for line in open(roster, encoding='utf-8'):
         parts = [norm(p) for p in line.split()]
@@ -197,6 +199,16 @@ def main():
                     pts = np.float32([[x - 4, y - 5], [x + w + 4, y - 5], [x + w + 4, y + h + 5], [x - 4, y + h + 5]])
                     q = cv2.transform(pts[None], M)[0].astype(np.int32)
                     cv2.fillConvexPoly(mask, q, 255)
+            for e in extra:
+                k = round(e['t'] * fps)
+                if abs(k - i) > 300:
+                    continue
+                M = transform(k, i)
+                if M is None:
+                    continue
+                x, y, w, h = e['box']
+                pts = np.float32([[x, y], [x + w, y], [x + w, y + h], [x, y + h]])
+                cv2.fillConvexPoly(mask, cv2.transform(pts[None], M)[0].astype(np.int32), 255)
             if mask.any():
                 mask = cv2.dilate(mask, np.ones((5, 5), np.uint8))
                 blur = cv2.GaussianBlur(fr, (0, 0), 9)
