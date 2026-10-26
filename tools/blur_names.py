@@ -51,28 +51,62 @@ def match(w, vocab):
     return None
 
 
-def boxes_for(words, first, rest):
-    """مربعات الكلمات اللي لازم تنغبّش في فريم واحد."""
+def fix_widths(words):
+    """tesseract أحياناً يمدّ مربع آخر كلمة على السطر كله: نقصّه عند الكلمة اللي على يمينه وبحدود طول الكلمة."""
     lines = {}
     for w in words:
         lines.setdefault((w['b'], w['ln']), []).append(w)
+    for ws in lines.values():
+        ws.sort(key=lambda w: -w['x'])
+        for i, w in enumerate(ws):
+            right = w['x'] + w['wd']
+            if i > 0:
+                right = min(right, ws[i - 1]['x'] - 2)
+            right = min(right, w['x'] + max(12, 0.62 * w['h'] * len(w['w']) + 6))
+            if right - w['x'] < 8:  # المربع غلط من الأساس: نخليه بطول الكلمة من يسار جارتها
+                right = (ws[i - 1]['x'] - 2) if i > 0 else w['x'] + w['wd']
+                w['x'] = right - max(12, 0.62 * w['h'] * len(w['w']))
+            w['wd'] = right - w['x']
+    return words
+
+
+EDGE_L, EDGE_R = 130, 1230  # كلمات مقطوعة عند حافة نافذة التطبيق
+
+
+def boxes_for(words, first, rest):
+    """مربعات الكلمات اللي لازم تنغبّش في فريم واحد."""
+    words = fix_widths([dict(w) for w in words])
+    tag = []
+    for w in words:
+        n = norm(w['w'])
+        f, r = match(n, first), match(n, rest)
+        if not f and not r and len(n) >= 2 and (w['x'] < EDGE_L or w['x'] + w['wd'] > EDGE_R):
+            # جزء من اسم مقطوع عند الحافة
+            if any(len(v) >= 3 and (v.endswith(n) or v.startswith(n)) for v in rest) and len(n) >= 3:
+                r = n
+        tag.append((w, f, r))
+    named = [w for w, f, r in tag if f or r]
+
+    def near_name(w):
+        # اسم ثاني على نفس السطر تقريباً، أو فوقها مباشرة (اسم ملفوف على سطرين في البطاقة)
+        for o in named:
+            if o is w:
+                continue
+            same_row = abs(o['y'] - w['y']) < 0.7 * max(o['h'], w['h']) and abs(o['x'] - w['x']) < 260
+            above = 0 < w['y'] - o['y'] < 2.3 * max(o['h'], w['h']) and o['x'] - 40 < w['x'] + w['wd'] and w['x'] - 40 < o['x'] + o['wd'] + 200
+            if same_row or above:
+                return True
+        return False
+
     out = []
-    keys = sorted(lines)
-    for idx, k in enumerate(keys):
-        ws = lines[k]
-        tags = [(w, match(norm(w['w']), first), match(norm(w['w']), rest)) for w in ws]
-        nameish = sum(1 for _, f, r in tags if f or r)
-        # السطر اللي قبله في نفس البلوك (اسم ملفوف على سطرين في البطاقة)
-        prev = lines.get((k[0], k[1] - 1), [])
-        prev_name = any(match(norm(w['w']), first) or match(norm(w['w']), rest) for w in prev)
-        for w, f, r in tags:
-            if not r or (f and not r):
-                continue
-            if f and r and norm(w['w']) in first:  # اسم أول (مثل «مريم») يبقى
-                continue
-            if r in AMBIG and nameish < 2 and not prev_name:
-                continue
-            out.append((w['x'], w['y'], w['wd'], w['h']))
+    for w, f, r in tag:
+        if not r:
+            continue
+        if f and norm(w['w']) in first:
+            continue
+        if r in AMBIG and not near_name(w):
+            continue
+        out.append((w['x'], w['y'], w['wd'], w['h']))
     return out
 
 
