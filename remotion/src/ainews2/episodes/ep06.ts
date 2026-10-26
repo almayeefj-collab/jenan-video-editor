@@ -8,7 +8,7 @@ export const ep06: ShowcaseEp = {
   number: 6,
   date: '٢٢ أكتوبر ٢٠٢٦',
   music: 'ainews/ep06/music-voice.mp3',
-  source: 'ainews/ep06/raw/source.mp4',
+  source: 'ainews/ep06/raw/source-blur.mp4', // نسخة مغبّشة (tools/blur_names.py): اسم الأب والعائلة مغبّش والاسم الأول واضح
   crop: [90, 145, 1180, 790],
   intro: {voice: 'ainews/ep06/v0.mp3', voiceDur: 8.78, beats: [
     {type: 'brand', look: 'dark', dur: 2.6, name: 'آخر أخبار أدوات الـ AI', chip: 'مع جنان المعييف'},
