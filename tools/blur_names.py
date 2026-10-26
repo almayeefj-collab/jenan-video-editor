@@ -188,6 +188,8 @@ def main():
         if lo - 8 <= i <= hi + 8:
             src = [k for k in keys if k <= i][-1:] + [k for k in keys if k > i][:1]
             src += [k for k in keys if k < i][-2:-1] + [k for k in keys if k > i][1:2]  # احتياط لو OCR فوّت كلمة
+            if i in kf:  # الفريم نفسه مقروء (حركة سريعة): مربعاته بس، بدون تتبّع
+                src = [i]
             mask = np.zeros((H, W), np.uint8)
             for k in src:
                 if abs(k - i) > 16 or not kf[k]:
