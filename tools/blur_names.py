@@ -212,6 +212,19 @@ def main():
                 x, y, w, h = e['box']
                 pts = np.float32([[x, y], [x + w, y], [x + w, y + h], [x, y + h]])
                 cv2.fillConvexPoly(mask, cv2.transform(pts[None], M)[0].astype(np.int32), 255)
+            # حركة سريعة (النص مسحوب وما ينقرا): لو الغبشة أصغر بوايد من الفريمات الحلوة القريبة،
+            # نغبّش عمود اسم الأب والعائلة كامل (الاسم الأول على يمينه يبقى)
+            good = [k for k in keys if abs(k - i) <= 60 and len(kf[k]) >= 6]
+            if good:
+                g = min(good, key=lambda k: abs(k - i))
+                area = (mask > 0).sum()
+                garea = sum(w * h for _, _, w, h in kf[g])
+                if area < 0.4 * garea:
+                    xs = [x for x, _, _, _ in kf[g]] + [x + w for x, _, w, _ in kf[g]]
+                    ys = [y for _, y, _, _ in kf[g]] + [y + h for _, y, _, h in kf[g]]
+                    x0, x1 = int(min(xs)) - 6, int(max(xs)) + 6
+                    y0, y1 = max(150, int(min(ys)) - 200), min(940, int(max(ys)) + 200)
+                    cv2.rectangle(mask, (x0, y0), (x1, y1), 255, -1)
             if not mask.any() and any(kf[k] for k in src):
                 misses.append(i)  # فيه أسماء قريبة بس ما قدرنا نتتبعها: الفريم يحتاج قراءة مباشرة
             if mask.any():
