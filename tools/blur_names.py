@@ -180,6 +180,7 @@ def main():
                              '-i', video, '-map', '0:v', '-map', '1:a?', '-c:v', 'libx264', '-crf', '16', '-preset', 'medium', '-pix_fmt', 'yuv420p', '-c:a', 'copy', outp],
                             stdin=subprocess.PIPE)
     lo, hi = keys[0], keys[-1]
+    misses = []
     cap = cv2.VideoCapture(video)
     for i in range(n):
         ok, fr = cap.read()
@@ -211,6 +212,8 @@ def main():
                 x, y, w, h = e['box']
                 pts = np.float32([[x, y], [x + w, y], [x + w, y + h], [x, y + h]])
                 cv2.fillConvexPoly(mask, cv2.transform(pts[None], M)[0].astype(np.int32), 255)
+            if not mask.any() and any(kf[k] for k in src):
+                misses.append(i)  # فيه أسماء قريبة بس ما قدرنا نتتبعها: الفريم يحتاج قراءة مباشرة
             if mask.any():
                 mask = cv2.dilate(mask, np.ones((5, 5), np.uint8))
                 blur = cv2.GaussianBlur(fr, (0, 0), 9)
@@ -221,6 +224,8 @@ def main():
             print(f'{i}/{n}', flush=True)
     proc.stdin.close()
     proc.wait()
+    json.dump(misses, open(outp + '.misses.json', 'w'))
+    print('frames needing OCR:', len(misses), flush=True)
 
 
 if __name__ == '__main__':
