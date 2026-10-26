@@ -11,6 +11,7 @@ roster.txt: سطر لكل طالبة بالاسم الكامل.
 """
 import glob
 import json
+import math
 import os
 import re
 import subprocess
@@ -124,7 +125,9 @@ def main():
     kf = {}
     for p in sorted(glob.glob(os.path.join(kfdir, '*.json'))):
         k = int(os.path.basename(p)[:-5])
-        kf[k] = boxes_for(json.load(open(p, encoding='utf-8')), first, rest)
+        # kfocr يقص الفريم بـ ffmpeg -ss {k/30:.3f}: التقريب لفوق يجيب الفريم اللي بعده، فنحسب الفريم الحقيقي
+        k = math.ceil(round(k / 30, 3) * 30 - 1e-6)
+        kf[k] = kf.get(k, []) + boxes_for(json.load(open(p, encoding='utf-8')), first, rest)
     keys = sorted(kf)
 
     cap = cv2.VideoCapture(video)
