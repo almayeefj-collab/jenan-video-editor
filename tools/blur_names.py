@@ -138,32 +138,41 @@ def main():
         grays.append(cv2.cvtColor(cv2.resize(fr, (W // SM, H // SM), interpolation=cv2.INTER_AREA), cv2.COLOR_BGR2GRAY))
     cap.release()
     n = len(grays)
-    orb = cv2.ORB_create(1200)
-    bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
-    feats = {}
-
-    def feat(i):
-        if i not in feats:
-            feats[i] = orb.detectAndCompute(grays[i], None)
-        return feats[i]
+    # حركة كل فريم عن اللي قبله (ECC: خطوات صغيرة ما تتلخبط بين البطاقات المتشابهة)، ونربطها ببعض
+    step = [None] * n  # step[j]: 3x3 من j-1 إلى j (بإحداثيات الفيديو الأصلي)، None = تغيّرت الشاشة
+    S = np.diag([SM, SM, 1.0])
+    Si = np.linalg.inv(S)
+    crit = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 40, 1e-4)
+    for j in range(1, n):
+        a, b = grays[j - 1], grays[j]
+        if np.abs(a.astype(np.int16) - b).mean() > 25:
+            continue
+        M = np.eye(2, 3, dtype=np.float32)
+        try:
+            _, M = cv2.findTransformECC(a, b, M, cv2.MOTION_AFFINE, crit, None, 3)
+        except cv2.error:
+            continue
+        warped = cv2.warpAffine(a, M, (a.shape[1], a.shape[0]))
+        inner = (slice(8, -8), slice(8, -8))
+        if np.abs(warped[inner].astype(np.int16) - b[inner]).mean() > 10:
+            continue
+        step[j] = S @ np.vstack([M, [0, 0, 1]]) @ Si
+    print('motion done', sum(x is not None for x in step), '/', n, flush=True)
 
     def transform(a, b):
-        """مصفوفة affine من فريم a لفريم b (أو None لو الشاشة تغيرت)."""
-        if a == b:
-            return np.array([[1, 0, 0], [0, 1, 0]], float)
-        ka, da = feat(a)
-        kb, db = feat(b)
-        if da is None or db is None or len(ka) < 20 or len(kb) < 20:
-            return None
-        m = bf.match(da, db)
-        if len(m) < 25:
-            return None
-        pa = np.float32([ka[x.queryIdx].pt for x in m]) * SM
-        pb = np.float32([kb[x.trainIdx].pt for x in m]) * SM
-        M, inl = cv2.estimateAffinePartial2D(pa, pb, ransacReprojThreshold=4)
-        if M is None or inl.sum() < max(20, 0.35 * len(m)):
-            return None
-        return M
+        """affine من فريم a لفريم b بربط الخطوات (None لو انقطعت السلسلة)."""
+        T = np.eye(3)
+        if b >= a:
+            for j in range(a + 1, b + 1):
+                if step[j] is None:
+                    return None
+                T = step[j] @ T
+        else:
+            for j in range(a, b, -1):
+                if step[j] is None:
+                    return None
+                T = np.linalg.inv(step[j]) @ T
+        return T[:2]
 
     proc = subprocess.Popen(['ffmpeg', '-nostdin', '-v', 'error', '-y', '-f', 'rawvideo', '-pix_fmt', 'bgr24', '-s', f'{W}x{H}', '-r', str(fps), '-i', '-',
                              '-i', video, '-map', '0:v', '-map', '1:a?', '-c:v', 'libx264', '-crf', '16', '-preset', 'medium', '-pix_fmt', 'yuv420p', '-c:a', 'copy', outp],
