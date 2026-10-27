@@ -12,6 +12,7 @@ export const HEIGHT = 1920;
 const T = 15; // مدة الانتقال بين المشاهد
 
 export const AUTHOR = 'أ. جنان المعيبف';
+export const AUTHOR_ROLE = 'عضو في فريق الابتكار التابع لوزارة التربية';
 const URL = 'https://educertifications.google';
 const MOE_EMAIL = 'T000000000000@moe.edu.kw';
 
@@ -404,8 +405,9 @@ const Intro: React.FC = () => {
           للتسجيل والحصول على الشهادة
         </Panel>
       </div>
-      <div style={{position: 'absolute', top: 1770, left: 0, right: 0, textAlign: 'center', fontSize: 36, fontWeight: 700, color: MUTED, ...reveal(f, 96)}}>
+      <div style={{position: 'absolute', top: 1720, left: 0, right: 0, textAlign: 'center', fontSize: 36, fontWeight: 700, color: MUTED, ...reveal(f, 96)}}>
         إعداد: <span style={{color: BLUE, fontWeight: 900}}>{AUTHOR}</span>
+        <div style={{fontSize: 28, fontWeight: 600, marginTop: 4}}>{AUTHOR_ROLE}</div>
       </div>
       <Sfx at={4} src="shimmer" v={0.45} />
     </AbsoluteFill>
@@ -859,7 +861,7 @@ const Outro: React.FC = () => {
         </div>
       </div>
       <div style={{position: 'absolute', top: 680, left: 0, right: 0, textAlign: 'center'}}>
-        <div style={{fontSize: 150, fontWeight: 900, color: BLUE, ...reveal(f, 20)}}>مبارك 👏</div>
+        <div style={{fontSize: 150, fontWeight: 900, color: BLUE, ...reveal(f, 20)}}>مبروك 👏</div>
         <div style={{fontSize: 92, fontWeight: 900, color: INK, marginTop: 10, ...reveal(f, 32)}}>حصلت على الشهادة</div>
       </div>
       <div style={{position: 'absolute', top: 1180, left: 110, right: 110, ...reveal(f, 50)}}>
@@ -868,6 +870,7 @@ const Outro: React.FC = () => {
       <div style={{position: 'absolute', top: 1440, left: 0, right: 0, textAlign: 'center', ...reveal(f, 70)}}>
         <div style={{fontSize: 36, color: MUTED, fontWeight: 700}}>إعداد</div>
         <div style={{fontSize: 76, color: INK, fontWeight: 900, marginTop: 4}}>{AUTHOR}</div>
+        <div style={{fontSize: 36, color: BLUE, fontWeight: 700, marginTop: 10}}>{AUTHOR_ROLE}</div>
       </div>
       <Sfx at={10} src="shimmer" v={0.5} />
     </AbsoluteFill>
