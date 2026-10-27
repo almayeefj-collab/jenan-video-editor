@@ -129,12 +129,13 @@ const CursorSvg: React.FC = () => (
     <path d="M4 2 L4 19 L8.5 15 L11.5 22 L14.5 20.7 L11.6 14 L18 14 Z" fill="#fff" stroke="#111" strokeWidth={1.3} strokeLinejoin="round" />
   </svg>
 );
-const Click: React.FC<{at: number; from?: [number, number]; children: React.ReactNode; style?: React.CSSProperties; ring?: boolean; pos?: [string, string]}> = ({
-  at, from = [260, 320], children, style, ring, pos = ['62%', '55%'],
-}) => {
+const Click: React.FC<{
+  at: number; from?: [number, number]; children: React.ReactNode; style?: React.CSSProperties; ring?: boolean; pos?: [string, string];
+  lead?: number; until?: number;
+}> = ({at, from = [260, 320], children, style, ring, pos = ['62%', '55%'], lead = 34, until = at + 34}) => {
   const f = useCurrentFrame();
-  const move = interpolate(f, [at - 34, at - 4], [0, 1], {...clamp, easing: ease});
-  const vis = interpolate(f, [at - 38, at - 32, at + 24, at + 34], [0, 1, 1, 0], clamp);
+  const move = interpolate(f, [at - lead, at - 4], [0, 1], {...clamp, easing: ease});
+  const vis = interpolate(f, [at - lead - 4, at - lead + 2, until - 8, until], [0, 1, 1, 0], clamp);
   const press = interpolate(f, [at - 3, at + 1, at + 8], [1, 0.93, 1], clamp);
   const rip = interpolate(f, [at, at + 20], [0, 1], clamp);
   const ringK = pr(f, at + 2, 10);
@@ -413,8 +414,8 @@ const Intro: React.FC = () => {
 
 const Step1: React.FC = () => {
   const f = useCurrentFrame();
-  const urlAt = 26;
-  const k = pr(f, 90, 18);
+  const urlAt = 50;
+  const k = pr(f, 120, 18);
   return (
     <AbsoluteFill>
       <Header n={1} title="الدخول إلى الموقع" />
@@ -448,7 +449,7 @@ const Step1: React.FC = () => {
               <GeminiBody />
             </div>
             <div dir="ltr" style={{marginTop: 28, display: 'flex'}}>
-              <Click at={170} from={[300, 380]}>
+              <Click at={297} from={[300, 380]}>
                 <Button label="Register for an Exam" />
               </Click>
             </div>
@@ -458,9 +459,9 @@ const Step1: React.FC = () => {
       <Captions
         top={1500}
         beats={[
-          {at: 18, n: 1, ar: 'ندخل على موقع شهادات Google للتعليم'},
-          {at: 110, n: 2, ar: 'نختار Google Certified Educator ثم نضغط على', en: 'Register for an Exam'},
-          {at: 215, tip: true, ar: 'ابدأ من الصفحة الرئيسية للشهادات'},
+          {at: 40, n: 1, ar: 'ندخل على موقع شهادات Google للتعليم'},
+          {at: 172, n: 2, ar: 'نختار Google Certified Educator ثم نضغط على', en: 'Register for an Exam'},
+          {at: 322, tip: true, ar: 'ابدأ من الصفحة الرئيسية للشهادات'},
         ]}
       />
     </AbsoluteFill>
@@ -479,7 +480,7 @@ const Step2: React.FC = () => {
           <div style={{padding: '30px 12px 6px'}}>
             <GeminiBody fs={1.12} />
             <div dir="ltr" style={{marginTop: 34, display: 'flex'}}>
-              <Click at={120} ring from={[280, 300]}>
+              <Click at={133} ring from={[280, 300]}>
                 <Button label="Register" w={340} h={86} fs={34} />
               </Click>
             </div>
@@ -489,9 +490,9 @@ const Step2: React.FC = () => {
       <Captions
         top={1440}
         beats={[
-          {at: 16, n: 1, ar: 'نختار اختبار', en: 'Gemini Educator'},
-          {at: 95, n: 2, ar: 'ثم نضغط على زر', en: 'Register'},
-          {at: 175, tip: true, ar: 'تأكد من اختيار الاختبار الصحيح قبل المتابعة'},
+          {at: 24, n: 1, ar: 'نختار اختبار', en: 'Gemini Educator'},
+          {at: 96, n: 2, ar: 'ثم نضغط على زر', en: 'Register'},
+          {at: 150, tip: true, ar: 'تأكد من اختيار الاختبار الصحيح قبل المتابعة'},
         ]}
       />
     </AbsoluteFill>
@@ -502,13 +503,13 @@ const Step3: React.FC = () => {
   const f = useCurrentFrame();
   const k = pr(f, 6, 20);
   const F = [
-    {label: 'First Name *', v: 'الاسم الأول', at: 34, per: 3},
-    {label: 'Last Name *', v: 'اسم العائلة', at: 92, per: 3},
-    {label: 'School / Organization *', v: 'moe.edu.kw', at: 150, per: 2},
-    {label: 'Email Address *', v: MOE_EMAIL, at: 205, per: 1.5},
+    {label: 'First Name *', v: 'الاسم الأول', at: 33, per: 2},
+    {label: 'Last Name *', v: 'اسم العائلة', at: 58, per: 2},
+    {label: 'School / Organization *', v: 'moe.edu.kw', at: 90, per: 2},
+    {label: 'Email Address *', v: MOE_EMAIL, at: 245, per: 1.5},
   ];
-  const active = (i: number) => f >= F[i].at - 6 && f < (F[i + 1]?.at ?? 290) - 6;
-  const school = f >= 300;
+  const active = (i: number) => f >= F[i].at - 6 && f < (F[i + 1]?.at ?? 470) - 6;
+  const school = f >= 492;
   return (
     <AbsoluteFill>
       <Header n={3} title="تعبئة البيانات الأساسية" />
@@ -520,7 +521,7 @@ const Step3: React.FC = () => {
               <Field
                 label={x.label}
                 active={active(i)}
-                value={i === 3 ? <MoeEmail text={typed(x.v, f, x.at, x.per)} hi={pr(f, 250, 12)} /> : typed(x.v, f, x.at, x.per)}
+                value={i === 3 ? <MoeEmail text={typed(x.v, f, x.at, x.per)} hi={pr(f, 369, 12)} /> : typed(x.v, f, x.at, x.per)}
               />
             </div>
           ))}
@@ -530,7 +531,7 @@ const Step3: React.FC = () => {
           </div>
           <Radio on={false} label="Personal Email Address" />
           <div dir="ltr" style={{display: 'flex'}}>
-            <Click at={300} from={[300, 260]} pos={['32px', '30px']}>
+            <Click at={492} from={[300, 260]} pos={['32px', '30px']}>
               <Radio on={school} label="School / Organizational Email Address" />
             </Click>
           </div>
@@ -541,11 +542,11 @@ const Step3: React.FC = () => {
       ))}
       <Captions
         beats={[
-          {at: 28, n: 1, color: G.blue, en: 'First Name:', enFirst: true, ar: 'نضع الاسم الأول'},
-          {at: 86, n: 2, color: G.green, en: 'Last Name:', enFirst: true, ar: 'نضع الاسم الثاني أو العائلة'},
-          {at: 144, n: 3, color: G.red, en: 'School / Organization:', enFirst: true, ar: 'نكتب moe.edu.kw'},
-          {at: 200, n: 4, color: G.purple, ar: 'نتأكد أن التسجيل بالبريد الإلكتروني الخاص بالوزارة', en: MOE_EMAIL, sub: 'مع وضع الرقم المدني بدلاً من الأصفار'},
-          {at: 278, n: 5, color: G.purple, ar: 'ثم نختار:', en: 'School / Organizational Email Address'},
+          {at: 26, n: 1, color: G.blue, en: 'First Name:', enFirst: true, ar: 'نضع الاسم الأول'},
+          {at: 52, n: 2, color: G.green, en: 'Last Name:', enFirst: true, ar: 'نضع الاسم الثاني أو العائلة'},
+          {at: 84, n: 3, color: G.red, en: 'School / Organization:', enFirst: true, ar: 'نكتب moe.edu.kw'},
+          {at: 238, n: 4, color: G.purple, ar: 'نتأكد أن التسجيل بالبريد الإلكتروني الخاص بالوزارة', en: MOE_EMAIL, sub: 'مع وضع الرقم المدني بدلاً من الأصفار'},
+          {at: 400, n: 5, color: G.purple, ar: 'ثم نختار:', en: 'School / Organizational Email Address'},
         ]}
       />
     </AbsoluteFill>
@@ -555,7 +556,7 @@ const Step3: React.FC = () => {
 const Step4: React.FC = () => {
   const f = useCurrentFrame();
   const k = pr(f, 6, 20);
-  const at = {pe: 28, bk: 86, job: 150, phase: 175, country: 215, lang: 255, c1: 305, c2: 330, next: 385};
+  const at = {pe: 18, bk: 161, job: 327, phase: 360, country: 458, lang: 486, c1: 547, c2: 572, next: 604};
   const BACKUP = 'yourname@gmail.com';
   const on = (t: number) => f >= t;
   const act = (a: number, b: number) => f >= a - 4 && f < b - 4;
@@ -573,13 +574,13 @@ const Step4: React.FC = () => {
           <div style={{marginTop: 18, display: 'flex', flexDirection: 'column', gap: 4}}>
             <Check on={false}>I would like to sign up for the latest news, offers and updates from Google for Education.</Check>
             <Check on={false}>I consent to a Google sales representative contacting me.</Check>
-            <Click at={at.c1} from={[300, 240]} pos={['30px', '22px']}>
+            <Click at={at.c1} from={[300, 240]} pos={['30px', '22px']} until={at.c1 + 12}>
               <Check on={on(at.c1)} hi={on(at.c1 - 20)}>
                 I certify that I am 18 years old or older, and I understand that if I am not 18+, I will not be allowed to take an exam through the Google for
                 Education Certification Launchpad.*
               </Check>
             </Click>
-            <Click at={at.c2} from={[0, -90]} pos={['30px', '22px']}>
+            <Click at={at.c2} from={[0, -90]} pos={['30px', '22px']} lead={14} until={at.c2 + 10}>
               <Check on={on(at.c2)} hi={on(at.c1 - 20)}>
                 I have read and accept the Google <A>Terms of Service</A>, <A>Exam Non-Disclosure Agreement (NDA)</A> and the Google for Education{' '}
                 <A>Exam Privacy and Policies</A>.*
@@ -587,7 +588,7 @@ const Step4: React.FC = () => {
             </Click>
           </div>
           <div dir="ltr" style={{display: 'flex', marginTop: 18}}>
-            <Click at={at.next} from={[260, 160]} ring>
+            <Click at={at.next} from={[260, 160]} ring lead={20}>
               <Button label="Next" w={220} h={70} />
             </Click>
           </div>
@@ -601,13 +602,12 @@ const Step4: React.FC = () => {
       <Captions
         top={1490}
         beats={[
-          {at: 22, n: 1, en: 'Personal Email Address:', enFirst: true, ar: 'نضع البريد الإلكتروني الخاص بالوزارة'},
-          {at: 80, n: 2, en: 'Back-up Email Address:', enFirst: true, ar: 'نضع البريد الإلكتروني الشخصي', sub: 'يُستخدم لاسترجاع الحساب'},
-          {at: 144, n: 3, en: 'Job Title: Teacher', enFirst: true, ar: 'ونختار المرحلة التي ندرّسها'},
-          {at: 209, n: 4, en: 'Country: Kuwait', enFirst: true, ar: 'نختار الدولة الكويت'},
-          {at: 249, n: 5, en: 'Language:', enFirst: true, ar: 'نختار العربية — لغة الاختبار'},
-          {at: 290, n: 6, ar: 'نضع علامة صح أمام الخيارين الأخيرين'},
-          {at: 362, n: 7, ar: 'ثم نضغط على زر', en: 'Next'},
+          {at: 14, n: 1, en: 'Personal Email Address:', enFirst: true, ar: 'نضع البريد الإلكتروني الخاص بالوزارة'},
+          {at: 117, n: 2, en: 'Back-up Email Address:', enFirst: true, ar: 'نضع البريد الإلكتروني الشخصي', sub: 'يُستخدم لاسترجاع الحساب'},
+          {at: 275, n: 3, en: 'Job Title: Teacher', enFirst: true, ar: 'ونختار المرحلة التي ندرّسها'},
+          {at: 412, n: 4, en: 'Country: Kuwait · Language:', enFirst: true, ar: 'الدولة الكويت، ولغة الاختبار العربية'},
+          {at: 500, n: 5, ar: 'نضع علامة صح أمام الخيارين الأخيرين'},
+          {at: 574, n: 6, ar: 'ثم نضغط على زر', en: 'Next'},
         ]}
       />
     </AbsoluteFill>
@@ -617,8 +617,8 @@ const Step4: React.FC = () => {
 const Step5: React.FC = () => {
   const f = useCurrentFrame();
   const k = pr(f, 6, 20);
-  const quiz = interpolate(f, [150, 168], [0, 1], clamp);
-  const pick = f >= 205;
+  const quiz = interpolate(f, [288, 306], [0, 1], clamp);
+  const pick = f >= 335;
   return (
     <AbsoluteFill>
       <Header n={5} title="بدء الاختبار" />
@@ -630,13 +630,13 @@ const Step5: React.FC = () => {
               <div style={{fontSize: 48, fontWeight: 800, color: '#202124', lineHeight: 1.4}}>تم تسجيلك في «اختبار Gemini للمعلّم»</div>
               <div style={{fontSize: 31, color: '#3c4043', lineHeight: 1.75, marginTop: 30}}>
                 نشكر على التسجيل في الاختبار.{' '}
-                <span style={{background: `linear-gradient(transparent 55%, rgba(251,188,5,${pr(f, 70, 12) * 0.7}) 55%)`, fontWeight: 700}}>
+                <span style={{background: `linear-gradient(transparent 55%, rgba(251,188,5,${pr(f, 140, 12) * 0.7}) 55%)`, fontWeight: 700}}>
                   سيكون لديك 14 يومًا لبدء الاختبار.
                 </span>{' '}
                 يمكنك بدء الاختبار الآن من خلال النقر على زر «إجراء الاختبار» أدناه أو من خلال منصة الشهادات في Google for Education.
               </div>
               <div style={{display: 'flex', gap: 24, marginTop: 56, alignItems: 'center'}}>
-                <Click at={125} from={[-260, 300]}>
+                <Click at={264} from={[-260, 300]}>
                   <Button label="إجراء الاختبار" h={88} fs={34} />
                 </Click>
                 <Button label="الانتقال إلى منصة Launchpad" h={88} fs={26} outline />
@@ -647,7 +647,7 @@ const Step5: React.FC = () => {
               <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                 <div style={{fontSize: 34, fontWeight: 800, color: BLUE}}>السؤال 1</div>
                 <div style={{width: 300, height: 14, borderRadius: 7, background: '#e8eef8', overflow: 'hidden'}}>
-                  <div style={{width: `${8 + pr(f, 240, 30) * 6}%`, height: '100%', background: BLUE}} />
+                  <div style={{width: `${8 + pr(f, 345, 30) * 6}%`, height: '100%', background: BLUE}} />
                 </div>
               </div>
               {[100, 78].map((w, i) => (
@@ -676,13 +676,13 @@ const Step5: React.FC = () => {
           </div>
         </Browser>
       </div>
-      <Sfx at={205} src="tick" v={0.6} />
+      <Sfx at={335} src="tick" v={0.6} />
       <Captions
         beats={[
-          {at: 16, n: 1, ar: 'تظهر رسالة: تم تسجيلك في', en: '«اختبار Gemini للمعلّم»'},
-          {at: 66, tip: true, ar: 'عندك 14 يومًا لبدء الاختبار من تاريخ التسجيل'},
-          {at: 105, n: 2, ar: 'ثم نضغط على زر «إجراء الاختبار»'},
-          {at: 165, n: 3, ar: 'بعد ذلك نجيب عن الأسئلة'},
+          {at: 14, n: 1, ar: 'تظهر رسالة: تم تسجيلك في', en: '«اختبار Gemini للمعلّم»'},
+          {at: 134, tip: true, ar: 'عندك 14 يومًا لبدء الاختبار من تاريخ التسجيل'},
+          {at: 226, n: 2, ar: 'ثم نضغط على زر «إجراء الاختبار»'},
+          {at: 288, n: 3, ar: 'بعد ذلك نجيب عن الأسئلة'},
         ]}
       />
     </AbsoluteFill>
@@ -692,8 +692,8 @@ const Step5: React.FC = () => {
 const Step6: React.FC = () => {
   const f = useCurrentFrame();
   const k = pr(f, 6, 20);
-  const card = pr(f, 150, 20);
-  const res = f >= 105;
+  const card = pr(f, 172, 20);
+  const res = f >= 153;
   const items: [string, number][] = [
     ['Home', 0], ['Google AI Educator Series', 0], ['Exams', 0], ['Register for an Exam', 1], ['Continue Exams', 1], ['Results', 0], ['Account Settings', 0],
   ];
@@ -719,7 +719,7 @@ const Step6: React.FC = () => {
                 </div>
               );
               return label === 'Results' ? (
-                <Click key={label} at={105} from={[260, 300]}>
+                <Click key={label} at={153} from={[260, 300]}>
                   {row}
                 </Click>
               ) : (
@@ -739,7 +739,7 @@ const Step6: React.FC = () => {
             <div style={{flex: 1}}>
               <GeminiBody desc={false} />
               <div style={{display: 'flex', marginTop: 26}}>
-                <Click at={250} from={[240, 260]}>
+                <Click at={264} from={[240, 260]}>
                   <Button label="See Certification" h={72} fs={28} />
                 </Click>
               </div>
@@ -751,9 +751,9 @@ const Step6: React.FC = () => {
         top={1440}
         beats={[
           {at: 12, n: 1, ar: 'نعود إلى الموقع الرئيسي مرة أخرى'},
-          {at: 66, n: 2, ar: 'من القائمة الجانبية نختار', en: 'Results'},
-          {at: 150, n: 3, ar: 'سيظهر لنا مربع الاختبار'},
-          {at: 212, n: 4, ar: 'ثم نضغط على زر', en: 'See Certification'},
+          {at: 90, n: 2, ar: 'من القائمة الجانبية نختار', en: 'Results'},
+          {at: 172, n: 3, ar: 'سيظهر لنا مربع الاختبار'},
+          {at: 232, n: 4, ar: 'ثم نضغط على زر', en: 'See Certification'},
         ]}
       />
     </AbsoluteFill>
@@ -763,8 +763,9 @@ const Step6: React.FC = () => {
 const Step7: React.FC = () => {
   const f = useCurrentFrame();
   const k = pr(f, 8, 22);
-  const dl = interpolate(f, [178, 228], [0, 1], {...clamp, easing: ease});
-  const chip = pr(f, 176, 14);
+  const dlAt = 112;
+  const dl = interpolate(f, [dlAt + 2, dlAt + 52], [0, 1], {...clamp, easing: ease});
+  const chip = pr(f, dlAt, 14);
   return (
     <AbsoluteFill>
       <Header n={7} title="عرض الشهادة وتحميلها" />
@@ -778,7 +779,7 @@ const Step7: React.FC = () => {
             </div>
             <div style={{fontSize: 44, fontWeight: 800, color: '#202124', marginTop: 10}}>معلّم معتمد من Gemini</div>
             <div style={{fontSize: 24, color: MUTED, marginTop: 8}}>تم منح شهادة التأهيل هذه إلى</div>
-            <div style={{fontSize: 64, fontWeight: 900, color: INK, marginTop: 10, ...reveal(f, 60, 20)}}>اسم المعلّم</div>
+            <div style={{fontSize: 64, fontWeight: 900, color: INK, marginTop: 10, ...reveal(f, 30, 20)}}>اسم المعلّم</div>
             <div style={{fontSize: 22, color: MUTED, lineHeight: 1.6, margin: '14px 80px 0'}}>
               بعد إثبات امتلاك المعرفة والمهارات والكفاءات الأساسية المطلوبة لاستخدام ذكاء Google الاصطناعي في مجال التعليم
             </div>
@@ -795,8 +796,8 @@ const Step7: React.FC = () => {
         <div style={{width: 1040, height: 34, marginLeft: -40, background: 'linear-gradient(180deg, #d7dbe3, #aab0bc)', borderRadius: '0 0 30px 30px'}} />
       </div>
       {/* زر التحميل */}
-      <div style={{position: 'absolute', top: 1110, left: 0, right: 0, display: 'flex', justifyContent: 'center', ...reveal(f, 110)}}>
-        <Click at={176} from={[260, 260]}>
+      <div style={{position: 'absolute', top: 1110, left: 0, right: 0, display: 'flex', justifyContent: 'center', ...reveal(f, 70)}}>
+        <Click at={dlAt} from={[260, 260]}>
           <div style={{display: 'flex', alignItems: 'center', gap: 18, background: BLUE, color: '#fff', borderRadius: 50, height: 96, padding: '0 50px', fontSize: 38, fontWeight: 800, boxShadow: '0 10px 26px rgba(26,115,232,.35)'}}>
             <svg width={46} height={46} viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 3v12M7 10l5 5 5-5M4 20h16" />
@@ -817,12 +818,12 @@ const Step7: React.FC = () => {
           <div style={{fontSize: 40, color: G.green, opacity: dl >= 1 ? 1 : 0}}>✓</div>
         </Panel>
       </div>
-      <Sfx at={228} src="shimmer" v={0.35} />
+      <Sfx at={dlAt + 52} src="shimmer" v={0.35} />
       <Captions
         top={1450}
         beats={[
-          {at: 14, n: 1, ar: 'بعد الضغط على See Certification تظهر الشهادة'},
-          {at: 150, n: 2, ar: 'ثم نقوم بتحميل الشهادة'},
+          {at: 14, n: 1, ar: 'بعد الضغط على See Certification تظهر الشهادة باسمك'},
+          {at: 92, n: 2, ar: 'ثم نقوم بتحميل الشهادة'},
         ]}
       />
     </AbsoluteFill>
@@ -874,15 +875,18 @@ const Outro: React.FC = () => {
 };
 
 // ===== التجميع =====
-const SCENES: {C: React.FC; d: number}[] = [
-  {C: Intro, d: 180},
-  {C: Step1, d: 280},
-  {C: Step2, d: 250},
-  {C: Step3, d: 370},
-  {C: Step4, d: 440},
-  {C: Step5, d: 300},
-  {C: Step6, d: 330},
-  {C: Step7, d: 290},
+// تعليق أ. جنان المعيبف مقطّع لملف لكل مشهد (public/gemini/vo) — حركات المشاهد مضبوطة على كلامها
+// والمدة = بداية الصوت + طوله + ذيل قصير + مدة الانتقال، عشان الكلام يخلص قبل ما يبدأ المشهد اللي بعده
+const VO_AT = 12;
+const SCENES: {C: React.FC; d: number; vo?: string}[] = [
+  {C: Intro, d: 230, vo: 'vo01'},
+  {C: Step1, d: 385, vo: 'vo02'},
+  {C: Step2, d: 327, vo: 'vo03'},
+  {C: Step3, d: 559, vo: 'vo04'},
+  {C: Step4, d: 664, vo: 'vo05'},
+  {C: Step5, d: 403, vo: 'vo06'},
+  {C: Step6, d: 343, vo: 'vo07'},
+  {C: Step7, d: 240, vo: 'vo08'},
   {C: Outro, d: 210},
 ];
 const starts = SCENES.map((_, i) => SCENES.slice(0, i).reduce((a, s) => a + s.d, 0) - i * T);
@@ -914,10 +918,15 @@ export const GeminiCert: React.FC = () => {
     <AbsoluteFill style={{fontFamily, background: '#f6f8fc'}}>
       <Bg />
       <TransitionSeries>
-        {SCENES.flatMap(({C, d}, i) => {
+        {SCENES.flatMap(({C, d, vo}, i) => {
           const seq = (
             <TransitionSeries.Sequence key={`s${i}`} durationInFrames={d}>
               <C />
+              {vo && (
+                <Sequence from={VO_AT} layout="none">
+                  <Audio src={staticFile(`gemini/vo/${vo}.mp3`)} />
+                </Sequence>
+              )}
             </TransitionSeries.Sequence>
           );
           if (i === 0) return [seq];
@@ -931,7 +940,7 @@ export const GeminiCert: React.FC = () => {
       ))}
       <Audio
         src={staticFile('c46/soft.mp3')}
-        volume={(f) => interpolate(f, [0, 20, total - 60, total], [0, 0.32, 0.32, 0], clamp)}
+        volume={(f) => interpolate(f, [0, 20, starts[8], starts[8] + 30, total - 60, total], [0, 0.1, 0.1, 0.3, 0.3, 0], clamp)}
       />
     </AbsoluteFill>
   );
