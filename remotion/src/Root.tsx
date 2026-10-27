@@ -8,11 +8,14 @@ import {FPS as T4_FPS, HEIGHT as T4_H, totalFrames as t4Frames, WIDTH as T4_W} f
 import {Teacher4} from './teacher4/Teacher4';
 import {FPS as C46_FPS, HEIGHT as C46_H, totalFrames as c46Frames, WIDTH as C46_W} from './conference46/config';
 import {Recommendations46} from './conference46/Recommendations';
+import {GeminiCert, FPS as GC_FPS, HEIGHT as GC_H, totalFrames as gcFrames, WIDTH as GC_W} from './gemini/GeminiCert';
 import {FPS as C46B_FPS, HEIGHT as C46B_H, Recommendations46V2, totalFrames as c46bFrames, WIDTH as C46B_W} from './conference46/v2/Recommendations2';
 
 export const RemotionRoot: React.FC = () => {
   return (
     <>
+      {/* شرح خطوات استخراج شهادة معلم معتمد من Google Gemini — أ. جنان المعيبف */}
+      <Composition id="GeminiCert" component={GeminiCert} durationInFrames={gcFrames()} fps={GC_FPS} width={GC_W} height={GC_H} />
       {/* ريل مستقبل التعليم بكلمة — جمعية المعلمين الكويتية */}
       <Composition id="TeachersReel" component={Reel} durationInFrames={totalFrames()} fps={FPS} width={WIDTH} height={HEIGHT} />
       {/* أبرز 15 توصية للمؤتمر التربوي السادس والأربعين — موشن جرافيك عمودي */}
