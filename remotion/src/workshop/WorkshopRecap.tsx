@@ -4,12 +4,14 @@
 import {fade} from '@remotion/transitions/fade';
 import {linearTiming, TransitionSeries} from '@remotion/transitions';
 import {Fragment} from 'react';
-import {AbsoluteFill, Audio, Easing, Img, interpolate, OffthreadVideo, random, Sequence, staticFile, useCurrentFrame} from 'remotion';
+import {AbsoluteFill, Audio, Easing, Img, interpolate, OffthreadVideo, random, Sequence, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {fontFamily} from '../reel/font';
 
 export const FPS = 30;
 export const WIDTH = 1080;
 export const HEIGHT = 1920;
+// مقاس الكاروسيل (إنستقرام 4:5)
+export const CAROUSEL_HEIGHT = 1350;
 const XFADE = 12;
 const DIR = 'footage/workshop/';
 
@@ -73,6 +75,12 @@ const ease = Easing.bezier(0.33, 0, 0.2, 1);
 const softShadow = '0 4px 28px rgba(0,0,0,0.8)';
 const GRADE = 'contrast(1.07) saturate(1.08) brightness(1.04)';
 
+// المسافات من تحت محسوبة للريل 1920؛ في الكاروسيل الإطار أقصر فتنزل تحت
+const useBottom = (reelPx: number) => {
+  const {height} = useVideoConfig();
+  return height >= HEIGHT ? reelPx : Math.round(reelPx * 0.42);
+};
+
 const useReveal = (delay: number, dur = 20) => {
   const frame = useCurrentFrame();
   const p = interpolate(frame - delay, [0, dur], [0, 1], {...clamp, easing: ease});
@@ -82,11 +90,12 @@ const useReveal = (delay: number, dur = 20) => {
 // نجوم البوستر الزرقاء ✦ تلمع بهدوء
 const Sparkles: React.FC<{seed: string; count?: number}> = ({seed, count = 10}) => {
   const frame = useCurrentFrame();
+  const {height} = useVideoConfig();
   return (
     <AbsoluteFill style={{pointerEvents: 'none'}}>
       {Array.from({length: count}).map((_, i) => {
         const x = random(`${seed}x${i}`) * WIDTH;
-        const y = random(`${seed}y${i}`) * HEIGHT;
+        const y = random(`${seed}y${i}`) * height;
         const s = 14 + random(`${seed}s${i}`) * 26;
         const tw = Math.max(0, Math.sin(frame / (10 + (i % 5) * 3) + i * 1.7));
         return (
@@ -109,9 +118,14 @@ const PosterIntro: React.FC<{frames: number}> = ({frames}) => {
   const fadeIn = interpolate(frame, [0, 14], [0, 1], clamp);
   // ضوء يمر على العنوان
   const sweep = interpolate(frame, [18, 58], [-400, WIDTH + 400], clamp);
+  const carousel = useVideoConfig().height < HEIGHT;
   return (
     <AbsoluteFill style={{background: NAVY, overflow: 'hidden', opacity: fadeIn}}>
-      <Img src={staticFile('teacher4vc/poster_jenan.png')} style={{width: '100%', height: '100%', transform: `scale(${scale})`, transformOrigin: '50% 20%'}} />
+      {carousel ? (
+        <Img src={staticFile('teacher4vc/poster_jenan.png')} style={{position: 'absolute', width: '100%', height: '100%', objectFit: 'cover', filter: 'blur(30px) brightness(0.6)'}} />
+      ) : null}
+      {/* في الكاروسيل البوستر كامل في النص وخلفه نسخة مغبشة */}
+      <Img src={staticFile('teacher4vc/poster_jenan.png')} style={{position: 'absolute', width: '100%', height: '100%', objectFit: 'contain', transform: `scale(${scale})`, transformOrigin: '50% 20%'}} />
       <div style={{position: 'absolute', top: 180, left: sweep, width: 220, height: 300, transform: 'skewX(-20deg)', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent)', mixBlendMode: 'screen'}} />
       <Sparkles seed="intro" count={8} />
     </AbsoluteFill>
@@ -121,8 +135,9 @@ const PosterIntro: React.FC<{frames: number}> = ({frames}) => {
 const CaptionChip: React.FC<{caption: Caption; frames: number}> = ({caption, frames}) => {
   const frame = useCurrentFrame();
   const show = interpolate(frame, [8, 24, frames - 16, frames - 4], [0, 1, 1, 0], {...clamp, easing: ease});
+  const bottom = useBottom(250);
   return (
-    <div style={{position: 'absolute', bottom: 250, left: 60, right: 60, display: 'flex', justifyContent: 'center', opacity: show, transform: `translateY(${(1 - show) * 30}px)`}}>
+    <div style={{position: 'absolute', bottom, left: 60, right: 60, display: 'flex', justifyContent: 'center', opacity: show, transform: `translateY(${(1 - show) * 30}px)`}}>
       <div
         style={{
           direction: 'rtl', fontFamily, display: 'flex', alignItems: 'center', gap: 22, padding: '20px 34px', borderRadius: 22,
@@ -140,10 +155,11 @@ const CaptionChip: React.FC<{caption: Caption; frames: number}> = ({caption, fra
 const PresenterTag: React.FC<{frames: number}> = ({frames}) => {
   const frame = useCurrentFrame();
   const show = interpolate(frame, [10, 28, frames - 14, frames], [0, 1, 1, 0], {...clamp, easing: ease});
+  const bottom = useBottom(270);
   return (
     <div
       style={{
-        position: 'absolute', bottom: 270, right: 70, direction: 'rtl', fontFamily, opacity: show, transform: `translateX(${(1 - show) * -40}px)`,
+        position: 'absolute', bottom, right: 70, direction: 'rtl', fontFamily, opacity: show, transform: `translateX(${(1 - show) * -40}px)`,
         padding: '18px 34px', borderRadius: 18, background: 'rgba(4,14,43,0.7)', backdropFilter: 'blur(10px)', borderRight: `6px solid ${ORANGE}`,
       }}
     >
@@ -177,8 +193,9 @@ const GuestsCard: React.FC<{frames: number}> = ({frames}) => {
   const frame = useCurrentFrame();
   const out = interpolate(frame, [frames - 18, frames - 2], [1, 0], clamp);
   const bg = interpolate(frame, [0, 18], [0, 1], clamp) * out;
+  const bottom = useBottom(230);
   return (
-    <AbsoluteFill style={{direction: 'rtl', fontFamily, justifyContent: 'flex-end', alignItems: 'center', paddingBottom: 230}}>
+    <AbsoluteFill style={{direction: 'rtl', fontFamily, justifyContent: 'flex-end', alignItems: 'center', paddingBottom: bottom}}>
       <AbsoluteFill style={{background: 'linear-gradient(to top, rgba(4,14,43,0.95) 0%, rgba(4,14,43,0.75) 38%, transparent 62%)', opacity: bg}} />
       <div style={{opacity: out, textAlign: 'center', padding: '0 70px', position: 'relative'}}>
         <div style={{...useReveal(6), display: 'inline-block', fontSize: 40, fontWeight: 800, color: ORANGE, padding: '6px 34px', border: `2px solid ${BLUE}`, borderRadius: 16, marginBottom: 30}}>بحضور</div>
