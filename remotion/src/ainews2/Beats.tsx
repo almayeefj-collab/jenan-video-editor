@@ -1,4 +1,5 @@
 import {AbsoluteFill, Easing, interpolate, spring, useCurrentFrame, useVideoConfig} from 'remotion';
+import {UiMock} from './UiMocks';
 import {fontFamily} from '../reel/font';
 import {type Beat, C, type Look} from './types';
 
@@ -320,6 +321,7 @@ export const BeatView: React.FC<{b: Beat; frames: number}> = ({b, frames}) => {
     case 'doc': center = <Doc title={b.title} rows={b.rows} />; break;
     case 'phone': center = <div style={{transform: `scale(${b.foot ? 0.78 : 0.88})`}}><Phone bubbles={b.bubbles} wave={b.wave} /></div>; break;
     case 'chips': center = <Chips chips={b.chips} look={look} />; break;
+    case 'ui': center = <UiMock screen={b.screen} frames={frames} />; break;
   }
   return (
     <AbsoluteFill>

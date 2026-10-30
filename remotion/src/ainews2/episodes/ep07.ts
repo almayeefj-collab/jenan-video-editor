@@ -17,22 +17,23 @@ export const ep07v2: Episode2 = {
   ]},
   stories: [
     {tag: 'Classroom', beats: [
-      {type: 'brand', look: 'dark', dur: 4.0, name: 'Google Classroom', chip: 'Gemini Notebook'},
-      {type: 'doc', look: 'light', dur: 4.6, head: 'ملخص *لطلابك*', title: 'Insights', rows: ['أكثر الأسئلة', 'نقاط تحتاج دعم', 'المحادثات كاملة']},
-      {type: 'chips', look: 'coral', dur: 3.4, head: 'حتى *المجانية*', chips: ['Fundamentals', 'Standard', 'Plus']},
+      {type: 'brand', look: 'dark', dur: 2.8, name: 'Google Classroom', chip: 'Gemini Notebook'},
+      {type: 'ui', look: 'light', dur: 4.2, head: 'تعطي طلابك *نوت بوك*', screen: 'classroomAssign'},
+      {type: 'ui', look: 'light', dur: 6.0, head: 'ويطلع لك *ملخص*', screen: 'classroomInsights'},
+      {type: 'chips', look: 'coral', dur: 2.8, head: 'حتى *المجانية*', chips: ['Fundamentals', 'Standard', 'Plus']},
     ]},
     {tag: 'Gemini', beats: [
-      {type: 'doc', look: 'light', dur: 4.6, head: 'من *Gemini* لموقع', title: 'Export', rows: ['تطبيقك أو لعبتك', 'Google Sites', 'شاركها مع طلابك']},
-      {type: 'chips', look: 'dark', dur: 3.4, head: 'بضغطة *وحدة*', chips: ['الويب', 'Android', 'iOS']},
+      {type: 'ui', look: 'light', dur: 5.4, head: 'من *Gemini*: Export', screen: 'geminiExport'},
+      {type: 'ui', look: 'light', dur: 5.4, head: 'وشاركه *بموقع*', screen: 'sitesShare'},
     ]},
     {tag: 'Copilot', beats: [
-      {type: 'brand', look: 'dark', dur: 3.8, name: 'Copilot', accent: 'Teach', chip: 'من Microsoft'},
-      {type: 'doc', look: 'light', dur: 4.4, head: 'خطة *وحدة* كاملة', title: 'Unit Plans', rows: ['تخطيط المنهج', 'أنشطة تعليمية', 'تعديل المحتوى']},
-      {type: 'chips', look: 'coral', dur: 3.2, head: 'زر جديد في', chips: ['OneNote', 'Class Notebook']},
+      {type: 'brand', look: 'dark', dur: 2.8, name: 'Copilot', accent: 'Teach', chip: 'من Microsoft'},
+      {type: 'ui', look: 'light', dur: 5.4, head: 'زر جديد في *OneNote*', screen: 'oneNoteTeach'},
+      {type: 'ui', look: 'light', dur: 5.6, head: 'خطة *وحدة* كاملة', screen: 'teachUnitPlan'},
     ]},
     {tag: 'Toolkit', beats: [
-      {type: 'chips', look: 'light', dur: 4.2, head: 'دروس *AI* للطلاب', chips: ['تأكد من الأخبار', 'إجابات الشات بوت']},
-      {type: 'stat', look: 'dark', dur: 3.6, head: 'للأعمار', value: '13–15', unit: 'سنة', foot: 'من *Microsoft*'},
+      {type: 'ui', look: 'light', dur: 6.4, head: 'يتأكدون من *الخبر*', screen: 'factCheckLesson'},
+      {type: 'stat', look: 'dark', dur: 2.8, head: 'دروس للأعمار', value: '13–15', unit: 'سنة', foot: 'من *Microsoft*'},
     ]},
   ],
   outro: {dur: 7, word: 'خطة'},

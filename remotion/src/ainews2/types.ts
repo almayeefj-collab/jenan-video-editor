@@ -2,6 +2,8 @@
 // بدون صور: كل خبر = كم «لقطة» (beat) فيها عنوان متحرك فوق وشكل ثلاثي الأبعاد بالنص.
 // العنوان: الكلمة اللي بين *نجمتين* تطلع بالمرجاني.
 
+import type {UiScreen} from './UiMocks';
+
 export type Look = 'light' | 'dark' | 'coral';
 
 type Base = {dur: number; look?: Look; head?: string; foot?: string};
@@ -16,6 +18,7 @@ export type Beat = Base &
     | {type: 'doc'; title: string; rows: string[]} // ورقة فيها صحّات تنصح وحدة وحدة
     | {type: 'phone'; bubbles?: string[]; wave?: boolean} // جوال: فقاعات أو موجة صوت
     | {type: 'chips'; chips: string[]} // كبسولات
+    | {type: 'ui'; screen: UiScreen} // واجهة توضيحية للأداة مع ماوس (UiMocks.tsx)
   );
 
 export type Story = {
