@@ -19,7 +19,7 @@ export type Beat = Base &
     | {type: 'phone'; bubbles?: string[]; wave?: boolean} // جوال: فقاعات أو موجة صوت
     | {type: 'chips'; chips: string[]} // كبسولات
     | {type: 'ui'; screen: UiScreen} // واجهة توضيحية للأداة مع ماوس (UiMocks.tsx)
-    | {type: 'clip'; src: string; from: number; rate?: number} // فيديو جنان الطولي كامل الشاشة (من ثانية from)
+    | {type: 'clip'; src: string; from: number; rate?: number; laptop?: boolean} // فيديو جنان: كامل الشاشة، أو laptop = شاشة مقصوصة داخل لابتوب
   );
 
 export type Story = {

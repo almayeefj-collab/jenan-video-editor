@@ -302,9 +302,38 @@ const Brand: React.FC<{name: string; accent?: string; chip?: string; look: Look}
 };
 
 // فيديو جنان (طولي) يملأ الشاشة، والعنوان فوقه على تدرّج غامق
+// شاشة اللعبة (مقصوصة من تصوير جنان بـ tools/rectify_screen.py) داخل لابتوب على خلفية السلسلة
+const LaptopClip: React.FC<{b: Extract<Beat, {type: 'clip'}>; frames: number}> = ({b, frames}) => {
+  const f = useCurrentFrame();
+  const {fps} = useVideoConfig();
+  const look: Look = b.look ?? 'light';
+  const pop = spring({frame: f, fps, config: {damping: 14, stiffness: 110}});
+  const zoom = 1 + (f / Math.max(frames, 1)) * 0.03;
+  const SW = 900;
+  const SH = 562;
+  return (
+    <AbsoluteFill>
+      <Backdrop look={look} />
+      {b.head ? <div style={{position: 'absolute', top: 210, left: 50, right: 50}}><Kinetic text={b.head} look={look} /></div> : null}
+      <div style={{position: 'absolute', top: 640, left: 0, right: 0, display: 'flex', flexDirection: 'column', alignItems: 'center',
+        transform: `translateY(${(1 - pop) * 200}px) scale(${(0.92 + 0.08 * pop) * zoom})`, opacity: Math.min(1, pop * 1.5)}}>
+        <div style={{width: SW + 44, height: SH + 44, borderRadius: 34, background: '#16110F', padding: 22, boxSizing: 'border-box', boxShadow: '0 40px 90px rgba(40,25,20,0.35)'}}>
+          <div style={{width: SW, height: SH, borderRadius: 12, overflow: 'hidden', background: '#000', position: 'relative'}}>
+            <OffthreadVideo src={staticFile(b.src)} startFrom={Math.round(b.from * fps)} playbackRate={b.rate ?? 1} muted
+              style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+          </div>
+        </div>
+        <div style={{width: SW + 140, height: 34, borderRadius: '0 0 30px 30px', background: 'linear-gradient(180deg,#D8D6D2,#A9A6A1)', boxShadow: '0 20px 40px rgba(40,25,20,0.25)'}} />
+      </div>
+      {b.foot ? <div style={{position: 'absolute', bottom: 330, left: 60, right: 60}}><Kinetic text={b.foot} look={look} size={70} delay={10} /></div> : null}
+    </AbsoluteFill>
+  );
+};
+
 const ClipBeat: React.FC<{b: Extract<Beat, {type: 'clip'}>; frames: number}> = ({b, frames}) => {
   const f = useCurrentFrame();
   const {fps} = useVideoConfig();
+  if (b.laptop) return <LaptopClip b={b} frames={frames} />;
   const inP = interpolate(f, [0, 6], [0, 1], {...clamp, easing: Easing.out(Easing.cubic)});
   const outP = interpolate(f, [frames - 4, frames], [0, 1], clamp);
   // نقرّب على شاشة اللابتوب (فوق) والكيبورد تحت يصير مكان العنوان
