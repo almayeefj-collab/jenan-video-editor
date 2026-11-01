@@ -4,7 +4,7 @@ import {Easing, interpolate, spring, useCurrentFrame, useVideoConfig} from 'remo
 import {fontFamily} from '../reel/font';
 import {C} from './types';
 
-export type UiScreen = 'classroomAssign' | 'classroomInsights' | 'geminiExport' | 'sitesShare' | 'oneNoteTeach' | 'teachUnitPlan' | 'factCheckLesson';
+export type UiScreen = 'claudeCodePrompt' | 'classroomAssign' | 'classroomInsights' | 'geminiExport' | 'sitesShare' | 'oneNoteTeach' | 'teachUnitPlan' | 'factCheckLesson';
 
 const clamp = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
 const ease = Easing.bezier(0.45, 0, 0.2, 1);
@@ -59,6 +59,58 @@ const Spark4: React.FC<{size?: number}> = ({size = 34}) => (
   <svg width={size} height={size} viewBox="0 0 24 24"><path d="M12 0 C13 8 16 11 24 12 C16 13 13 16 12 24 C11 16 8 13 0 12 C8 11 11 8 12 0Z" fill="url(#gg)" />
     <defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#4285F4" /><stop offset="0.5" stopColor="#9B72CB" /><stop offset="1" stopColor="#D96570" /></linearGradient></defs></svg>
 );
+
+// ───────── Claude: تبويب Code — البرومبت ينكتب وتطلع اللعبة ─────────
+export const SEEN_JEEM_PROMPT = [
+  'سوّ لي لعبة «سين جيم» تفاعلية لمادة الدستور، صف ١٢:',
+  '• لوحة ٦ فئات من دروس الفصل الأول، وكل فئة أسئلة ٢٠٠ و٤٠٠ و٦٠٠',
+  '• فريقين بأسماء طالباتي، ومؤقت لكل سؤال',
+  '• زر يُظهر الإجابة، وأختار مين جاوب صح وتنضاف النقاط',
+  '• وسائل مساعدة: الحفرة، جاوبي جوابين، استعانة بزميلة',
+  '• ألوان برتقالية ورسمة لكل فئة',
+];
+const ClaudeMark: React.FC<{size?: number}> = ({size = 40}) => (
+  <svg width={size} height={size} viewBox="-50 -50 100 100">{Array.from({length: 12}, (_, i) => (
+    <line key={i} x1="0" y1="0" x2="0" y2="-44" stroke="#D97757" strokeWidth="9" strokeLinecap="round" transform={`rotate(${i * 30})`} />))}</svg>
+);
+const ClaudeCodePrompt: React.FC<{p: number}> = ({p}) => {
+  const all = SEEN_JEEM_PROMPT.join('\n');
+  const n = Math.floor(interpolate(p, [0.05, 0.55], [0, all.length], clamp));
+  const shown = all.slice(0, n).split('\n');
+  const sent = p > 0.62;
+  const done = appear(p, 0.78, 0.06);
+  return (
+    <Win app={<L>Claude</L>} color="#F4EEE8" icon={<ClaudeMark size={40} />}
+      right={<div style={{display: 'flex', gap: 6, background: '#F1EFEA', borderRadius: 999, padding: 5, direction: 'ltr'}}>
+        {['Chat', 'Code'].map((t) => <div key={t} style={{fontSize: 24, fontWeight: 900, padding: '6px 18px', borderRadius: 999, background: t === 'Code' ? 'white' : 'transparent', color: t === 'Code' ? '#D97757' : '#888', boxShadow: t === 'Code' ? '0 2px 6px rgba(0,0,0,0.12)' : 'none'}}>{t}</div>)}
+      </div>}>
+      <div style={{padding: 30, display: 'flex', flexDirection: 'column', gap: 22, height: '100%', boxSizing: 'border-box'}}>
+        {sent ? (
+          <div style={{alignSelf: 'flex-start', background: '#F4EEE8', borderRadius: '26px 26px 6px 26px', padding: '18px 24px', fontSize: 30, fontWeight: 700, lineHeight: 1.5, maxWidth: 860}}>
+            {SEEN_JEEM_PROMPT.map((l) => <div key={l}>{l}</div>)}
+          </div>
+        ) : null}
+        {sent ? (
+          <div style={{display: 'flex', alignItems: 'center', gap: 14, fontSize: 27, fontWeight: 800, color: '#555'}}>
+            <ClaudeMark size={36} />{done < 0.5 ? 'يسوي اللعبة…' : 'اللعبة جاهزة ✓'}
+          </div>
+        ) : null}
+        <Row p={p} at={0.78} style={{border: '3px solid #E8735A', borderRadius: 22, padding: 18, display: 'flex', alignItems: 'center', gap: 18, background: '#FFF4EE'}}>
+          <div style={{width: 84, height: 84, borderRadius: 18, background: 'linear-gradient(140deg,#F05A28,#E8243C)', color: 'white', fontSize: 30, fontWeight: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1}}>سين<br />جيم</div>
+          <div style={{flex: 1}}><div style={{fontSize: 30, fontWeight: 900}}>سين جيم · الدستور</div><div style={{fontSize: 24, color: '#777', fontWeight: 700}}>لعبة تفاعلية جاهزة للعرض</div></div>
+          <Btn on={p > 0.92 ? 1 : 0} color="#E8735A">افتحي اللعبة</Btn>
+        </Row>
+        <div style={{flex: 1}} />
+        {!sent ? (
+          <div style={{border: '2px solid #E2DED6', borderRadius: 26, padding: '18px 22px', fontSize: 30, fontWeight: 700, lineHeight: 1.5, minHeight: 360, background: 'white'}}>
+            {shown.map((l, i) => <div key={i}>{l}{i === shown.length - 1 ? <span style={{opacity: Math.floor(p * 60) % 2 ? 1 : 0}}>|</span> : null}</div>)}
+          </div>
+        ) : null}
+      </div>
+      <Cursor p={p} path={[[0, 600, 760], [0.55, 600, 760], [0.6, 820, 820], [0.86, 820, 820], [0.9, 150, 420], [1, 150, 420]]} clicks={[0.61, 0.92]} />
+    </Win>
+  );
+};
 
 // ───────── ١) Google Classroom: صفحة الواجب وتبويب Insights الجديد ─────────
 const ClassroomAssign: React.FC<{p: number}> = ({p}) => {
@@ -310,6 +362,7 @@ export const UiMock: React.FC<{screen: UiScreen; frames: number}> = ({screen, fr
   const p = interpolate(f, [6, Math.max(7, frames - 6)], [0, 1], clamp);
   const pop = spring({frame: f, fps, config: {damping: 14, stiffness: 120}});
   const body = {
+    claudeCodePrompt: <ClaudeCodePrompt p={p} />,
     classroomAssign: <ClassroomAssign p={p} />,
     classroomInsights: <ClassroomInsights p={p} />,
     geminiExport: <GeminiExport p={p} />,

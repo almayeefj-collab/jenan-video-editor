@@ -69,4 +69,5 @@ export const COVERS: Record<string, CoverProps> = {
   '05': {number: 5, title: 'Claude يحضّر *دروسك*', tools: ['Claude', 'Canva'], tag: 'شرح خطوة بخطوة'},
   '06': {number: 6, title: 'سويت *دفتر متابعة* لصفي', tools: ['Claude Code'], tag: 'مشروعي'},
   '07': {number: 7, title: 'أخبار تفيد *المعلم*', tools: ['Classroom', 'Gemini', 'Copilot Teach'], tag: 'للمعلمين'},
+  '08': {number: 8, title: 'لعبة *سين جيم* بـ Claude', tools: ['Claude', 'لعبة تفاعلية'], tag: 'لطالباتي'},
 };

@@ -1,4 +1,4 @@
-import {AbsoluteFill, Easing, interpolate, spring, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, Easing, interpolate, OffthreadVideo, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {UiMock} from './UiMocks';
 import {fontFamily} from '../reel/font';
 import {type Beat, C, type Look} from './types';
@@ -301,9 +301,29 @@ const Brand: React.FC<{name: string; accent?: string; chip?: string; look: Look}
   );
 };
 
+// فيديو جنان (طولي) يملأ الشاشة، والعنوان فوقه على تدرّج غامق
+const ClipBeat: React.FC<{b: Extract<Beat, {type: 'clip'}>; frames: number}> = ({b, frames}) => {
+  const f = useCurrentFrame();
+  const {fps} = useVideoConfig();
+  const inP = interpolate(f, [0, 6], [0, 1], {...clamp, easing: Easing.out(Easing.cubic)});
+  const outP = interpolate(f, [frames - 4, frames], [0, 1], clamp);
+  // نقرّب على شاشة اللابتوب (فوق) والكيبورد تحت يصير مكان العنوان
+  const z = 1.42 + (f / Math.max(frames, 1)) * 0.05 + (1 - inP) * 0.06;
+  return (
+    <AbsoluteFill style={{background: '#000', overflow: 'hidden'}}>
+      <OffthreadVideo src={staticFile(b.src)} startFrom={Math.round(b.from * fps)} playbackRate={b.rate ?? 1} muted
+        style={{width: '100%', height: '100%', objectFit: 'cover', transformOrigin: '50% 30%', transform: `scale(${z})`, opacity: 1 - outP * 0.5}} />
+      <div style={{position: 'absolute', bottom: 0, left: 0, right: 0, height: 900, background: 'linear-gradient(0deg, rgba(20,14,12,0.92) 0%, rgba(20,14,12,0.75) 55%, transparent 100%)'}} />
+      {b.head ? <div style={{position: 'absolute', bottom: b.foot ? 520 : 420, left: 50, right: 50}}><Kinetic text={b.head} look="dark" /></div> : null}
+      {b.foot ? <div style={{position: 'absolute', bottom: 380, left: 60, right: 60}}><Kinetic text={b.foot} look="dark" size={70} delay={10} /></div> : null}
+    </AbsoluteFill>
+  );
+};
+
 // ───────── اللقطة كاملة ─────────
 export const BeatView: React.FC<{b: Beat; frames: number}> = ({b, frames}) => {
   const f = useCurrentFrame();
+  if (b.type === 'clip') return <ClipBeat b={b} frames={frames} />;
   const look: Look = b.look ?? 'light';
   // whip: دخول من اليمين مع blur، وخروج لليسار
   const inP = interpolate(f, [0, 7], [1, 0], {...clamp, easing: Easing.out(Easing.cubic)});
