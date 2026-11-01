@@ -24,7 +24,7 @@ export const ep08v2: Episode2 = {
       {type: 'clip', dur: 4.5, head: 'لوحة *٦ فئات*', src: C1, from: 1},
       {type: 'clip', dur: 3.5, head: 'تختار *النقاط*', src: C1, from: 9},
       {type: 'clip', dur: 4.5, head: 'السؤال مع *المؤقت*', src: C1, from: 22.5},
-      {type: 'clip', dur: 3.9, head: 'وتظهر *الإجابة*', src: C2, from: 9.6, foot: 'وأختار *منو جاوب*'},
+      {type: 'clip', dur: 3.9, head: 'وتظهر *الإجابة*', src: C2, from: 9.6, foot: 'أختار *منو جاوب صح*'},
     ]},
     {tag: 'Helps', beats: [
       {type: 'chips', look: 'dark', dur: 4.0, head: 'وسائل *مساعدة*', chips: ['الحفرة', 'جاوبي جوابين', 'استعانة بزميلة']},
