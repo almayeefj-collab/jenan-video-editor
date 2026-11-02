@@ -3,76 +3,67 @@
 <head>
 <meta charset="utf-8">
 <title>لوحة غرفة الاجتماعات</title>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;700;900&family=Aref+Ruqaa:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&family=Reem+Kufi:wght@600;700&display=swap" rel="stylesheet">
 <style>
   @page { size: A4 portrait; margin: 0; }
-  :root{
-    --navy:#3a3a3c; --navy2:#262628; --gold:#ef7f1a; --gold2:#f6b26b; --cream:#ffffff;
-  }
+  :root{ --ink:#333335; --ink2:#232325; --orange:#ef7f1a; --muted:#8a8a8e; --line:#e6e6e8; --bg:#ffffff; }
   *{box-sizing:border-box;margin:0;padding:0}
-  html,body{width:210mm;height:297mm;background:var(--cream)}
+  html,body{width:210mm;height:297mm;background:var(--bg)}
   .page{
-    position:relative;width:210mm;height:297mm;overflow:hidden;
-    background:
-      radial-gradient(circle at 50% 38%, #ffffff 0%, var(--cream) 60%);
-    font-family:'Cairo',sans-serif;color:var(--navy);
-    display:flex;flex-direction:column;align-items:center;
+    position:relative;width:210mm;height:297mm;overflow:hidden;background:var(--bg);
+    font-family:'Cairo',sans-serif;color:var(--ink);
+    display:grid;grid-template-rows:auto 1fr auto;justify-items:center;
+    padding:22mm 18mm 20mm;
   }
-  /* outer frame */
-  .frame{position:absolute;inset:28mm 10mm;border:1.2mm solid var(--navy);border-radius:6mm}
-  .frame::after{content:"";position:absolute;inset:2.2mm;border:0.4mm solid var(--gold);border-radius:4mm}
-  /* top band */
-  .band{position:absolute;top:0;left:0;right:0;height:22mm;background:linear-gradient(90deg,var(--navy2),var(--navy));}
-  .band-bottom{position:absolute;bottom:0;left:0;right:0;height:22mm;background:linear-gradient(90deg,var(--navy),var(--navy2));}
-  .band::after,.band-bottom::before{content:"";position:absolute;left:0;right:0;height:1.6mm;background:var(--gold)}
-  .band::after{bottom:0}.band-bottom::before{top:0}
+  /* thin accents */
+  .page::before{content:"";position:absolute;top:0;left:0;right:0;height:5mm;background:var(--ink2)}
+  .page::after{content:"";position:absolute;top:5mm;left:0;right:0;height:1.2mm;background:var(--orange)}
+  .foot-bar{position:absolute;bottom:0;left:0;right:0;height:5mm;background:var(--ink2)}
+  .foot-bar::before{content:"";position:absolute;top:-1.2mm;left:0;right:0;height:1.2mm;background:var(--orange)}
+  .frame{position:absolute;inset:14mm 12mm;border:.35mm solid var(--line);border-radius:4mm;pointer-events:none}
+  .corner{position:absolute;width:12mm;height:12mm;border:0 solid var(--orange)}
+  .c1{top:14mm;right:12mm;border-top-width:1mm;border-right-width:1mm;border-top-right-radius:4mm}
+  .c2{top:14mm;left:12mm;border-top-width:1mm;border-left-width:1mm;border-top-left-radius:4mm}
+  .c3{bottom:14mm;right:12mm;border-bottom-width:1mm;border-right-width:1mm;border-bottom-right-radius:4mm}
+  .c4{bottom:14mm;left:12mm;border-bottom-width:1mm;border-left-width:1mm;border-bottom-left-radius:4mm}
 
-  .logo-wrap{margin-top:40mm;width:92mm;height:66mm;display:flex;align-items:center;justify-content:center;position:relative;z-index:2}
-  .logo-wrap img{width:100%;height:100%;object-fit:contain}
-  .logo-placeholder{font-weight:700;font-size:5mm;color:#9aa7b6;text-align:center;line-height:1.5}
-  .school{margin-top:6mm;font-weight:900;font-size:10.5mm;letter-spacing:.2mm;z-index:2}
-  .divider{display:flex;align-items:center;gap:4mm;margin:8mm 0 3mm;z-index:2}
-  .divider span{display:block;width:38mm;height:.5mm;background:linear-gradient(90deg,transparent,var(--gold))}
-  .divider span:last-child{background:linear-gradient(90deg,var(--gold),transparent)}
-  .divider i{width:3.2mm;height:3.2mm;background:var(--gold);transform:rotate(45deg)}
+  .logo{width:78mm;height:auto;display:block;margin-top:6mm}
 
-  .welcome{font-family:'Aref Ruqaa',serif;font-size:34mm;line-height:1.1;color:var(--navy);z-index:2;margin-top:2mm}
-  .to{font-weight:700;font-size:10mm;color:var(--navy);margin-top:0;z-index:2}
-  .room{font-weight:900;font-size:18mm;line-height:1.25;color:var(--gold);margin-top:1mm;z-index:2;
-        text-shadow:0 .4mm 0 rgba(0,0,0,.08)}
+  .content{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;width:100%}
+  .welcome{font-family:'Reem Kufi',sans-serif;font-weight:700;font-size:30mm;line-height:1;color:var(--ink);letter-spacing:.3mm}
+  .rule{display:flex;align-items:center;gap:4mm;margin:14mm 0 10mm}
+  .rule span{width:30mm;height:.4mm;background:var(--orange);opacity:.55}
+  .rule i{width:2.6mm;height:2.6mm;background:var(--orange);transform:rotate(45deg)}
+  .to{font-weight:600;font-size:9mm;line-height:1;color:var(--muted)}
+  .room{font-weight:800;font-size:19mm;line-height:1.2;color:var(--orange);margin-top:7mm}
 
-  .arrow{margin-top:7mm;z-index:2}
+  .direction{
+    display:flex;align-items:center;justify-content:center;
+    width:150mm;height:34mm;border-radius:17mm;background:var(--ink2);margin-bottom:6mm;
+  }
 </style>
 </head>
 <body>
 <div class="page">
-  <div class="band"></div>
-  <div class="band-bottom"></div>
   <div class="frame"></div>
+  <div class="corner c1"></div><div class="corner c2"></div><div class="corner c3"></div><div class="corner c4"></div>
+  <div class="foot-bar"></div>
 
-  <div class="logo-wrap">
-    <img id="logo" src="school-logo.png" alt="شعار المدرسة"
-         onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'logo-placeholder',innerHTML:'ضع شعار المدرسة<br>school-logo.png'}))">
+  <img class="logo" src="school-logo.png" alt="شعار ثانوية فاطمة الهاشمية">
+
+  <div class="content">
+    <div class="welcome">حياكم الله</div>
+    <div class="rule"><span></span><i></i><span></span></div>
+    <div class="to">إلى</div>
+    <div class="room">غرفة الاجتماعات</div>
   </div>
 
-  <div class="divider"><span></span><i></i><span></span></div>
-
-  <div class="welcome">حياكم الله</div>
-  <div class="to">إلى</div>
-  <div class="room">غرفة الاجتماعات</div>
-
-  <!-- arrow pointing right -->
-  <svg class="arrow" width="140mm" height="45mm" viewBox="0 0 300 96" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="g" x1="0" x2="1">
-        <stop offset="0" stop-color="#3a3a3c" stop-opacity=".0"/>
-        <stop offset=".35" stop-color="#3a3a3c"/>
-        <stop offset="1" stop-color="#262628"/>
-      </linearGradient>
-    </defs>
-    <path d="M10 34 H200 V8 L292 48 L200 88 V62 H10 Z" fill="url(#g)"/>
-    <path d="M200 8 L292 48 L200 88" fill="none" stroke="#ef7f1a" stroke-width="5" stroke-linejoin="round"/>
-  </svg>
+  <div class="direction" aria-label="اتجه يمين">
+    <svg width="118mm" height="20mm" viewBox="0 0 236 40" xmlns="http://www.w3.org/2000/svg">
+      <line x1="6" y1="20" x2="214" y2="20" stroke="#ffffff" stroke-width="6" stroke-linecap="round"/>
+      <path d="M194 4 L224 20 L194 36" fill="none" stroke="#ef7f1a" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
 </div>
 </body>
 </html>
