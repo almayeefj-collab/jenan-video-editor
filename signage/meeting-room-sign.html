@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>لوحة غرفة الاجتماعات</title>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&family=Reem+Kufi:wght@600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&family=Aref+Ruqaa:wght@400;700&display=swap" rel="stylesheet">
 <style>
   @page { size: A4 portrait; margin: 0; }
   :root{ --ink:#333335; --ink2:#232325; --orange:#ef7f1a; --muted:#8a8a8e; --line:#e6e6e8; --bg:#ffffff; }
@@ -30,8 +30,8 @@
   .logo{width:78mm;height:auto;display:block;margin-top:6mm}
 
   .content{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;width:100%}
-  .welcome{font-family:'Reem Kufi',sans-serif;font-weight:700;font-size:30mm;line-height:1;color:var(--ink);letter-spacing:.3mm}
-  .rule{display:flex;align-items:center;gap:4mm;margin:14mm 0 10mm}
+  .welcome{font-family:'Aref Ruqaa',serif;font-weight:700;font-size:30mm;line-height:1.5;color:var(--ink);padding-bottom:4mm}
+  .rule{display:flex;align-items:center;gap:4mm;margin:6mm 0 10mm}
   .rule span{width:30mm;height:.4mm;background:var(--orange);opacity:.55}
   .rule i{width:2.6mm;height:2.6mm;background:var(--orange);transform:rotate(45deg)}
   .to{font-weight:600;font-size:9mm;line-height:1;color:var(--muted)}
@@ -39,11 +39,13 @@
 
   .direction{
     display:flex;align-items:center;justify-content:center;
-    width:150mm;height:34mm;border-radius:17mm;background:var(--ink2);margin-bottom:6mm;
+    width:150mm;height:34mm;border-radius:17mm;background:#7a7b7e;margin-bottom:6mm;
   }
+  body.left .direction svg{transform:scaleX(-1)}
 </style>
 </head>
 <body>
+<script>if(location.hash==='#left')document.body.classList.add('left')</script>
 <div class="page">
   <div class="frame"></div>
   <div class="corner c1"></div><div class="corner c2"></div><div class="corner c3"></div><div class="corner c4"></div>
@@ -61,7 +63,7 @@
   <div class="direction" aria-label="اتجه يمين">
     <svg width="118mm" height="20mm" viewBox="0 0 236 40" xmlns="http://www.w3.org/2000/svg">
       <line x1="6" y1="20" x2="214" y2="20" stroke="#ffffff" stroke-width="6" stroke-linecap="round"/>
-      <path d="M194 4 L224 20 L194 36" fill="none" stroke="#ef7f1a" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M194 4 L224 20 L194 36" fill="none" stroke="#ffffff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
   </div>
 </div>
