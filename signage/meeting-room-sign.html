@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>لوحة غرفة الاجتماعات</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;700;900&family=Aref+Ruqaa:wght@700&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4 portrait; margin: 0; }
+  :root{
+    --navy:#14365c; --navy2:#0d2540; --gold:#c9a24a; --gold2:#e7cf8e; --cream:#fbf8f1;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:210mm;height:297mm;background:var(--cream)}
+  .page{
+    position:relative;width:210mm;height:297mm;overflow:hidden;
+    background:
+      radial-gradient(circle at 50% 38%, #ffffff 0%, var(--cream) 60%);
+    font-family:'Cairo',sans-serif;color:var(--navy);
+    display:flex;flex-direction:column;align-items:center;
+  }
+  /* outer frame */
+  .frame{position:absolute;inset:28mm 10mm;border:1.2mm solid var(--navy);border-radius:6mm}
+  .frame::after{content:"";position:absolute;inset:2.2mm;border:0.4mm solid var(--gold);border-radius:4mm}
+  /* top band */
+  .band{position:absolute;top:0;left:0;right:0;height:22mm;background:linear-gradient(90deg,var(--navy2),var(--navy));}
+  .band-bottom{position:absolute;bottom:0;left:0;right:0;height:22mm;background:linear-gradient(90deg,var(--navy),var(--navy2));}
+  .band::after,.band-bottom::before{content:"";position:absolute;left:0;right:0;height:1.6mm;background:var(--gold)}
+  .band::after{bottom:0}.band-bottom::before{top:0}
+
+  .logo-wrap{
+    margin-top:38mm;width:56mm;height:56mm;border-radius:50%;
+    background:#fff;border:1mm solid var(--gold);
+    box-shadow:0 0 0 2.5mm #fff, 0 0 0 3mm var(--navy), 0 3mm 8mm rgba(20,54,92,.18);
+    display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;z-index:2;
+  }
+  .logo-wrap img{width:84%;height:84%;object-fit:contain}
+  .logo-placeholder{font-weight:700;font-size:5mm;color:#9aa7b6;text-align:center;line-height:1.5}
+  .school{margin-top:6mm;font-weight:900;font-size:10.5mm;letter-spacing:.2mm;z-index:2}
+  .divider{display:flex;align-items:center;gap:4mm;margin:5mm 0 2mm;z-index:2}
+  .divider span{display:block;width:38mm;height:.5mm;background:linear-gradient(90deg,transparent,var(--gold))}
+  .divider span:last-child{background:linear-gradient(90deg,var(--gold),transparent)}
+  .divider i{width:3.2mm;height:3.2mm;background:var(--gold);transform:rotate(45deg)}
+
+  .welcome{font-family:'Aref Ruqaa',serif;font-size:32mm;line-height:1.1;color:var(--navy);z-index:2;margin-top:2mm}
+  .to{font-weight:700;font-size:10mm;color:var(--navy);margin-top:0;z-index:2}
+  .room{font-weight:900;font-size:17mm;line-height:1.25;color:var(--gold);margin-top:1mm;z-index:2;
+        text-shadow:0 .4mm 0 rgba(13,37,64,.15)}
+
+  .arrow{margin-top:5mm;z-index:2}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="band"></div>
+  <div class="band-bottom"></div>
+  <div class="frame"></div>
+
+  <div class="logo-wrap">
+    <img id="logo" src="school-logo.png" alt="شعار المدرسة"
+         onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'logo-placeholder',innerHTML:'ضع شعار المدرسة<br>school-logo.png'}))">
+  </div>
+  <div class="school">ثانوية فاطمة الهاشمية</div>
+
+  <div class="divider"><span></span><i></i><span></span></div>
+
+  <div class="welcome">حياكم الله</div>
+  <div class="to">إلى</div>
+  <div class="room">غرفة الاجتماعات</div>
+
+  <!-- arrow pointing right -->
+  <svg class="arrow" width="140mm" height="45mm" viewBox="0 0 300 96" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="g" x1="0" x2="1">
+        <stop offset="0" stop-color="#14365c" stop-opacity=".0"/>
+        <stop offset=".35" stop-color="#14365c"/>
+        <stop offset="1" stop-color="#0d2540"/>
+      </linearGradient>
+    </defs>
+    <path d="M10 34 H200 V8 L292 48 L200 88 V62 H10 Z" fill="url(#g)"/>
+    <path d="M200 8 L292 48 L200 88" fill="none" stroke="#c9a24a" stroke-width="5" stroke-linejoin="round"/>
+  </svg>
+</div>
+</body>
+</html>
