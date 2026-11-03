@@ -1,5 +1,5 @@
 // فريق العلاقات العامة — فاطمة الهاشمية (نسخة رسمية)
-// عنوان ← أربع لقطات بعناوين سفلية أنيقة ← خاتمة
+// عنوان ← أربع لقطات بدون كتابة ← خاتمة
 // اللقطات في public/footage/pr/ (ما ترفع للمستودع)
 import {fade} from '@remotion/transitions/fade';
 import {linearTiming, TransitionSeries} from '@remotion/transitions';
@@ -19,15 +19,15 @@ const INK = '#0E0F14';
 
 type Shot =
   | {kind: 'title'; dur: number}
-  | {kind: 'video'; src: string; from: number; dur: number; caption: string}
+  | {kind: 'video'; src: string; from: number; dur: number}
   | {kind: 'final'; dur: number};
 
 const SHOTS: Shot[] = [
   {kind: 'title', dur: 3.6},
-  {kind: 'video', src: 'c1311.mp4', from: 0, dur: 3.3, caption: 'فريق واحد'},
-  {kind: 'video', src: 'c1312.mp4', from: 0, dur: 1.85, caption: 'روح الفريق'},
-  {kind: 'video', src: 'c1313.mp4', from: 0, dur: 5.0, caption: 'تواصل وتنسيق'},
-  {kind: 'video', src: 'c1314.mp4', from: 0, dur: 5.45, caption: 'حضور يليق بالمدرسة'},
+  {kind: 'video', src: 'c1311.mp4', from: 0, dur: 3.3},
+  {kind: 'video', src: 'c1312.mp4', from: 0, dur: 1.85},
+  {kind: 'video', src: 'c1313.mp4', from: 0, dur: 5.0},
+  {kind: 'video', src: 'c1314.mp4', from: 0, dur: 5.45},
   {kind: 'final', dur: 4.2},
 ];
 
@@ -86,29 +86,7 @@ const BlurBg: React.FC<{src: string; frames: number}> = ({src, frames}) => {
   );
 };
 
-const Brand: React.FC = () => (
-  <div style={{position: 'absolute', top: 110, left: 0, right: 0, textAlign: 'center', direction: 'rtl', fontFamily, fontSize: 34, fontWeight: 700, color: IVORY, letterSpacing: 1, textShadow: shadow, opacity: 0.92}}>
-    فريق العلاقات العامة <span style={{color: GOLD}}>|</span> فاطمة الهاشمية
-  </div>
-);
-
-const LowerThird: React.FC<{text: string; frames: number}> = ({text, frames}) => {
-  const frame = useCurrentFrame();
-  const show = interpolate(frame, [8, 26, frames - 16, frames - 4], [0, 1, 1, 0], {...clamp, easing: ease});
-  return (
-    <div
-      style={{
-        position: 'absolute', bottom: 280, right: 70, direction: 'rtl', fontFamily, whiteSpace: 'nowrap',
-        opacity: show, transform: `translateX(${(1 - show) * -40}px)`,
-        padding: '16px 38px 22px', borderRadius: 16, background: 'rgba(14,15,20,0.6)', borderRight: `6px solid ${GOLD}`,
-      }}
-    >
-      <div style={{fontSize: 64, fontWeight: 800, color: '#fff'}}>{text}</div>
-    </div>
-  );
-};
-
-const VideoShot: React.FC<{src: string; from: number; frames: number; caption: string}> = ({src, from, frames, caption}) => {
+const VideoShot: React.FC<{src: string; from: number; frames: number}> = ({src, from, frames}) => {
   const frame = useCurrentFrame();
   const scale = interpolate(frame, [0, frames], [1.0, 1.06]);
   return (
@@ -121,8 +99,6 @@ const VideoShot: React.FC<{src: string; from: number; frames: number; caption: s
       />
       <AbsoluteFill style={{background: 'linear-gradient(180deg, rgba(14,15,20,0.45) 0%, transparent 18%, transparent 70%, rgba(14,15,20,0.55) 100%)'}} />
       <Vignette />
-      <Brand />
-      <LowerThird text={caption} frames={frames} />
     </AbsoluteFill>
   );
 };
@@ -153,10 +129,13 @@ const Final: React.FC<{frames: number}> = ({frames}) => {
     <AbsoluteFill style={{background: INK}}>
       <BlurBg src="c1314.mp4" frames={frames} />
       <AbsoluteFill style={{direction: 'rtl', justifyContent: 'center', alignItems: 'center', textAlign: 'center', fontFamily, padding: '0 60px'}}>
-        <div style={{...useReveal(6), fontSize: 92, fontWeight: 800, color: IVORY, lineHeight: 1.3, textShadow: shadow}}>تواصلٌ يصنع الأثر</div>
+        <div style={{...useReveal(6), fontSize: 104, fontWeight: 900, color: IVORY, lineHeight: 1.2, textShadow: shadow}}>
+          فريق
+          <br />
+          العلاقات العامة
+        </div>
         <Rule width={420} delay={24} />
-        <div style={{...useReveal(32), fontSize: 50, fontWeight: 700, color: GOLD, textShadow: shadow}}>فريق العلاقات العامة</div>
-        <div style={{...useReveal(42), fontSize: 42, fontWeight: 500, color: IVORY, marginTop: 10, textShadow: shadow}}>فاطمة الهاشمية</div>
+        <div style={{...useReveal(32), fontSize: 64, fontWeight: 700, color: GOLD, textShadow: shadow}}>تواصلٌ يصنع الأثر</div>
       </AbsoluteFill>
       <AbsoluteFill style={{background: 'black', opacity: black}} />
     </AbsoluteFill>
@@ -168,7 +147,7 @@ const ShotView: React.FC<{shot: Shot; frames: number}> = ({shot, frames}) => {
     case 'title':
       return <TitleCard frames={frames} />;
     case 'video':
-      return <VideoShot src={shot.src} from={shot.from} frames={frames} caption={shot.caption} />;
+      return <VideoShot src={shot.src} from={shot.from} frames={frames} />;
     case 'final':
       return <Final frames={frames} />;
   }
