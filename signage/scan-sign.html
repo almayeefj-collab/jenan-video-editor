@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>امسح الباركود لتسجيل الحضور</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&family=Mirza:wght@700&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4 portrait; margin: 0; }
+  :root{ --ink:#333335; --ink2:#232325; --orange:#ef7f1a; --muted:#8a8a8e; --line:#e6e6e8; --bg:#ffffff; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:210mm;height:297mm;background:var(--bg)}
+  .page{
+    position:relative;width:210mm;height:297mm;overflow:hidden;background:var(--bg);
+    font-family:'Cairo',sans-serif;color:var(--ink);
+    display:flex;flex-direction:column;align-items:center;padding:24mm 18mm 20mm;
+  }
+  .page::before{content:"";position:absolute;top:0;left:0;right:0;height:5mm;background:var(--ink2)}
+  .page::after{content:"";position:absolute;top:5mm;left:0;right:0;height:1.2mm;background:var(--orange)}
+  .foot-bar{position:absolute;bottom:0;left:0;right:0;height:5mm;background:var(--ink2)}
+  .foot-bar::before{content:"";position:absolute;top:-1.2mm;left:0;right:0;height:1.2mm;background:var(--orange)}
+  .frame{position:absolute;inset:14mm 12mm;border:.35mm solid var(--line);border-radius:4mm}
+  .corner{position:absolute;width:12mm;height:12mm;border:0 solid var(--orange)}
+  .c1{top:14mm;right:12mm;border-top-width:1mm;border-right-width:1mm;border-top-right-radius:4mm}
+  .c2{top:14mm;left:12mm;border-top-width:1mm;border-left-width:1mm;border-top-left-radius:4mm}
+  .c3{bottom:14mm;right:12mm;border-bottom-width:1mm;border-right-width:1mm;border-bottom-right-radius:4mm}
+  .c4{bottom:14mm;left:12mm;border-bottom-width:1mm;border-left-width:1mm;border-bottom-left-radius:4mm}
+
+  .logo{width:58mm;height:auto;display:block}
+  .welcome{font-family:'Mirza',serif;font-weight:700;font-size:28mm;line-height:1.5;color:var(--ink);
+           -webkit-text-stroke:.6mm var(--ink);paint-order:stroke fill;white-space:nowrap;margin-top:1mm}
+  .event{font-weight:800;font-size:9mm;line-height:1.3;color:var(--orange);text-align:center}
+  .rule{display:flex;align-items:center;gap:4mm;margin:6mm 0 7mm}
+  .rule span{width:30mm;height:.4mm;background:var(--orange);opacity:.55}
+  .rule i{width:2.6mm;height:2.6mm;background:var(--orange);transform:rotate(45deg)}
+
+  .scan{font-weight:800;font-size:12mm;line-height:1.2;color:var(--ink)}
+  .scan-sub{font-weight:600;font-size:5.5mm;color:var(--muted);margin-top:2mm}
+
+  .qr-box{position:relative;margin-top:8mm;padding:7mm;border-radius:6mm;background:#fff;border:.5mm solid var(--line)}
+  .qr-box img{display:block;width:78mm;height:78mm}
+  .qb{position:absolute;width:11mm;height:11mm;border:0 solid var(--orange)}
+  .q1{top:-1mm;right:-1mm;border-top-width:1.6mm;border-right-width:1.6mm;border-top-right-radius:6mm}
+  .q2{top:-1mm;left:-1mm;border-top-width:1.6mm;border-left-width:1.6mm;border-top-left-radius:6mm}
+  .q3{bottom:-1mm;right:-1mm;border-bottom-width:1.6mm;border-right-width:1.6mm;border-bottom-right-radius:6mm}
+  .q4{bottom:-1mm;left:-1mm;border-bottom-width:1.6mm;border-left-width:1.6mm;border-bottom-left-radius:6mm}
+
+  .url{margin-top:6mm;font-size:4.6mm;font-weight:600;color:var(--muted);direction:ltr;letter-spacing:.2mm}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="frame"></div>
+  <div class="corner c1"></div><div class="corner c2"></div><div class="corner c3"></div><div class="corner c4"></div>
+  <div class="foot-bar"></div>
+
+  <img class="logo" src="school-logo.png" alt="شعار ثانوية فاطمة الهاشمية">
+  <div class="welcome">حيــاكــم اللّــه</div>
+  <div class="event">حضور اجتماع مديري ومديرات المدارس</div>
+
+  <div class="rule"><span></span><i></i><span></span></div>
+
+  <div class="scan">امسح الباركود</div>
+  <div class="scan-sub">لتسجيل حضورك بالاسم والمدرسة</div>
+
+  <div class="qr-box">
+    <img src="qr.svg" alt="باركود صفحة تسجيل الحضور">
+    <div class="qb q1"></div><div class="qb q2"></div><div class="qb q3"></div><div class="qb q4"></div>
+  </div>
+
+  <div class="url">fh-attendance.higgsfield.app</div>
+</div>
+</body>
+</html>
