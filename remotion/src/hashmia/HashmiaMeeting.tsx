@@ -238,7 +238,7 @@ export const HashmiaMeeting: React.FC = () => {
         src={staticFile('music/hashmia.wav')}
         volume={(f) =>
           interpolate(f, [0, 8], [0, 1], clamp) *
-          interpolate(f, [footStart, footStart + 30, footEnd - 30, footEnd], [0.9, 0.7, 0.7, 0.9], clamp) *
+          interpolate(f, [footStart, footStart + 30, footEnd - 30, footEnd], [0.85, 0.55, 0.55, 0.85], clamp) *
           interpolate(f, [total - 45, total - 1], [1, 0], clamp)
         }
       />

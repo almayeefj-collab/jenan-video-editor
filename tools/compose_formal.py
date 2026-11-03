@@ -6,6 +6,8 @@
     outro  : كورد ختامي كبير يتلاشى
 
 --style soft: نسخة هادئة (بيانو ووتريات ممتدة) بدون الضربات بين المشاهد.
+--style calm: رسمية هادية للفعاليات (وتريات + هورن + هارب، تتابع باخيلبل) بشدة ثابتة بدون تصعيد.
+    --intro = بارات الانترو، --recs × --rec-bars = بارات الجسم، --outro = بارات الكورد الختامي.
 
 الاستخدام:
     python tools/compose_formal.py --sf2 GeneralUser-GS.sf2 --bpm 96 --intro 6 --recs 15 --rec-bars 3 --outro 4 \
@@ -222,6 +224,56 @@ def compose_soft(bpm, intro, recs, rec_bars, outro):
     return s, total_bars * bar + 4.5
 
 
+# النسخة الرسمية الهادية: G - D/F# - Em - Bm/D - C - G/B - Am - D
+CALM_PROG = [
+    (['G', 'B', 'D'], ('G', 2)),
+    (['F#', 'A', 'D'], ('F#', 2)),
+    (['E', 'G', 'B'], ('E', 2)),
+    (['D', 'F#', 'B'], ('D', 2)),
+    (['C', 'E', 'G'], ('C', 2)),
+    (['B', 'D', 'G'], ('B', 1)),
+    (['A', 'C', 'E'], ('A', 1)),
+    (['D', 'F#', 'A'], ('D', 2)),
+]
+CALM_MEL = [
+    [('D', 5, 0, 2), ('B', 4, 2, 2)], [('A', 4, 0, 4)], [('G', 4, 0, 2), ('B', 4, 2, 2)], [('F#', 4, 0, 4)],
+    [('E', 4, 0, 2), ('G', 4, 2, 2)], [('D', 4, 0, 2), ('G', 4, 2, 2)], [('E', 4, 0, 2), ('A', 4, 2, 2)], [('F#', 4, 0, 4)],
+]
+
+
+def compose_calm(bpm, intro, recs, rec_bars, outro):
+    s = Score(bpm)
+    b = s.beat
+    bar = 4 * b
+    body = intro + recs * rec_bars
+    for n in range(body):
+        t0 = n * bar
+        tones, (bass, bo) = CALM_PROG[n % 8]
+        swell = min(1.0, 0.55 + 0.45 * n / max(1, intro))  # الانترو يدخل بهدوء ثم الشدة ثابتة
+        for nm in tones:
+            s.note('strings', t0, bar + b * 0.3, midi(nm, 4), 50 * swell)
+        s.note('basses', t0, bar, midi(bass, bo + 1), 48 * swell)
+        # هارب: نوتات ربع ناعمة صاعدة
+        for k, key in enumerate([midi(bass, bo + 2), midi(tones[0], 4), midi(tones[1], 4), midi(tones[2], 4)]):
+            s.note('harp', t0 + k * b, b * 1.8, key, 46 * swell)
+        if n >= intro:
+            phrase = (n - intro) // 8
+            line = CALM_MEL[(n - intro) % 8]
+            for nm, octv, st, dur in line:
+                if phrase % 2 == 0:
+                    s.note('horns', t0 + st * b, dur * b * 0.97, midi(nm, octv), 62)
+                else:
+                    s.note('strings', t0 + st * b, dur * b * 0.97, midi(nm, octv + 1), 52)
+    t0 = body * bar
+    for nm, o in [('G', 3), ('D', 4), ('G', 4), ('B', 4), ('D', 5)]:
+        s.note('strings', t0, bar * outro, midi(nm, o), 58)
+    s.note('horns', t0, bar * outro, midi('G', 4), 55)
+    s.note('basses', t0, bar * outro, midi('G', 2), 55)
+    for k, (nm, o) in enumerate([('G', 2), ('D', 3), ('G', 3), ('B', 3), ('D', 4), ('G', 4)]):
+        s.note('harp', t0 + k * b / 3, bar * 2, midi(nm, o), 50)
+    return s, (body + outro) * bar + 4.5
+
+
 def render(score, length, sf2):
     syn = tinysoundfont.Synth(samplerate=SR, gain=-6)
     sf = syn.sfload(sf2)
@@ -268,10 +320,10 @@ def main():
     ap.add_argument('--recs', type=int, default=15)
     ap.add_argument('--rec-bars', type=int, default=3)
     ap.add_argument('--outro', type=int, default=4)
-    ap.add_argument('--style', choices=['formal', 'soft'], default='formal')
+    ap.add_argument('--style', choices=['formal', 'soft', 'calm'], default='formal')
     ap.add_argument('-o', '--out', required=True)
     a = ap.parse_args()
-    fn = compose_soft if a.style == 'soft' else compose
+    fn = {'soft': compose_soft, 'calm': compose_calm}.get(a.style, compose)
     score, length = fn(a.bpm, a.intro, a.recs, a.rec_bars, a.outro)
     audio = reverb(render(score, length, a.sf2))
     audio /= np.abs(audio).max() / 0.89
