@@ -29,7 +29,7 @@ const CLIPS: [string, number][] = [
 ];
 
 const INTRO = 300; // 10 ثواني: الشعار ثم بيانات الاجتماع
-const OUTRO = 135;
+const OUTRO = 165;
 const XF = 10; // تلاشي بين اللقطات
 const XF_BIG = 18; // تلاشي الانترو/الأوترو
 
@@ -158,28 +158,33 @@ const Intro: React.FC = () => (
   </AbsoluteFill>
 );
 
+// الختام: صورة فريق العلاقات العامة، والشعار والإهداء في الفراغ فوق رؤوسهم (بعيد عن الوجوه)
 const Outro: React.FC = () => {
   const frame = useCurrentFrame();
   const t = interpolate(frame, [XF_BIG, XF_BIG + 24], [0, 1], {...clamp, easing: ease});
-  const t2 = interpolate(frame, [XF_BIG + 22, XF_BIG + 44], [0, 1], {...clamp, easing: ease});
+  const t2 = interpolate(frame, [XF_BIG + 20, XF_BIG + 42], [0, 1], {...clamp, easing: ease});
+  // زوم بطيء من فوق عشان الرؤوس تنزل شوي والفراغ اللي فوق يكبر
+  const zoom = interpolate(frame, [0, OUTRO], [1, 1.04]);
   return (
-    <AbsoluteFill>
-      <AbsoluteFill style={{background: `radial-gradient(ellipse at 50% 45%, #FFFFFF 0%, ${C.bg} 60%, #F3ECE1 100%)`}} />
+    <AbsoluteFill style={{background: C.bg}}>
+      <Img
+        src={staticFile('footage/hashmia/pr-team.jpg')}
+        style={{width: '100%', height: '100%', objectFit: 'cover', transform: `scale(${zoom})`, transformOrigin: '50% 0%'}}
+      />
+      <div style={{position: 'absolute', top: 0, left: 0, right: 0, height: 700, background: 'linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.25) 70%, rgba(255,255,255,0))'}} />
       <div style={{position: 'absolute', bottom: 0, left: 0, right: 0, height: 14, background: C.orange}} />
-      <AbsoluteFill style={{alignItems: 'center', justifyContent: 'center'}}>
-        <Img src={staticFile('brand/hashmia/logo.svg')} style={{width: 760, opacity: t, transform: `scale(${0.9 + 0.1 * t}) translateY(-90px)`}} />
-      </AbsoluteFill>
-      <AbsoluteFill style={{alignItems: 'center', justifyContent: 'center', direction: 'rtl', fontFamily}}>
-        <div style={{marginTop: 760, display: 'flex', flexDirection: 'column', alignItems: 'center', opacity: t2, transform: `translateY(${(1 - t2) * 30}px)`}}>
-          <div style={{display: 'flex', alignItems: 'center', gap: 16, marginBottom: 28}}>
-            <div style={{height: 3, width: 110 * t2, background: C.orange}} />
-            <div style={{width: 14, height: 14, background: C.dark, transform: 'rotate(45deg)'}} />
-            <div style={{height: 3, width: 110 * t2, background: C.orange}} />
+      <div style={{position: 'absolute', top: 60, left: 0, right: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', direction: 'rtl', fontFamily}}>
+        <Img src={staticFile('brand/hashmia/logo.svg')} style={{width: 470, opacity: t, transform: `scale(${0.9 + 0.1 * t})`}} />
+        <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 18, opacity: t2, transform: `translateY(${(1 - t2) * 24}px)`}}>
+          <div style={{display: 'flex', alignItems: 'center', gap: 14, marginBottom: 10}}>
+            <div style={{height: 3, width: 90 * t2, background: C.orange}} />
+            <div style={{width: 12, height: 12, background: C.dark, transform: 'rotate(45deg)'}} />
+            <div style={{height: 3, width: 90 * t2, background: C.orange}} />
           </div>
-          <div style={{fontSize: 46, fontWeight: 600, color: C.muted}}>مع تحيات</div>
-          <div style={{fontSize: 66, fontWeight: 800, color: C.orange, lineHeight: 1.4}}>فريق العلاقات العامة</div>
+          <div style={{fontSize: 38, fontWeight: 600, color: C.dark}}>مع تحيات</div>
+          <div style={{fontSize: 58, fontWeight: 800, color: C.orange, lineHeight: 1.35}}>فريق العلاقات العامة</div>
         </div>
-      </AbsoluteFill>
+      </div>
     </AbsoluteFill>
   );
 };
