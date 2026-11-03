@@ -9,7 +9,7 @@ page = page.replace("__LOGO__", uri)
 admin = (here / "admin.html").read_text(encoding="utf-8").replace("__LOGO__", uri)
 password = sys.argv[2]
 
-code = r"""// تسجيل حضور غرفة الاجتماعات — ثانوية فاطمة الهاشمية
+code = r"""// حضور اجتماع مديري ومديرات المدارس — ثانوية فاطمة الهاشمية
 // الصقي هذا الملف كاملاً في Apps Script (الإضافات ← Apps Script) ثم انشريه كتطبيق ويب.
 
 const SHEET_NAME = 'الحضور';
@@ -18,7 +18,7 @@ const ADMIN_PASSWORD = '""" + password + """';   // كلمة سر صفحة ال�
 function doGet(e) {
   const admin = e && e.parameter && e.parameter.page === 'admin';
   return HtmlService.createHtmlOutput(admin ? ADMIN : PAGE)
-    .setTitle(admin ? 'إدارة الحضور' : 'تسجيل الحضور')
+    .setTitle(admin ? 'إدارة الحضور' : 'حضور اجتماع مديري ومديرات المدارس')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1');
 }
 
