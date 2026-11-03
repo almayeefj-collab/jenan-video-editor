@@ -22,8 +22,11 @@ body{background:#fff}
 .rule{display:flex;align-items:center;gap:3mm;margin:6mm 0 0}
 .rule span{width:22mm;height:.35mm;background:var(--orange);opacity:.55}
 .rule i{width:2mm;height:2mm;background:var(--orange);transform:rotate(45deg)}
-.names{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:12mm;width:100%;padding:2mm 0 6mm}
+.names{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:16mm;width:100%;padding:2mm 0 6mm}
 .names div{font-weight:800;font-size:34pt;line-height:1.25;white-space:normal;text-wrap:balance;max-width:100%;text-align:center;word-spacing:1mm}
+.names div{position:relative}
+.names div+div::before{content:"";position:absolute;top:-9mm;left:50%;width:2.2mm;height:2.2mm;background:var(--orange);transform:translateX(-50%) rotate(45deg)}
+.names div+div::after{content:"";position:absolute;top:-8mm;left:50%;width:34mm;height:.35mm;background:linear-gradient(90deg,var(--orange) 0 40%,transparent 40% 60%,var(--orange) 60%);opacity:.45;transform:translateX(-50%)}
 </style></head><body>
 <div class="page"><div class="frame"></div><div class="c c1"></div><div class="c c2"></div><div class="c c3"></div><div class="c c4"></div><div class="foot"></div><img class="logo" src="school-logo.png" alt="شعار ثانوية فاطمة الهاشمية"><div class="rule"><span></span><i></i><span></span></div><div class="names"><div>ثانويـة الإمـام مالـك</div><div>ثانويـة جابـر العلـي</div></div></div>
 <div class="page"><div class="frame"></div><div class="c c1"></div><div class="c c2"></div><div class="c c3"></div><div class="c c4"></div><div class="foot"></div><img class="logo" src="school-logo.png" alt="شعار ثانوية فاطمة الهاشمية"><div class="rule"><span></span><i></i><span></span></div><div class="names"><div>ثانويـة سليمـان العدسانـي</div><div>ثانويـة صبـاح السالـم</div></div></div>
