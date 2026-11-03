@@ -2,6 +2,7 @@ import {Composition} from 'remotion';
 import {HelloJenan, helloJenanSchema} from './HelloJenan';
 import {FPS, HEIGHT, totalFrames, WIDTH} from './reel/config';
 import {Reel} from './reel/Reel';
+import {FPS as HM_FPS, HashmiaMeeting, HEIGHT as HM_H, totalFrames as hmFrames, WIDTH as HM_W} from './hashmia/HashmiaMeeting';
 import {FPS as SD_FPS, HEIGHT as SD_H, SalwaDinner, totalFrames as sdFrames, WIDTH as SD_W} from './salwa/SalwaDinner';
 import {ConferenceInterviews, FPS as CI_FPS, HEIGHT as CI_H, totalFrames as ciFrames, WIDTH as CI_W} from './interviews/ConferenceInterviews';
 import {FPS as T4_FPS, HEIGHT as T4_H, totalFrames as t4Frames, WIDTH as T4_W} from './teacher4/config';
@@ -13,6 +14,8 @@ import {FPS as C46B_FPS, HEIGHT as C46B_H, Recommendations46V2, totalFrames as c
 export const RemotionRoot: React.FC = () => {
   return (
     <>
+      {/* اجتماع مديري ومديرات المدارس الثانوية — ثانوية فاطمة الهاشمية */}
+      <Composition id="HashmiaMeeting" component={HashmiaMeeting} durationInFrames={hmFrames()} fps={HM_FPS} width={HM_W} height={HM_H} />
       {/* ريل مستقبل التعليم بكلمة — جمعية المعلمين الكويتية */}
       <Composition id="TeachersReel" component={Reel} durationInFrames={totalFrames()} fps={FPS} width={WIDTH} height={HEIGHT} />
       {/* أبرز 15 توصية للمؤتمر التربوي السادس والأربعين — موشن جرافيك عمودي */}
