@@ -33,6 +33,7 @@ const OUTRO = 105;
 const XF = 10; // تلاشي بين اللقطات
 const XF_BIG = 18; // تلاشي الانترو/الأوترو
 
+const CLIP_VOLUME = 0.3; // صوت المكان خفيف تحت الأغنية
 const clipLen = (n: number) => n - 2;
 export const totalFrames = () =>
   INTRO + OUTRO + CLIPS.reduce((s, [, n]) => s + clipLen(n), 0) - XF * (CLIPS.length - 1) - 2 * XF_BIG;
@@ -179,36 +180,30 @@ const Clip: React.FC<{name: string; frames: number}> = ({name, frames}) => {
     <AbsoluteFill style={{background: 'black'}}>
       <OffthreadVideo
         src={staticFile(`footage/hashmia/${name}.mp4`)}
+        volume={CLIP_VOLUME}
         style={{width: '100%', height: '100%', objectFit: 'cover', transform: `scale(${s})`}}
       />
     </AbsoluteFill>
   );
 };
 
-// شارة الشعار فوق يمين أثناء اللقطات
+// الشعار كامل فوق يمين أثناء اللقطات — بدون خلفية، مع توهج أبيض خفيف عشان يبان فوق الفيديو
 const Badge: React.FC<{dur: number}> = ({dur}) => {
   const frame = useCurrentFrame();
   const t = interpolate(frame, [0, 15], [0, 1], clamp) * interpolate(frame, [dur - 15, dur], [1, 0], clamp);
   return (
-    <div
+    <Img
+      src={staticFile('brand/hashmia/logo.svg')}
       style={{
         position: 'absolute',
-        top: 90,
-        right: 44,
-        width: 132,
-        height: 132,
-        borderRadius: 30,
-        background: 'rgba(255,255,255,0.92)',
-        boxShadow: '0 6px 24px rgba(0,0,0,0.18)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
+        top: 80,
+        right: 40,
+        width: 330,
         opacity: t,
         transform: `translateX(${(1 - t) * 40}px)`,
+        filter: 'drop-shadow(0 0 3px rgba(255,255,255,0.95)) drop-shadow(0 0 10px rgba(255,255,255,0.7))',
       }}
-    >
-      <Img src={staticFile('brand/hashmia/emblem.svg')} style={{width: 96}} />
-    </div>
+    />
   );
 };
 
@@ -238,6 +233,15 @@ export const HashmiaMeeting: React.FC = () => {
       <Sequence from={footStart + XF_BIG} durationInFrames={footEnd - footStart - 2 * XF_BIG}>
         <Badge dur={footEnd - footStart - 2 * XF_BIG} />
       </Sequence>
+      {/* الموسيقى: أعلى في الانترو والأوترو، أهدى شوي على اللقطات، وتتلاشى في النهاية */}
+      <Audio
+        src={staticFile('music/hashmia.wav')}
+        volume={(f) =>
+          interpolate(f, [0, 8], [0, 1], clamp) *
+          interpolate(f, [footStart, footStart + 30, footEnd - 30, footEnd], [0.9, 0.7, 0.7, 0.9], clamp) *
+          interpolate(f, [total - 45, total - 1], [1, 0], clamp)
+        }
+      />
       <Sequence from={4} durationInFrames={60}>
         <Audio src={staticFile('sfx/shimmer.wav')} volume={0.5} />
       </Sequence>
