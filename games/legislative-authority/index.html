@@ -29,7 +29,10 @@ body{background:var(--ink);color:var(--paper);font-family:var(--f-body);font-siz
 button{font-family:inherit}
 button:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
 
-.bg{position:fixed;inset:0;background:url("assets/hall.jpg") center/cover no-repeat;filter:brightness(.32) saturate(.9);z-index:0}
+.bg{position:fixed;inset:0;background:url("assets/gulf-road.jpg") center/cover no-repeat;filter:brightness(.32) saturate(.9);z-index:0;transition:filter .6s}
+.bg.hall{background-image:url("assets/hall.jpg")}
+.hero{width:min(600px,100%);aspect-ratio:16/9;object-fit:cover;border-radius:14px;border:2px solid var(--gold-soft);box-shadow:0 12px 34px rgba(0,0,0,.55)}
+.hero-cap{color:var(--muted);font-size:.95rem;margin:-8px 0 0}
 .bg::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 35%,transparent 0,rgba(13,26,23,.7) 70%)}
 
 .wrap{position:relative;z-index:1;min-height:100%;max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:20px;
@@ -52,15 +55,11 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
 
 /* intro */
 .intro{align-items:center;text-align:center;padding-top:4vh}
-.intro .bigflag{width:min(300px,70vw);height:auto;direction:ltr;box-shadow:0 10px 30px rgba(0,0,0,.55);animation:wave 4s ease-in-out infinite;transform-origin:left center}
-@keyframes wave{0%,100%{transform:skewY(0)}50%{transform:skewY(-1.2deg)}}
 .eyebrow{color:var(--gold);letter-spacing:.04em;font-weight:700}
 h1{font-family:var(--f-display);font-size:clamp(2rem,5.5vw,3.4rem);line-height:1.25;margin:0;text-wrap:balance}
 .lead{max-width:60ch;color:var(--muted);margin:0 auto}
 .cta{background:var(--gold);color:var(--ink);border:0;border-radius:14px;padding:14px 38px;font-size:1.25rem;font-weight:800;cursor:pointer;box-shadow:0 6px 0 var(--gold-soft);transition:transform .1s}
 .cta:active{transform:translateY(3px);box-shadow:0 3px 0 var(--gold-soft)}
-.steps{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;color:var(--muted);font-size:.95rem}
-.steps span{background:rgba(19,36,31,.8);border:1px solid rgba(214,180,106,.25);border-radius:10px;padding:6px 12px}
 
 /* game layout */
 .game{display:grid;grid-template-columns:1.1fr 1fr;gap:20px;align-items:start}
@@ -94,18 +93,6 @@ h1{font-family:var(--f-display);font-size:clamp(2rem,5.5vw,3.4rem);line-height:1
 .clue{background:rgba(0,122,61,.22);border:1px solid rgba(63,191,127,.45);color:#d7f3e3;border-radius:999px;padding:4px 12px;font-size:.92rem;animation:rise .4s}
 .clues-h{font-size:.9rem;color:var(--muted);margin:0}
 
-/* final */
-.final{align-items:center;text-align:center}
-.slots{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;min-height:72px}
-.slot{min-width:150px;padding:14px 18px;border:2px dashed var(--gold-soft);border-radius:12px;font-family:var(--f-display);font-size:1.5rem;color:var(--muted)}
-.slot.filled{border-style:solid;background:var(--gold);color:var(--ink);cursor:pointer}
-.pool{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
-.word{background:var(--panel-2);border:2px solid rgba(214,180,106,.4);color:var(--paper);border-radius:12px;padding:10px 20px;font-family:var(--f-display);font-size:1.35rem;cursor:pointer}
-.word:hover{border-color:var(--gold)}
-.word[disabled]{opacity:.25;cursor:default}
-.slots.bad .slot{border-color:var(--bad);animation:shake .35s}
-.hint{color:var(--muted);font-size:.95rem;margin:0}
-
 .reveal{display:flex;flex-direction:column;gap:18px;align-items:center}
 .title-reveal{font-family:var(--f-display);font-weight:700;font-size:clamp(2rem,6vw,3.6rem);color:var(--gold);margin:0;text-shadow:0 4px 18px rgba(0,0,0,.6);text-wrap:balance}
 .three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;width:100%;max-width:760px}
@@ -132,7 +119,7 @@ canvas#confetti{position:fixed;inset:0;pointer-events:none;z-index:5}
     <div class="brand">
       <!-- علم دولة الكويت: الأخضر أعلى، الأبيض وسط، الأحمر أسفل، وشبه المنحرف الأسود جهة السارية (اليسار) -->
       <svg class="flag" viewBox="0 0 120 60" role="img" aria-label="علم دولة الكويت"><rect width="120" height="20" fill="#007a3d"/><rect y="20" width="120" height="20" fill="#fff"/><rect y="40" width="120" height="20" fill="#ce1126"/><polygon points="0,0 30,20 30,40 0,60" fill="#000"/></svg>
-      <div><b>نشاط استهلالي</b><small>اجمع المفاتيح واكشف قاعة عبدالله السالم</small></div>
+      <div><b>نشاط استهلالي</b><small>أجب واكشف الصورة المخفية</small></div>
     </div>
     <div class="tools">
       <span class="chip" id="score" hidden>النقاط: 0</span>
@@ -142,11 +129,11 @@ canvas#confetti{position:fixed;inset:0;pointer-events:none;z-index:5}
 
   <!-- INTRO -->
   <section class="screen intro" id="s-intro">
-    <svg class="bigflag" viewBox="0 0 120 60" role="img" aria-label="علم دولة الكويت"><rect width="120" height="20" fill="#007a3d"/><rect y="20" width="120" height="20" fill="#fff"/><rect y="40" width="120" height="20" fill="#ce1126"/><polygon points="0,0 30,20 30,40 0,60" fill="#000"/></svg>
-    <div class="eyebrow">خلف هذه البطاقات قاعة مهمة في دولة الكويت</div>
+    <img class="hero" src="assets/gulf-road.jpg" alt="شارع الخليج العربي ويظهر مبنى مجلس الأمة">
+    <p class="hero-cap">شارع الخليج العربي · مبنى مجلس الأمة</p>
+    <div class="eyebrow">داخل هذا المبنى صورة مخفية… اكشفها بإجاباتك</div>
     <h1>ما عنوان درسنا اليوم؟</h1>
-    <p class="lead">أجب عن ٨ أسئلة. كل إجابة صحيحة تكشف جزءاً من الصورة وتعطيك مفتاحاً. في النهاية رتّب الكلمات لتستنتج عنوان الدرس.</p>
-    <div class="steps"><span>١ · أجب</span><span>٢ · اكشف الصورة</span><span>٣ · اجمع المفاتيح</span><span>٤ · استنتج العنوان</span></div>
+    <p class="lead">أجب عن ٨ أسئلة. كل إجابة تكشف جزءاً من الصورة المخفية وتعطيك مفتاحاً يساعدك على استنتاج عنوان الدرس.</p>
     <button class="cta" id="start" type="button">ابدأ النشاط</button>
   </section>
 
@@ -170,18 +157,10 @@ canvas#confetti{position:fixed;inset:0;pointer-events:none;z-index:5}
     </div>
   </section>
 
-  <!-- FINAL -->
-  <section class="screen final" id="s-final" hidden>
-    <div class="eyebrow">انكشفت الصورة: قاعة عبدالله السالم في مجلس الأمة</div>
-    <h1>رتّب الكلمات لتكوّن عنوان الدرس</h1>
-    <p class="hint">اضغط الكلمات بالترتيب الصحيح. اضغط كلمة في الخانة لإرجاعها.</p>
-    <div class="slots" id="slots"><div class="slot">١</div><div class="slot">٢</div><div class="slot">٣</div></div>
-    <div class="pool" id="pool"></div>
-    <div class="clues" id="clues2" style="justify-content:center"></div>
-  </section>
-
   <!-- REVEAL -->
   <section class="screen reveal" id="s-reveal" hidden>
+    <img class="hero" src="assets/hall.jpg" alt="قاعة عبدالله السالم">
+    <p class="hero-cap">قاعة عبدالله السالم في مجلس الأمة</p>
     <div class="eyebrow">أحسنتم! عنوان درسنا</div>
     <p class="title-reveal">اختصاصات السلطة التشريعية</p>
     <div class="three">
@@ -215,8 +194,6 @@ const Q = [
   {tag:"المكان",q:"في أي قاعة يجتمع أعضاء مجلس الأمة لمناقشة القوانين؟",o:["قاعة عبدالله السالم","قاعة التحرير","قاعة الشعب"],a:0,
    why:"قاعة عبدالله السالم في مبنى مجلس الأمة، وسُمّيت باسم الشيخ عبدالله السالم «أبو الدستور».",clue:"مجلس الأمة"}
 ];
-const WORDS = ["اختصاصات","السلطة","التشريعية"];
-const DECOYS = ["التنفيذية","القضائية","واجبات"];
 
 const $ = id => document.getElementById(id);
 const song = $("song");
@@ -241,7 +218,7 @@ function beep(ok){
   }catch(e){}
 }
 
-function show(id){ ["s-intro","s-game","s-final","s-reveal"].forEach(s=>$(s).hidden = s!==id); window.scrollTo(0,0); }
+function show(id){ document.querySelector(".bg").classList.toggle("hall",id==="s-reveal"); ["s-intro","s-game","s-reveal"].forEach(s=>$(s).hidden = s!==id); window.scrollTo(0,0); }
 
 function buildTiles(){
   $("tiles").innerHTML="";
@@ -251,7 +228,7 @@ function buildTiles(){
 function openTile(){ const t=$("tiles").children[order[opened.length]]; t.classList.add("open"); opened.push(1); }
 
 function start(){
-  i=0;score=0;opened=[];$("clues").innerHTML="";$("clues2").innerHTML="";
+  i=0;score=0;opened=[];$("clues").innerHTML="";
   $("score").hidden=false; updScore(); buildTiles(); show("s-game"); render();
   $("board-cap").textContent="ما هذا المكان؟ اكشف الصورة لتعرف";
 }
@@ -282,41 +259,13 @@ function answer(k,btn){
   const c=document.createElement("span");c.className="clue";c.textContent=q.clue;$("clues").appendChild(c);
   $("fb").innerHTML=(ok?"<b>إجابة صحيحة!</b> ":"<b>الإجابة الصحيحة: "+q.o[q.a]+".</b> ")+"";
   $("fb").append(q.why); $("fb").hidden=false;
-  $("next").textContent = i===Q.length-1 ? "استنتج العنوان" : "التالي";
+  $("next").textContent = i===Q.length-1 ? "اكشف عنوان الدرس" : "التالي";
   $("next").hidden=false; $("next").focus();
   $("bar").style.width=((i+1)/Q.length*100)+"%";
   if(i===Q.length-1) $("board-cap").textContent="إنها قاعة عبدالله السالم في مجلس الأمة";
 }
-$("next").onclick=()=>{ i++; if(i<Q.length) render(); else toFinal(); };
+$("next").onclick=()=>{ i++; if(i<Q.length) render(); else reveal(); };
 
-/* final: arrange the title */
-let picked=[];
-function toFinal(){
-  picked=[];
-  $("clues2").innerHTML=$("clues").innerHTML;
-  const pool=[...WORDS,...DECOYS].sort(()=>Math.random()-.5);
-  $("pool").innerHTML="";
-  pool.forEach(w=>{const b=document.createElement("button");b.type="button";b.className="word";b.textContent=w;b.onclick=()=>pick(w,b);$("pool").appendChild(b);});
-  drawSlots(); show("s-final");
-}
-function drawSlots(){
-  const s=$("slots"); s.innerHTML=""; s.classList.remove("bad");
-  for(let k=0;k<3;k++){
-    const d=document.createElement("div");d.className="slot"+(picked[k]?" filled":"");
-    d.textContent=picked[k]?picked[k].w:AR(k+1);
-    if(picked[k]){d.title="إرجاع";d.onclick=()=>{picked[k].b.disabled=false;picked.splice(k,1);drawSlots();};}
-    s.appendChild(d);
-  }
-}
-function pick(w,b){
-  if(picked.length>=3) return;
-  picked.push({w,b}); b.disabled=true; drawSlots();
-  if(picked.length===3){
-    if(picked.every((p,k)=>p.w===WORDS[k])){ beep(true); setTimeout(reveal,500); }
-    else { beep(false); $("slots").classList.add("bad");
-      setTimeout(()=>{picked.forEach(p=>p.b.disabled=false);picked=[];drawSlots();},900); }
-  }
-}
 function reveal(){
   show("s-reveal");
   $("final-score").textContent="نقاطكم: "+AR(score)+" من "+AR(Q.length);
