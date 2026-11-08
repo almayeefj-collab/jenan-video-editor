@@ -65,7 +65,7 @@ h1{font-family:var(--f-display);font-size:clamp(2rem,5.5vw,3.4rem);line-height:1
 .game{display:grid;grid-template-columns:1.1fr 1fr;gap:20px;align-items:start}
 @media (max-width:820px){.game{grid-template-columns:1fr}}
 .board{position:relative;aspect-ratio:16/9;max-width:100%;border-radius:12px;overflow:hidden;border:2px solid var(--gold-soft);background:url("assets/hall.jpg") center/cover;box-shadow:0 12px 30px rgba(0,0,0,.5)}
-.tiles{position:absolute;inset:0;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr)}
+.tiles{position:absolute;inset:0;display:grid;grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr)}
 .tile{background:var(--panel);border:1px solid rgba(214,180,106,.3);display:grid;place-items:center;font-family:var(--f-display);font-size:clamp(1.4rem,4vw,2.4rem);color:var(--gold-soft);transition:opacity .7s ease,transform .7s ease;
   background-image:repeating-linear-gradient(45deg,rgba(214,180,106,.06) 0 6px,transparent 6px 12px)}
 .tile.open{opacity:0;transform:scale(.85) rotate(-4deg)}
@@ -133,7 +133,7 @@ canvas#confetti{position:fixed;inset:0;pointer-events:none;z-index:5}
     <p class="hero-cap">شارع الخليج العربي · مبنى مجلس الأمة</p>
     <div class="eyebrow">داخل هذا المبنى صورة مخفية… اكشفها بإجاباتك</div>
     <h1>ما عنوان درسنا اليوم؟</h1>
-    <p class="lead">أجب عن ٨ أسئلة. كل إجابة تكشف جزءاً من الصورة المخفية وتعطيك مفتاحاً يساعدك على استنتاج عنوان الدرس.</p>
+    <p class="lead">أجب عن ٤ أسئلة. كل إجابة تكشف جزءاً من الصورة المخفية وتعطيك مفتاحاً يساعدك على استنتاج عنوان الدرس.</p>
     <button class="cta" id="start" type="button">ابدأ النشاط</button>
   </section>
 
@@ -147,7 +147,7 @@ canvas#confetti{position:fixed;inset:0;pointer-events:none;z-index:5}
         <div class="clues" id="clues"></div>
       </div>
       <div class="card" aria-live="polite">
-        <div class="qmeta"><span id="qnum">السؤال ١ من ٨</span><span id="qtag"></span></div>
+        <div class="qmeta"><span id="qnum">السؤال ١ من ٤</span><span id="qtag"></span></div>
         <div class="progress"><i id="bar" style="width:0%"></i></div>
         <p class="q" id="qtext"></p>
         <div class="opts" id="opts"></div>
@@ -181,18 +181,10 @@ const Q = [
    why:"نصت المادة ٧٩ من الدستور: «لا يصدر قانون إلا إذا أقره مجلس الأمة وصدّق عليه الأمير».",clue:"سنّ القوانين"},
   {tag:"الاقتراح",q:"القانون الذي تقدّمه الحكومة يسمى:",o:["اقتراح بقانون","مشروع قانون","لائحة داخلية"],a:1,
    why:"ما تقدمه الحكومة يسمى «مشروع قانون».",clue:"مشروع قانون"},
-  {tag:"الاقتراح",q:"القانون الذي يقدّمه أحد النواب يسمى:",o:["اقتراح بقانون","مرسوم أميري","مشروع قانون"],a:0,
-   why:"ما يقدمه أحد النواب يسمى «اقتراح بقانون»، ولا فرق في الموضوعات بين الشكلين.",clue:"اقتراح النواب"},
-  {tag:"المناقشة والتصويت",q:"لكي يحصل مشروع القانون على الموافقة لا بد من تصويت:",o:["جميع الأعضاء","أغلبية الحاضرين من الأعضاء","الوزراء فقط"],a:1,
-   why:"لابد من تصويت أغلبية الحاضرين لصالح المشروع، وإلا يُعدّ مرفوضاً. والوزراء يصوّتون بوصفهم أعضاء.",clue:"التصويت"},
-  {tag:"المادة ٩٤",q:"الأصل في جلسات مجلس الأمة والتصويت أن تكون:",o:["سرية دائماً","علنية","مغلقة أمام الإعلام"],a:1,
-   why:"الأصل العلنية، ويجوز عقدها سرية بطلب الحكومة أو رئيس المجلس أو عشرة أعضاء.",clue:"جلسات علنية"},
   {tag:"التصديق والاعتراض",q:"إذا ردّ الأمير القانون، يقرّه المجلس مرة ثانية بأغلبية:",o:["ثلثي الأعضاء","نصف الحاضرين","ثلث الأعضاء"],a:0,
    why:"يقرّونه بأغلبية ثلثي الأعضاء، ثم يُرفع للأمير، ولا يجوز إرجاعه للمجلس مرة أخرى.",clue:"تصديق الأمير"},
   {tag:"النشر",q:"ما اسم الجريدة الرسمية التي تُنشر فيها القوانين؟",o:["الكويت اليوم","الرأي العام","الوطن"],a:0,
-   why:"تُنشر القوانين في الجريدة الرسمية «الكويت اليوم» ويُعمل بها بعد شهر من صدورها.",clue:"الكويت اليوم"},
-  {tag:"المكان",q:"في أي قاعة يجتمع أعضاء مجلس الأمة لمناقشة القوانين؟",o:["قاعة عبدالله السالم","قاعة التحرير","قاعة الشعب"],a:0,
-   why:"قاعة عبدالله السالم في مبنى مجلس الأمة، وسُمّيت باسم الشيخ عبدالله السالم «أبو الدستور».",clue:"مجلس الأمة"}
+   why:"تُنشر القوانين في الجريدة الرسمية «الكويت اليوم» ويُعمل بها بعد شهر من صدورها.",clue:"الكويت اليوم"}
 ];
 
 const $ = id => document.getElementById(id);
@@ -222,8 +214,8 @@ function show(id){ document.querySelector(".bg").classList.toggle("hall",id==="s
 
 function buildTiles(){
   $("tiles").innerHTML="";
-  order=[...Array(8).keys()].sort(()=>Math.random()-.5);
-  for(let k=0;k<8;k++){const t=document.createElement("div");t.className="tile";t.textContent="؟";$("tiles").appendChild(t);}
+  order=[...Array(Q.length).keys()].sort(()=>Math.random()-.5);
+  for(let k=0;k<Q.length;k++){const t=document.createElement("div");t.className="tile";t.textContent="؟";$("tiles").appendChild(t);}
 }
 function openTile(){ const t=$("tiles").children[order[opened.length]]; t.classList.add("open"); opened.push(1); }
 
