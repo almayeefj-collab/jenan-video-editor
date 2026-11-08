@@ -115,6 +115,11 @@ h1{font-family:var(--f-display);font-size:clamp(2rem,5.5vw,3.4rem);line-height:1
 .who .skip{background:transparent;color:var(--paper);border:1px solid rgba(214,180,106,.5)}
 .who button:disabled{opacity:.4;cursor:default}
 .stars{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:760px}
+.names{width:min(560px,100%);text-align:right;background:rgba(19,36,31,.9);border:1px solid rgba(214,180,106,.3);border-radius:12px;padding:10px 14px}
+.names summary{cursor:pointer;color:var(--gold);font-weight:700}
+.names textarea{width:100%;margin-top:8px;background:var(--panel-2);color:var(--paper);border:1px solid rgba(214,180,106,.35);border-radius:10px;padding:8px 10px;font:inherit;font-size:.95rem}
+.hint-s{color:var(--muted);font-size:.9rem;margin:6px 0 0}
+.names-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:8px;color:var(--muted);font-size:.9rem}
 canvas#confetti{position:fixed;inset:0;pointer-events:none;z-index:5}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -122,7 +127,6 @@ canvas#confetti{position:fixed;inset:0;pointer-events:none;z-index:5}
 <div class="bg" aria-hidden="true"></div>
 <canvas id="confetti" aria-hidden="true"></canvas>
 
-<script src="students.js"></script>
 <audio id="song" src="assets/national-song.mp3" loop preload="auto"></audio>
 
 <main class="wrap" dir="rtl" lang="ar">
@@ -146,6 +150,12 @@ canvas#confetti{position:fixed;inset:0;pointer-events:none;z-index:5}
     <h1>ما عنوان درسنا اليوم؟</h1>
     <p class="lead">أجب عن ٤ أسئلة. كل إجابة تكشف جزءاً من الصورة المخفية وتعطيك مفتاحاً يساعدك على استنتاج عنوان الدرس.</p>
     <button class="cta" id="start" type="button">ابدأ النشاط</button>
+    <details class="names">
+      <summary>أسماء الطالبات (للمعلمة)</summary>
+      <p class="hint-s">الصقي أسماء طالبات الفصل من «دفتر طالباتي»، كل اسم في سطر. تُحفظ في متصفح هذا الجهاز فقط ولا تظهر لأحد غيرك.</p>
+      <textarea id="names-in" rows="7" placeholder="اسم الطالبة الأولى&#10;اسم الطالبة الثانية"></textarea>
+      <div class="names-row"><button class="next" id="names-save" type="button">حفظ الأسماء</button><span id="names-state"></span></div>
+    </details>
   </section>
 
   <!-- GAME -->
@@ -207,7 +217,19 @@ const $ = id => document.getElementById(id);
 const song = $("song");
 let i=0, score=0, order=[], opened=[];
 /* اختيار الطالبة من دفتر طالباتي (students.js) */
-const STUDENTS = Array.isArray(window.STUDENTS) ? window.STUDENTS.slice() : [];
+const LS_KEY="lesson-students";
+function loadNames(){
+  if(Array.isArray(window.STUDENTS) && window.STUDENTS.length) return window.STUDENTS.slice();
+  try{ const v=JSON.parse(localStorage.getItem(LS_KEY)||"[]"); return Array.isArray(v)?v:[]; }catch(e){ return []; }
+}
+let STUDENTS = loadNames();
+function namesLabel(){ $("names-state").textContent = STUDENTS.length ? "محفوظ على هذا الجهاز · عدد الأسماء: "+AR(STUDENTS.length) : "لم تُضف أسماء بعد، واللعبة تعمل بدونها"; }
+$("names-save").onclick=()=>{
+  STUDENTS=$("names-in").value.split(/\n+/).map(x=>x.trim()).filter(Boolean);
+  try{ localStorage.setItem(LS_KEY,JSON.stringify(STUDENTS)); }catch(e){}
+  pool=[]; absent.clear(); namesLabel();
+};
+$("names-in").value=STUDENTS.join("\n"); setTimeout(namesLabel);
 const absent = new Set();
 let pool=[], current=null, rolling=false, winners=[];
 const short = n => n.split(/\s+/).slice(0,2).join(" ");
