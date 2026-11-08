@@ -105,6 +105,16 @@ h1{font-family:var(--f-display);font-size:clamp(2rem,5.5vw,3.4rem);line-height:1
 .three div:nth-child(3){border-top:5px solid var(--kw-red)}
 .ask{max-width:60ch;background:rgba(214,180,106,.1);border-radius:12px;padding:12px 16px;margin:0}
 
+.who{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:rgba(214,180,106,.1);border:1px dashed var(--gold-soft);border-radius:12px;padding:10px 14px}
+.who-name{font-family:var(--display);font-size:clamp(1.2rem,2.6vw,1.55rem);color:var(--gold);min-width:0}
+.who-name.spin{color:var(--muted)}
+.who-name small{display:block;font-family:var(--f-body);font-size:.8rem;color:var(--muted)}
+.who-btns{display:flex;gap:8px;flex-wrap:wrap}
+.who button{border-radius:10px;padding:8px 16px;font-weight:800;font-size:1rem;cursor:pointer}
+.who .pick{background:var(--gold);color:var(--ink);border:0}
+.who .skip{background:transparent;color:var(--paper);border:1px solid rgba(214,180,106,.5)}
+.who button:disabled{opacity:.4;cursor:default}
+.stars{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:760px}
 canvas#confetti{position:fixed;inset:0;pointer-events:none;z-index:5}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -112,6 +122,7 @@ canvas#confetti{position:fixed;inset:0;pointer-events:none;z-index:5}
 <div class="bg" aria-hidden="true"></div>
 <canvas id="confetti" aria-hidden="true"></canvas>
 
+<script src="students.js"></script>
 <audio id="song" src="assets/national-song.mp3" loop preload="auto"></audio>
 
 <main class="wrap" dir="rtl" lang="ar">
@@ -149,6 +160,10 @@ canvas#confetti{position:fixed;inset:0;pointer-events:none;z-index:5}
       <div class="card" aria-live="polite">
         <div class="qmeta"><span id="qnum">السؤال ١ من ٤</span><span id="qtag"></span></div>
         <div class="progress"><i id="bar" style="width:0%"></i></div>
+        <div class="who" id="who" hidden>
+          <div class="who-name" id="who-name"><small>الطالبة التي ستجيب</small>اضغطي «اختاري طالبة»</div>
+          <div class="who-btns"><button class="pick" id="pick" type="button">اختاري طالبة</button><button class="skip" id="skip" type="button" hidden>غائبة · اختاري غيرها</button></div>
+        </div>
         <p class="q" id="qtext"></p>
         <div class="opts" id="opts"></div>
         <div class="fb" id="fb" hidden></div>
@@ -170,6 +185,7 @@ canvas#confetti{position:fixed;inset:0;pointer-events:none;z-index:5}
     </div>
     <p class="ask"><b style="color:var(--gold)">سؤال للنقاش:</b> لماذا اشترط الدستور في المادة ٧٩ أن يقرّ مجلس الأمة القانون وأن يصدّق عليه الأمير؟</p>
     <p class="chip" id="final-score"></p>
+    <div class="stars" id="stars"></div>
     <button class="cta" id="again" type="button">العب مرة أخرى</button>
   </section>
 </main>
@@ -190,6 +206,37 @@ const Q = [
 const $ = id => document.getElementById(id);
 const song = $("song");
 let i=0, score=0, order=[], opened=[];
+/* اختيار الطالبة من دفتر طالباتي (students.js) */
+const STUDENTS = Array.isArray(window.STUDENTS) ? window.STUDENTS.slice() : [];
+const absent = new Set();
+let pool=[], current=null, rolling=false, winners=[];
+const short = n => n.split(/\s+/).slice(0,2).join(" ");
+function nextName(){
+  const left = STUDENTS.filter(n=>!absent.has(n));
+  if(!left.length) return null;
+  pool = pool.filter(n=>!absent.has(n));
+  if(!pool.length) pool = left.slice().sort(()=>Math.random()-.5);
+  return pool.shift();
+}
+function setOpts(on){ [...$("opts").children].forEach(b=>b.disabled=!on); }
+function pickStudent(){
+  if(rolling) return;
+  const chosen = nextName(); if(!chosen) return;
+  rolling=true; $("pick").disabled=true; $("skip").hidden=true; setOpts(false);
+  const el=$("who-name"); el.classList.add("spin");
+  const live = STUDENTS.filter(n=>!absent.has(n));
+  let t=0; const steps=reduce?1:18;
+  (function tick(){
+    if(++t<steps){ el.textContent=short(live[Math.random()*live.length|0]); setTimeout(tick,50+t*6); return; }
+    current=chosen; el.classList.remove("spin");
+    el.innerHTML="<small>الطالبة التي ستجيب</small>"; el.append(chosen);
+    beep(true); rolling=false; $("pick").disabled=false; $("pick").textContent="طالبة أخرى";
+    $("skip").hidden=false; setOpts(true);
+  })();
+}
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+$("pick").onclick=pickStudent;
+$("skip").onclick=()=>{ if(current){absent.add(current); current=null;} pickStudent(); };
 
 /* music */
 function setMusic(on){
@@ -220,7 +267,7 @@ function buildTiles(){
 function openTile(){ const t=$("tiles").children[order[opened.length]]; t.classList.add("open"); opened.push(1); }
 
 function start(){
-  i=0;score=0;opened=[];$("clues").innerHTML="";
+  i=0;score=0;opened=[];winners=[];$("clues").innerHTML="";
   $("score").hidden=false; updScore(); buildTiles(); show("s-game"); render();
   $("board-cap").textContent="ما هذا المكان؟ اكشف الصورة لتعرف";
 }
@@ -239,17 +286,24 @@ function render(){
     b.innerHTML='<span class="k">'+"أبج"[k]+'</span><span></span>';b.lastChild.textContent=t;
     b.onclick=()=>answer(k,b);$("opts").appendChild(b);
   });
+  if(STUDENTS.length){
+    current=null; $("who").hidden=false; $("pick").disabled=false; $("pick").textContent="اختاري طالبة"; $("skip").hidden=true;
+    $("who-name").innerHTML="<small>الطالبة التي ستجيب</small>اضغطي «اختاري طالبة»"; setOpts(false);
+  }
 }
 function answer(k,btn){
   const q=Q[i],all=[...$("opts").children];
   all.forEach(b=>b.disabled=true);
+  $("pick").disabled=true; $("skip").hidden=true;
   all[q.a].classList.add("right");
   const ok=k===q.a;
   if(ok){score++;updScore();}else btn.classList.add("wrong");
   beep(ok);
   openTile();
   const c=document.createElement("span");c.className="clue";c.textContent=q.clue;$("clues").appendChild(c);
-  $("fb").innerHTML=(ok?"<b>إجابة صحيحة!</b> ":"<b>الإجابة الصحيحة: "+q.o[q.a]+".</b> ")+"";
+  const nm = current ? short(current) : "";
+  if(ok && current) winners.push(current);
+  $("fb").innerHTML=(ok?"<b>إجابة صحيحة"+(nm?"، أحسنتِ يا "+nm:"")+"!</b> ":"<b>"+(nm?"محاولة جميلة يا "+nm+". ":"")+"الإجابة الصحيحة: "+q.o[q.a]+".</b> ");
   $("fb").append(q.why); $("fb").hidden=false;
   $("next").textContent = i===Q.length-1 ? "اكشف عنوان الدرس" : "التالي";
   $("next").hidden=false; $("next").focus();
@@ -261,6 +315,8 @@ $("next").onclick=()=>{ i++; if(i<Q.length) render(); else reveal(); };
 function reveal(){
   show("s-reveal");
   $("final-score").textContent="نقاطكم: "+AR(score)+" من "+AR(Q.length);
+  $("stars").innerHTML="";
+  winners.forEach(n=>{const c=document.createElement("span");c.className="clue";c.textContent="نجمة الحصة: "+n;$("stars").appendChild(c);});
   if(song.paused) setMusic(true);
   confetti();
 }
