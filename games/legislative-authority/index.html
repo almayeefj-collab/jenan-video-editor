@@ -1,0 +1,338 @@
+<title>قاعة عبدالله السالم</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@500;700&family=Tajawal:wght@400;500;700;800&display=swap">
+<style>
+/* Layout: one-screen stage over the hall photo; a puzzle board of 8 tiles hides the hall, each correct answer lifts one tile; final step assembles the lesson title. Single dark theme by choice (chamber at night, gold lattice). */
+:root{
+  --ink:#0d1a17;          /* deep chamber green-black */
+  --panel:#13241f;
+  --panel-2:#1b302a;
+  --gold:#d6b46a;          /* lattice gold */
+  --gold-soft:#b89a55;
+  --paper:#f5efe0;
+  --muted:#b9c2b8;
+  --kw-green:#007a3d;      /* Kuwait flag */
+  --kw-red:#ce1126;
+  --kw-black:#000;
+  --kw-white:#fff;
+  --ok:#3fbf7f;
+  --bad:#e0566a;
+  --f-display:"Reem Kufi","Tajawal",system-ui,sans-serif;
+  --f-body:"Tajawal",system-ui,"Segoe UI",Tahoma,sans-serif;
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{background:var(--ink);color:var(--paper);font-family:var(--f-body);font-size:18px;line-height:1.6;overflow-x:hidden}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+button{font-family:inherit}
+button:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+
+.bg{position:fixed;inset:0;background:url("assets/hall.jpg") center/cover no-repeat;filter:brightness(.32) saturate(.9);z-index:0}
+.bg::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 35%,transparent 0,rgba(13,26,23,.7) 70%)}
+
+.wrap{position:relative;z-index:1;min-height:100%;max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:20px;
+  padding-block:20px 28px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* top bar */
+.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px}
+.flag{width:66px;height:auto;flex:none;box-shadow:0 2px 8px rgba(0,0,0,.5);direction:ltr}
+.brand b{font-family:var(--f-display);font-weight:700;font-size:1.15rem;color:var(--gold);display:block;line-height:1.2}
+.brand small{color:var(--muted);font-size:.85rem}
+.tools{display:flex;gap:8px;align-items:center}
+.chip{background:rgba(214,180,106,.12);border:1px solid rgba(214,180,106,.4);color:var(--gold);border-radius:999px;padding:6px 14px;font-weight:700;font-variant-numeric:tabular-nums}
+.icon-btn{background:var(--panel-2);border:1px solid rgba(214,180,106,.35);color:var(--paper);border-radius:999px;padding:6px 14px;cursor:pointer;font-size:.95rem}
+.icon-btn:hover{border-color:var(--gold)}
+
+/* screens */
+.screen{display:flex;flex-direction:column;gap:20px;animation:rise .45s ease both}
+@keyframes rise{from{transform:translateY(10px);opacity:.4}to{transform:none;opacity:1}}
+
+/* intro */
+.intro{align-items:center;text-align:center;padding-top:4vh}
+.intro .bigflag{width:min(300px,70vw);height:auto;direction:ltr;box-shadow:0 10px 30px rgba(0,0,0,.55);animation:wave 4s ease-in-out infinite;transform-origin:left center}
+@keyframes wave{0%,100%{transform:skewY(0)}50%{transform:skewY(-1.2deg)}}
+.eyebrow{color:var(--gold);letter-spacing:.04em;font-weight:700}
+h1{font-family:var(--f-display);font-size:clamp(2rem,5.5vw,3.4rem);line-height:1.25;margin:0;text-wrap:balance}
+.lead{max-width:60ch;color:var(--muted);margin:0 auto}
+.cta{background:var(--gold);color:var(--ink);border:0;border-radius:14px;padding:14px 38px;font-size:1.25rem;font-weight:800;cursor:pointer;box-shadow:0 6px 0 var(--gold-soft);transition:transform .1s}
+.cta:active{transform:translateY(3px);box-shadow:0 3px 0 var(--gold-soft)}
+.steps{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;color:var(--muted);font-size:.95rem}
+.steps span{background:rgba(19,36,31,.8);border:1px solid rgba(214,180,106,.25);border-radius:10px;padding:6px 12px}
+
+/* game layout */
+.game{display:grid;grid-template-columns:1.1fr 1fr;gap:20px;align-items:start}
+@media (max-width:820px){.game{grid-template-columns:1fr}}
+.board{position:relative;aspect-ratio:16/9;max-width:100%;border-radius:12px;overflow:hidden;border:2px solid var(--gold-soft);background:url("assets/hall.jpg") center/cover;box-shadow:0 12px 30px rgba(0,0,0,.5)}
+.tiles{position:absolute;inset:0;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr)}
+.tile{background:var(--panel);border:1px solid rgba(214,180,106,.3);display:grid;place-items:center;font-family:var(--f-display);font-size:clamp(1.4rem,4vw,2.4rem);color:var(--gold-soft);transition:opacity .7s ease,transform .7s ease;
+  background-image:repeating-linear-gradient(45deg,rgba(214,180,106,.06) 0 6px,transparent 6px 12px)}
+.tile.open{opacity:0;transform:scale(.85) rotate(-4deg)}
+.board-cap{font-size:.9rem;color:var(--muted);text-align:center;margin-top:8px}
+
+.card{background:rgba(19,36,31,.94);border:1px solid rgba(214,180,106,.35);border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.qmeta{display:flex;justify-content:space-between;color:var(--gold);font-weight:700;font-size:.95rem}
+.progress{height:6px;background:var(--panel-2);border-radius:99px;overflow:hidden}
+.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--kw-green),var(--gold));transition:width .4s}
+.q{font-family:var(--f-display);font-weight:500;font-size:clamp(1.3rem,2.6vw,1.65rem);line-height:1.5;margin:0;text-wrap:balance}
+.opts{display:grid;gap:10px}
+.opt{text-align:right;background:var(--panel-2);color:var(--paper);border:2px solid transparent;border-radius:12px;padding:12px 16px;font-size:1.1rem;font-weight:500;cursor:pointer;display:flex;gap:12px;align-items:center;transition:border-color .15s,background .15s}
+.opt:hover:not(:disabled){border-color:var(--gold)}
+.opt .k{flex:none;width:30px;height:30px;border-radius:8px;display:grid;place-items:center;background:rgba(214,180,106,.15);color:var(--gold);font-weight:800}
+.opt.right{border-color:var(--ok);background:rgba(63,191,127,.16)}
+.opt.wrong{border-color:var(--bad);background:rgba(224,86,106,.16);animation:shake .35s}
+.opt:disabled{cursor:default}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.fb{border-radius:12px;padding:12px 14px;background:rgba(214,180,106,.1);border-right:4px solid var(--gold);font-size:1rem}
+.fb b{color:var(--gold)}
+.next{align-self:flex-start;background:var(--gold);color:var(--ink);border:0;border-radius:10px;padding:10px 26px;font-weight:800;font-size:1.05rem;cursor:pointer}
+
+/* clues */
+.clues{display:flex;flex-wrap:wrap;gap:8px}
+.clue{background:rgba(0,122,61,.22);border:1px solid rgba(63,191,127,.45);color:#d7f3e3;border-radius:999px;padding:4px 12px;font-size:.92rem;animation:rise .4s}
+.clues-h{font-size:.9rem;color:var(--muted);margin:0}
+
+/* final */
+.final{align-items:center;text-align:center}
+.slots{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;min-height:72px}
+.slot{min-width:150px;padding:14px 18px;border:2px dashed var(--gold-soft);border-radius:12px;font-family:var(--f-display);font-size:1.5rem;color:var(--muted)}
+.slot.filled{border-style:solid;background:var(--gold);color:var(--ink);cursor:pointer}
+.pool{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.word{background:var(--panel-2);border:2px solid rgba(214,180,106,.4);color:var(--paper);border-radius:12px;padding:10px 20px;font-family:var(--f-display);font-size:1.35rem;cursor:pointer}
+.word:hover{border-color:var(--gold)}
+.word[disabled]{opacity:.25;cursor:default}
+.slots.bad .slot{border-color:var(--bad);animation:shake .35s}
+.hint{color:var(--muted);font-size:.95rem;margin:0}
+
+.reveal{display:flex;flex-direction:column;gap:18px;align-items:center}
+.title-reveal{font-family:var(--f-display);font-weight:700;font-size:clamp(2rem,6vw,3.6rem);color:var(--gold);margin:0;text-shadow:0 4px 18px rgba(0,0,0,.6);text-wrap:balance}
+.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;width:100%;max-width:760px}
+@media (max-width:560px){.three{grid-template-columns:1fr}}
+.three div{background:rgba(19,36,31,.94);border:1px solid rgba(214,180,106,.4);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:4px}
+.three b{font-family:var(--f-display);font-size:1.3rem;color:var(--gold)}
+.three span{font-size:.92rem;color:var(--muted)}
+.three div:nth-child(1){border-top:5px solid var(--kw-green)}
+.three div:nth-child(2){border-top:5px solid var(--kw-white)}
+.three div:nth-child(3){border-top:5px solid var(--kw-red)}
+.ask{max-width:60ch;background:rgba(214,180,106,.1);border-radius:12px;padding:12px 16px;margin:0}
+
+canvas#confetti{position:fixed;inset:0;pointer-events:none;z-index:5}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="bg" aria-hidden="true"></div>
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<audio id="song" src="assets/national-song.mp3" loop preload="auto"></audio>
+
+<main class="wrap" dir="rtl" lang="ar">
+  <header class="bar">
+    <div class="brand">
+      <!-- علم دولة الكويت: الأخضر أعلى، الأبيض وسط، الأحمر أسفل، وشبه المنحرف الأسود جهة السارية (اليسار) -->
+      <svg class="flag" viewBox="0 0 120 60" role="img" aria-label="علم دولة الكويت"><rect width="120" height="20" fill="#007a3d"/><rect y="20" width="120" height="20" fill="#fff"/><rect y="40" width="120" height="20" fill="#ce1126"/><polygon points="0,0 30,20 30,40 0,60" fill="#000"/></svg>
+      <div><b>نشاط استهلالي</b><small>اجمع المفاتيح واكشف قاعة عبدالله السالم</small></div>
+    </div>
+    <div class="tools">
+      <span class="chip" id="score" hidden>النقاط: 0</span>
+      <button class="icon-btn" id="music" type="button" aria-pressed="false">♪ تشغيل الأغنية</button>
+    </div>
+  </header>
+
+  <!-- INTRO -->
+  <section class="screen intro" id="s-intro">
+    <svg class="bigflag" viewBox="0 0 120 60" role="img" aria-label="علم دولة الكويت"><rect width="120" height="20" fill="#007a3d"/><rect y="20" width="120" height="20" fill="#fff"/><rect y="40" width="120" height="20" fill="#ce1126"/><polygon points="0,0 30,20 30,40 0,60" fill="#000"/></svg>
+    <div class="eyebrow">خلف هذه البطاقات قاعة مهمة في دولة الكويت</div>
+    <h1>ما عنوان درسنا اليوم؟</h1>
+    <p class="lead">أجب عن ٨ أسئلة. كل إجابة صحيحة تكشف جزءاً من الصورة وتعطيك مفتاحاً. في النهاية رتّب الكلمات لتستنتج عنوان الدرس.</p>
+    <div class="steps"><span>١ · أجب</span><span>٢ · اكشف الصورة</span><span>٣ · اجمع المفاتيح</span><span>٤ · استنتج العنوان</span></div>
+    <button class="cta" id="start" type="button">ابدأ النشاط</button>
+  </section>
+
+  <!-- GAME -->
+  <section class="screen" id="s-game" hidden>
+    <div class="game">
+      <div>
+        <div class="board"><div class="tiles" id="tiles"></div></div>
+        <p class="board-cap" id="board-cap">ما هذا المكان؟ اكشف الصورة لتعرف</p>
+        <p class="clues-h">المفاتيح التي جمعتها:</p>
+        <div class="clues" id="clues"></div>
+      </div>
+      <div class="card" aria-live="polite">
+        <div class="qmeta"><span id="qnum">السؤال ١ من ٨</span><span id="qtag"></span></div>
+        <div class="progress"><i id="bar" style="width:0%"></i></div>
+        <p class="q" id="qtext"></p>
+        <div class="opts" id="opts"></div>
+        <div class="fb" id="fb" hidden></div>
+        <button class="next" id="next" type="button" hidden>التالي</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL -->
+  <section class="screen final" id="s-final" hidden>
+    <div class="eyebrow">انكشفت الصورة: قاعة عبدالله السالم في مجلس الأمة</div>
+    <h1>رتّب الكلمات لتكوّن عنوان الدرس</h1>
+    <p class="hint">اضغط الكلمات بالترتيب الصحيح. اضغط كلمة في الخانة لإرجاعها.</p>
+    <div class="slots" id="slots"><div class="slot">١</div><div class="slot">٢</div><div class="slot">٣</div></div>
+    <div class="pool" id="pool"></div>
+    <div class="clues" id="clues2" style="justify-content:center"></div>
+  </section>
+
+  <!-- REVEAL -->
+  <section class="screen reveal" id="s-reveal" hidden>
+    <div class="eyebrow">أحسنتم! عنوان درسنا</div>
+    <p class="title-reveal">اختصاصات السلطة التشريعية</p>
+    <div class="three">
+      <div><b>الاختصاص التشريعي</b><span>سنّ القوانين وإصدارها</span></div>
+      <div><b>الاختصاص السياسي</b><span>الرقابة على أعمال الحكومة</span></div>
+      <div><b>الاختصاص المالي</b><span>إقرار الميزانية والشؤون المالية</span></div>
+    </div>
+    <p class="ask"><b style="color:var(--gold)">سؤال للنقاش:</b> لماذا اشترط الدستور في المادة ٧٩ أن يقرّ مجلس الأمة القانون وأن يصدّق عليه الأمير؟</p>
+    <p class="chip" id="final-score"></p>
+    <button class="cta" id="again" type="button">العب مرة أخرى</button>
+  </section>
+</main>
+
+<script>
+const AR = n => String(n).replace(/\d/g,d=>"٠١٢٣٤٥٦٧٨٩"[d]);
+const Q = [
+  {tag:"المادة ٧٩",q:"من يشترك مع مجلس الأمة في سنّ القوانين في دولة الكويت؟",o:["الأمير","المحكمة الدستورية","البلدية"],a:0,
+   why:"نصت المادة ٧٩ من الدستور: «لا يصدر قانون إلا إذا أقره مجلس الأمة وصدّق عليه الأمير».",clue:"سنّ القوانين"},
+  {tag:"الاقتراح",q:"القانون الذي تقدّمه الحكومة يسمى:",o:["اقتراح بقانون","مشروع قانون","لائحة داخلية"],a:1,
+   why:"ما تقدمه الحكومة يسمى «مشروع قانون».",clue:"مشروع قانون"},
+  {tag:"الاقتراح",q:"القانون الذي يقدّمه أحد النواب يسمى:",o:["اقتراح بقانون","مرسوم أميري","مشروع قانون"],a:0,
+   why:"ما يقدمه أحد النواب يسمى «اقتراح بقانون»، ولا فرق في الموضوعات بين الشكلين.",clue:"اقتراح النواب"},
+  {tag:"المناقشة والتصويت",q:"لكي يحصل مشروع القانون على الموافقة لا بد من تصويت:",o:["جميع الأعضاء","أغلبية الحاضرين من الأعضاء","الوزراء فقط"],a:1,
+   why:"لابد من تصويت أغلبية الحاضرين لصالح المشروع، وإلا يُعدّ مرفوضاً. والوزراء يصوّتون بوصفهم أعضاء.",clue:"التصويت"},
+  {tag:"المادة ٩٤",q:"الأصل في جلسات مجلس الأمة والتصويت أن تكون:",o:["سرية دائماً","علنية","مغلقة أمام الإعلام"],a:1,
+   why:"الأصل العلنية، ويجوز عقدها سرية بطلب الحكومة أو رئيس المجلس أو عشرة أعضاء.",clue:"جلسات علنية"},
+  {tag:"التصديق والاعتراض",q:"إذا ردّ الأمير القانون، يقرّه المجلس مرة ثانية بأغلبية:",o:["ثلثي الأعضاء","نصف الحاضرين","ثلث الأعضاء"],a:0,
+   why:"يقرّونه بأغلبية ثلثي الأعضاء، ثم يُرفع للأمير، ولا يجوز إرجاعه للمجلس مرة أخرى.",clue:"تصديق الأمير"},
+  {tag:"النشر",q:"ما اسم الجريدة الرسمية التي تُنشر فيها القوانين؟",o:["الكويت اليوم","الرأي العام","الوطن"],a:0,
+   why:"تُنشر القوانين في الجريدة الرسمية «الكويت اليوم» ويُعمل بها بعد شهر من صدورها.",clue:"الكويت اليوم"},
+  {tag:"المكان",q:"في أي قاعة يجتمع أعضاء مجلس الأمة لمناقشة القوانين؟",o:["قاعة عبدالله السالم","قاعة التحرير","قاعة الشعب"],a:0,
+   why:"قاعة عبدالله السالم في مبنى مجلس الأمة، وسُمّيت باسم الشيخ عبدالله السالم «أبو الدستور».",clue:"مجلس الأمة"}
+];
+const WORDS = ["اختصاصات","السلطة","التشريعية"];
+const DECOYS = ["التنفيذية","القضائية","واجبات"];
+
+const $ = id => document.getElementById(id);
+const song = $("song");
+let i=0, score=0, order=[], opened=[];
+
+/* music */
+function setMusic(on){
+  if(on){ song.volume=.45; song.play().then(()=>{$("music").textContent="❚❚ إيقاف الأغنية";$("music").setAttribute("aria-pressed","true")}).catch(()=>{}); }
+  else { song.pause(); $("music").textContent="♪ تشغيل الأغنية"; $("music").setAttribute("aria-pressed","false"); }
+}
+$("music").onclick=()=>setMusic(song.paused);
+
+/* sfx */
+let ac;
+function beep(ok){
+  try{
+    ac = ac || new (window.AudioContext||window.webkitAudioContext)();
+    const notes = ok?[660,880]:[220,170];
+    notes.forEach((f,k)=>{const o=ac.createOscillator(),g=ac.createGain();o.type=ok?"triangle":"square";o.frequency.value=f;
+      g.gain.setValueAtTime(.0001,ac.currentTime+k*.12);g.gain.exponentialRampToValueAtTime(.18,ac.currentTime+k*.12+.02);
+      g.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+k*.12+.2);o.connect(g).connect(ac.destination);o.start(ac.currentTime+k*.12);o.stop(ac.currentTime+k*.12+.22)});
+  }catch(e){}
+}
+
+function show(id){ ["s-intro","s-game","s-final","s-reveal"].forEach(s=>$(s).hidden = s!==id); window.scrollTo(0,0); }
+
+function buildTiles(){
+  $("tiles").innerHTML="";
+  order=[...Array(8).keys()].sort(()=>Math.random()-.5);
+  for(let k=0;k<8;k++){const t=document.createElement("div");t.className="tile";t.textContent="؟";$("tiles").appendChild(t);}
+}
+function openTile(){ const t=$("tiles").children[order[opened.length]]; t.classList.add("open"); opened.push(1); }
+
+function start(){
+  i=0;score=0;opened=[];$("clues").innerHTML="";$("clues2").innerHTML="";
+  $("score").hidden=false; updScore(); buildTiles(); show("s-game"); render();
+  $("board-cap").textContent="ما هذا المكان؟ اكشف الصورة لتعرف";
+}
+function updScore(){ $("score").textContent="النقاط: "+AR(score)+" / "+AR(Q.length); }
+
+function render(){
+  const q=Q[i];
+  $("qnum").textContent="السؤال "+AR(i+1)+" من "+AR(Q.length);
+  $("qtag").textContent=q.tag;
+  $("bar").style.width=(i/Q.length*100)+"%";
+  $("qtext").textContent=q.q;
+  $("fb").hidden=true; $("next").hidden=true;
+  $("opts").innerHTML="";
+  q.o.forEach((t,k)=>{
+    const b=document.createElement("button");b.type="button";b.className="opt";
+    b.innerHTML='<span class="k">'+"أبج"[k]+'</span><span></span>';b.lastChild.textContent=t;
+    b.onclick=()=>answer(k,b);$("opts").appendChild(b);
+  });
+}
+function answer(k,btn){
+  const q=Q[i],all=[...$("opts").children];
+  all.forEach(b=>b.disabled=true);
+  all[q.a].classList.add("right");
+  const ok=k===q.a;
+  if(ok){score++;updScore();}else btn.classList.add("wrong");
+  beep(ok);
+  openTile();
+  const c=document.createElement("span");c.className="clue";c.textContent=q.clue;$("clues").appendChild(c);
+  $("fb").innerHTML=(ok?"<b>إجابة صحيحة!</b> ":"<b>الإجابة الصحيحة: "+q.o[q.a]+".</b> ")+"";
+  $("fb").append(q.why); $("fb").hidden=false;
+  $("next").textContent = i===Q.length-1 ? "استنتج العنوان" : "التالي";
+  $("next").hidden=false; $("next").focus();
+  $("bar").style.width=((i+1)/Q.length*100)+"%";
+  if(i===Q.length-1) $("board-cap").textContent="إنها قاعة عبدالله السالم في مجلس الأمة";
+}
+$("next").onclick=()=>{ i++; if(i<Q.length) render(); else toFinal(); };
+
+/* final: arrange the title */
+let picked=[];
+function toFinal(){
+  picked=[];
+  $("clues2").innerHTML=$("clues").innerHTML;
+  const pool=[...WORDS,...DECOYS].sort(()=>Math.random()-.5);
+  $("pool").innerHTML="";
+  pool.forEach(w=>{const b=document.createElement("button");b.type="button";b.className="word";b.textContent=w;b.onclick=()=>pick(w,b);$("pool").appendChild(b);});
+  drawSlots(); show("s-final");
+}
+function drawSlots(){
+  const s=$("slots"); s.innerHTML=""; s.classList.remove("bad");
+  for(let k=0;k<3;k++){
+    const d=document.createElement("div");d.className="slot"+(picked[k]?" filled":"");
+    d.textContent=picked[k]?picked[k].w:AR(k+1);
+    if(picked[k]){d.title="إرجاع";d.onclick=()=>{picked[k].b.disabled=false;picked.splice(k,1);drawSlots();};}
+    s.appendChild(d);
+  }
+}
+function pick(w,b){
+  if(picked.length>=3) return;
+  picked.push({w,b}); b.disabled=true; drawSlots();
+  if(picked.length===3){
+    if(picked.every((p,k)=>p.w===WORDS[k])){ beep(true); setTimeout(reveal,500); }
+    else { beep(false); $("slots").classList.add("bad");
+      setTimeout(()=>{picked.forEach(p=>p.b.disabled=false);picked=[];drawSlots();},900); }
+  }
+}
+function reveal(){
+  show("s-reveal");
+  $("final-score").textContent="نقاطكم: "+AR(score)+" من "+AR(Q.length);
+  if(song.paused) setMusic(true);
+  confetti();
+}
+$("start").onclick=()=>{ setMusic(true); start(); };
+$("again").onclick=start;
+
+/* confetti in flag colours */
+function confetti(){
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const c=$("confetti"),x=c.getContext("2d");c.width=innerWidth;c.height=innerHeight;
+  const cols=["#007a3d","#ffffff","#ce1126","#000000","#d6b46a"];
+  const P=[...Array(160)].map(()=>({x:Math.random()*c.width,y:-20-Math.random()*c.height*.5,r:4+Math.random()*6,v:2+Math.random()*3,s:Math.random()*6,c:cols[Math.random()*5|0]}));
+  let t=0;(function f(){x.clearRect(0,0,c.width,c.height);P.forEach(p=>{p.y+=p.v;p.x+=Math.sin((t+p.s)/12)*1.4;x.fillStyle=p.c;x.fillRect(p.x,p.y,p.r,p.r*.6)});
+    if(++t<260)requestAnimationFrame(f);else x.clearRect(0,0,c.width,c.height)})();
+}
+</script>
