@@ -10,11 +10,14 @@ import {FPS as C46_FPS, HEIGHT as C46_H, totalFrames as c46Frames, WIDTH as C46_
 import {Recommendations46} from './conference46/Recommendations';
 import {FPS as C46B_FPS, HEIGHT as C46B_H, Recommendations46V2, totalFrames as c46bFrames, WIDTH as C46B_W} from './conference46/v2/Recommendations2';
 
+import {FPS as CT_FPS, HEIGHT as CT_H, PublicHearing, totalFrames as ctFrames, WIDTH as CT_W} from './court/PublicHearing';
 import {FPS as PR_FPS, HEIGHT as PR_H, PRTeam, totalFrames as prFrames, WIDTH as PR_W} from './pr/PRTeam';
 
 export const RemotionRoot: React.FC = () => {
   return (
     <>
+      {/* علنية جلسات المحاكم — دولة الكويت، أفقي 16:9 */}
+      <Composition id="PublicHearing" component={PublicHearing} durationInFrames={ctFrames()} fps={CT_FPS} width={CT_W} height={CT_H} />
       {/* فريق العلاقات العامة — فاطمة الهاشمية، نسخة رسمية */}
       <Composition id="PRTeam" component={PRTeam} durationInFrames={prFrames()} fps={PR_FPS} width={PR_W} height={PR_H} />
       {/* ريل مستقبل التعليم بكلمة — جمعية المعلمين الكويتية */}
