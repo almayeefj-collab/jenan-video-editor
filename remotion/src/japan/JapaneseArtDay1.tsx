@@ -22,23 +22,23 @@ const ORANGE = '#E5892A';
 
 type Shot =
   | {kind: 'title'; dur: number}
-  | {kind: 'video'; src: string; from: number; dur: number; wide?: boolean}
+  | {kind: 'video'; src: string; from: number; dur: number; wide?: boolean; zoom?: number; origin?: string}
   | {kind: 'photo'; src: string; dur: number; wide?: boolean}
   | {kind: 'credits'; dur: number}
   | {kind: 'end'; dur: number};
 
 const SHOTS: Shot[] = [
   {kind: 'title', dur: 4.4},
-  {kind: 'video', src: 'f3f9374a.mp4', from: 0.2, dur: 5.6, wide: true},
-  {kind: 'video', src: '8835b874.mp4', from: 2.0, dur: 6.0, wide: true},
+  // القاعة: تكبير لجهة اليمين عشان المقدّمة (الحجاب والعباية البنفسجية) ما تطلع
+  {kind: 'video', src: 'f3f9374a.mp4', from: 0.3, dur: 5.6, zoom: 1.6, origin: '100% 50%'},
+  {kind: 'video', src: '8835b874.mp4', from: 2.0, dur: 6.0},
   {kind: 'video', src: 'efe0ce2c.mp4', from: 0.0, dur: 4.6},
-  {kind: 'photo', src: 'photo1.jpg', dur: 3.8, wide: true},
   {kind: 'video', src: '5f125241.mp4', from: 0.4, dur: 5.0},
   {kind: 'video', src: 'b25c35e4.mp4', from: 0.0, dur: 4.4},
   {kind: 'video', src: 'b2156b50.mp4', from: 3.0, dur: 5.0},
-  {kind: 'video', src: '270baead.mp4', from: 3.0, dur: 6.0, wide: true},
+  {kind: 'video', src: '270baead.mp4', from: 3.0, dur: 6.0},
   {kind: 'video', src: 'b2156b50.mp4', from: 26.0, dur: 4.6},
-  {kind: 'video', src: '651e8866.mp4', from: 1.5, dur: 7.0, wide: true},
+  {kind: 'video', src: '651e8866.mp4', from: 1.5, dur: 7.0},
   {kind: 'photo', src: 'photo2.jpg', dur: 4.4},
   {kind: 'credits', dur: 7.6},
   {kind: 'end', dur: 4.4},
@@ -121,9 +121,9 @@ const Media: React.FC<{src: string; from?: number; style: React.CSSProperties}> 
 
 const look = 'contrast(1.05) saturate(1.06) brightness(1.02)';
 
-const MediaShot: React.FC<{src: string; from?: number; frames: number; wide?: boolean}> = ({src, from, frames, wide}) => {
+const MediaShot: React.FC<{src: string; from?: number; frames: number; wide?: boolean; zoom?: number; origin?: string}> = ({src, from, frames, wide, zoom = 1, origin = '50% 50%'}) => {
   const frame = useCurrentFrame();
-  const scale = interpolate(frame, [0, frames], [1.0, 1.06]);
+  const scale = zoom * interpolate(frame, [0, frames], [1.0, 1.06]);
   if (!wide) {
     return (
       <AbsoluteFill style={{background: INK}}>
@@ -137,10 +137,10 @@ const MediaShot: React.FC<{src: string; from?: number; frames: number; wide?: bo
   const fgH = Math.round((fgW * 9) / 16) + 60;
   return (
     <AbsoluteFill style={{background: INK}}>
-      <Media src={src} from={from} style={{width: '100%', height: '100%', objectFit: 'cover', transform: `scale(${1.2 + (scale - 1)})`, filter: 'blur(26px) brightness(0.55) saturate(1.1)'}} />
+      <Media src={src} from={from} style={{width: '100%', height: '100%', objectFit: 'cover', transform: `scale(${1.2 + (scale - 1)})`, transformOrigin: origin, filter: 'blur(26px) brightness(0.55) saturate(1.1)'}} />
       <AbsoluteFill style={{justifyContent: 'center', alignItems: 'center'}}>
         <div style={{width: fgW, height: fgH, overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,0.5)'}}>
-          <Media src={src} from={from} style={{width: '100%', height: '100%', objectFit: 'cover', transform: `scale(${scale})`, filter: look}} />
+          <Media src={src} from={from} style={{width: '100%', height: '100%', objectFit: 'cover', transform: `scale(${scale})`, transformOrigin: origin, filter: look}} />
         </div>
       </AbsoluteFill>
     </AbsoluteFill>
@@ -232,7 +232,7 @@ const ShotView: React.FC<{shot: Shot; frames: number}> = ({shot, frames}) => {
     case 'title':
       return <TitleCard frames={frames} />;
     case 'video':
-      return <MediaShot src={shot.src} from={shot.from} frames={frames} wide={shot.wide} />;
+      return <MediaShot src={shot.src} from={shot.from} frames={frames} wide={shot.wide} zoom={shot.zoom} origin={shot.origin} />;
     case 'photo':
       return <MediaShot src={shot.src} frames={frames} wide={shot.wide} />;
     case 'credits':
