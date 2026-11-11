@@ -149,41 +149,18 @@ const MediaShot: React.FC<{src: string; from?: number; frames: number; wide?: bo
 
 const TitleCard: React.FC<{frames: number}> = ({frames}) => {
   const frame = useCurrentFrame();
-  const sun = interpolate(frame, [0, 26], [0, 1], {...clamp, easing: ease});
-  const drift = interpolate(frame, [0, frames], [0, -20]);
+  const drift = interpolate(frame, [0, frames], [0, -16]);
   return (
     <Washi>
-      <AbsoluteFill style={{direction: 'rtl', alignItems: 'center', fontFamily, textAlign: 'center'}}>
-        <div
-          style={{
-            marginTop: 380 + drift,
-            width: 360,
-            height: 360,
-            borderRadius: '50%',
-            background: CRIMSON,
-            transform: `scale(${sun})`,
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            boxShadow: '0 18px 50px rgba(179,38,46,0.25)',
-          }}
-        >
-          <div style={{...useReveal(16), fontSize: 66, fontWeight: 800, color: WASHI, lineHeight: 1.25}}>
-            اليوم
-            <br />
-            الأول
-          </div>
-        </div>
-        <div style={{...useReveal(24), marginTop: 90, fontSize: 118, fontWeight: 900, color: INK, lineHeight: 1.2}}>
+      <AbsoluteFill style={{direction: 'rtl', justifyContent: 'center', alignItems: 'center', fontFamily, textAlign: 'center', transform: `translateY(${drift}px)`}}>
+        <Img src={staticFile(LOGO)} style={{...useReveal(4, 26), width: 440, mixBlendMode: 'multiply', marginBottom: 110}} />
+        <div style={{...useReveal(22), fontSize: 120, fontWeight: 900, color: INK, lineHeight: 1.2}}>
           دورة
           <br />
           الفن الياباني
         </div>
-        <Rule width={460} delay={40} />
-        <div style={{...useReveal(48), fontSize: 58, fontWeight: 700, color: CRIMSON}}>ثانوية فاطمة الهاشمية</div>
-      </AbsoluteFill>
-      <AbsoluteFill style={{justifyContent: 'flex-end', alignItems: 'center', paddingBottom: 150}}>
-        <Img src={staticFile(LOGO)} style={{...useReveal(58), width: 300, mixBlendMode: 'multiply'}} />
+        <Rule width={460} delay={36} />
+        <div style={{...useReveal(44), fontSize: 64, fontWeight: 700, color: CRIMSON}}>اليوم الأول</div>
       </AbsoluteFill>
     </Washi>
   );
