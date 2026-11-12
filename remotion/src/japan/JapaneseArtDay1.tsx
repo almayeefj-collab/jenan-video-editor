@@ -62,9 +62,9 @@ const CLOSING_SHOTS: Shot[] = [
   {kind: 'end', dur: 4.4},
 ];
 
-type Cfg = {dir: string; shots: Shot[]; subtitle: string};
-const DAY1: Cfg = {dir: 'footage/day1/', shots: DAY1_SHOTS, subtitle: 'اليوم الأول'};
-const CLOSING: Cfg = {dir: 'footage/closing/', shots: CLOSING_SHOTS, subtitle: 'الختام'};
+type Cfg = {dir: string; shots: Shot[]; lead: string; subtitle?: string; endLine: string};
+const DAY1: Cfg = {dir: 'footage/day1/', shots: DAY1_SHOTS, lead: 'دورة', subtitle: 'اليوم الأول', endLine: 'دورة الفن الياباني · اليوم الأول'};
+const CLOSING: Cfg = {dir: 'footage/closing/', shots: CLOSING_SHOTS, lead: 'ختام دورة', endLine: 'ختام دورة الفن الياباني'};
 const CfgCtx = createContext<Cfg>(DAY1);
 
 const shotFrames = (s: Shot) => Math.round(s.dur * FPS);
@@ -175,18 +175,22 @@ const MediaShot: React.FC<{src: string; from?: number; frames: number; wide?: bo
 const TitleCard: React.FC<{frames: number}> = ({frames}) => {
   const frame = useCurrentFrame();
   const drift = interpolate(frame, [0, frames], [0, -16]);
-  const {subtitle} = useContext(CfgCtx);
+  const {lead, subtitle} = useContext(CfgCtx);
   return (
     <Washi>
       <AbsoluteFill style={{direction: 'rtl', justifyContent: 'center', alignItems: 'center', fontFamily, textAlign: 'center', transform: `translateY(${drift}px)`}}>
         <Img src={staticFile(LOGO)} style={{...useReveal(4, 26), width: 440, mixBlendMode: 'multiply', marginBottom: 110}} />
         <div style={{...useReveal(22), fontSize: 120, fontWeight: 900, color: INK, lineHeight: 1.2}}>
-          دورة
+          {lead}
           <br />
           الفن الياباني
         </div>
-        <Rule width={460} delay={36} />
-        <div style={{...useReveal(44), fontSize: 64, fontWeight: 700, color: CRIMSON}}>{subtitle}</div>
+        {subtitle ? (
+          <>
+            <Rule width={460} delay={36} />
+            <div style={{...useReveal(44), fontSize: 64, fontWeight: 700, color: CRIMSON}}>{subtitle}</div>
+          </>
+        ) : null}
       </AbsoluteFill>
     </Washi>
   );
@@ -218,13 +222,13 @@ const Credits: React.FC = () => (
 const End: React.FC<{frames: number}> = ({frames}) => {
   const frame = useCurrentFrame();
   const fadeOut = interpolate(frame, [frames - 22, frames], [0, 1], clamp);
-  const {subtitle} = useContext(CfgCtx);
+  const {endLine} = useContext(CfgCtx);
   return (
     <Washi>
       <AbsoluteFill style={{direction: 'rtl', justifyContent: 'center', alignItems: 'center', textAlign: 'center', fontFamily}}>
         <Img src={staticFile(LOGO)} style={{...useReveal(4, 26), width: 560, mixBlendMode: 'multiply'}} />
         <Rule width={420} delay={26} />
-        <div style={{...useReveal(34), fontSize: 54, fontWeight: 700, color: CRIMSON}}>دورة الفن الياباني · {subtitle}</div>
+        <div style={{...useReveal(34), fontSize: 54, fontWeight: 700, color: CRIMSON}}>{endLine}</div>
       </AbsoluteFill>
       <AbsoluteFill style={{background: WASHI, opacity: fadeOut}} />
     </Washi>
