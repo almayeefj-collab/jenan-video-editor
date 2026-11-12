@@ -46,7 +46,6 @@ const DAY1_SHOTS: Shot[] = [
 const CLOSING_SHOTS: Shot[] = [
   {kind: 'title', dur: 4.4},
   {kind: 'video', src: '6826cbb1.mp4', from: 0.0, dur: 2.7},
-  {kind: 'video', src: '4911206c.mp4', from: 0.0, dur: 4.0},
   {kind: 'video', src: '58b92aad.mp4', from: 0.0, dur: 2.8},
   {kind: 'video', src: '1c97e7e5.mp4', from: 0.0, dur: 3.8},
   {kind: 'video', src: '0305f0bc.mp4', from: 0.0, dur: 3.9},
