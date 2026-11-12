@@ -1,9 +1,9 @@
-// دورة الفن الياباني — ثانوية فاطمة الهاشمية — اليوم الأول
+// دورة الفن الياباني — ثانوية فاطمة الهاشمية (اليوم الأول + الختام)
 // عنوان ← لقطات الورشة بدون كتابة ← الإعداد والإشراف ← شعار المدرسة
-// اللقطات في public/footage/day1/ (ما ترفع للمستودع)
+// اللقطات في public/footage/day1/ و public/footage/closing/ (ما ترفع للمستودع)
 import {fade} from '@remotion/transitions/fade';
 import {linearTiming, TransitionSeries} from '@remotion/transitions';
-import {Fragment} from 'react';
+import {createContext, Fragment, useContext} from 'react';
 import {AbsoluteFill, Audio, Easing, Img, interpolate, OffthreadVideo, staticFile, useCurrentFrame} from 'remotion';
 import {fontFamily} from '../reel/font';
 
@@ -11,7 +11,6 @@ export const FPS = 30;
 export const WIDTH = 1080;
 export const HEIGHT = 1920;
 const XFADE = 12;
-const DIR = 'footage/day1/';
 const LOGO = 'brand/fatma-alhashmia-logo.png';
 
 // ألوان ورق الواشي الياباني + الأحمر القرمزي + برتقالي شعار المدرسة
@@ -23,11 +22,11 @@ const ORANGE = '#E5892A';
 type Shot =
   | {kind: 'title'; dur: number}
   | {kind: 'video'; src: string; from: number; dur: number; wide?: boolean; zoom?: number; origin?: string}
-  | {kind: 'photo'; src: string; dur: number; wide?: boolean}
+  | {kind: 'photo'; src: string; dur: number; wide?: boolean; aspect?: number}
   | {kind: 'credits'; dur: number}
   | {kind: 'end'; dur: number};
 
-const SHOTS: Shot[] = [
+const DAY1_SHOTS: Shot[] = [
   {kind: 'title', dur: 4.4},
   // القاعة: تكبير لجهة اليمين عشان المقدّمة (الحجاب والعباية البنفسجية) ما تطلع
   {kind: 'video', src: 'f3f9374a.mp4', from: 0.3, dur: 5.6, zoom: 1.6, origin: '100% 50%'},
@@ -44,20 +43,45 @@ const SHOTS: Shot[] = [
   {kind: 'end', dur: 4.4},
 ];
 
+const CLOSING_SHOTS: Shot[] = [
+  {kind: 'title', dur: 4.4},
+  {kind: 'video', src: '6826cbb1.mp4', from: 0.0, dur: 2.7},
+  {kind: 'video', src: '4911206c.mp4', from: 0.0, dur: 4.0},
+  {kind: 'video', src: '58b92aad.mp4', from: 0.0, dur: 2.8},
+  {kind: 'video', src: '1c97e7e5.mp4', from: 0.0, dur: 3.8},
+  {kind: 'video', src: '0305f0bc.mp4', from: 0.0, dur: 3.9},
+  {kind: 'video', src: 'be4002c4.mp4', from: 0.0, dur: 2.6},
+  {kind: 'video', src: 'a902e71f.mp4', from: 0.0, dur: 2.6},
+  {kind: 'video', src: 'c679d4f0.mp4', from: 0.0, dur: 3.3},
+  {kind: 'video', src: 'c679d4f0.mp4', from: 4.0, dur: 4.5},
+  {kind: 'video', src: '6f394c12.mp4', from: 3.0, dur: 4.5},
+  {kind: 'video', src: '68400728.mp4', from: 0.0, dur: 5.0},
+  {kind: 'video', src: '34c64b24.mp4', from: 0.0, dur: 2.5},
+  {kind: 'video', src: '746ceaa3.mp4', from: 0.0, dur: 5.0},
+  {kind: 'photo', src: 'group.jpg', dur: 5.6, wide: true, aspect: 3 / 4},
+  {kind: 'credits', dur: 7.6},
+  {kind: 'end', dur: 4.4},
+];
+
+type Cfg = {dir: string; shots: Shot[]; subtitle: string};
+const DAY1: Cfg = {dir: 'footage/day1/', shots: DAY1_SHOTS, subtitle: 'اليوم الأول'};
+const CLOSING: Cfg = {dir: 'footage/closing/', shots: CLOSING_SHOTS, subtitle: 'الختام'};
+const CfgCtx = createContext<Cfg>(DAY1);
+
 const shotFrames = (s: Shot) => Math.round(s.dur * FPS);
 const enterFrames = (i: number) => (i === 0 ? 0 : XFADE);
 
-export const timeline = () => {
+const timeline = (shots: Shot[]) => {
   let t = 0;
-  return SHOTS.map((shot, i) => {
+  return shots.map((shot, i) => {
     t -= enterFrames(i);
     const start = t;
     t += shotFrames(shot);
     return {shot, start, frames: shotFrames(shot)};
   });
 };
-export const totalFrames = () => {
-  const tl = timeline();
+const framesOf = (shots: Shot[]) => {
+  const tl = timeline(shots);
   const last = tl[tl.length - 1];
   return last.start + last.frames;
 };
@@ -112,16 +136,18 @@ const Vignette: React.FC = () => (
   <AbsoluteFill style={{background: 'radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.4) 100%)'}} />
 );
 
-const Media: React.FC<{src: string; from?: number; style: React.CSSProperties}> = ({src, from, style}) =>
-  src.endsWith('.jpg') ? (
-    <Img src={staticFile(DIR + src)} style={style} />
+const Media: React.FC<{src: string; from?: number; style: React.CSSProperties}> = ({src, from, style}) => {
+  const {dir} = useContext(CfgCtx);
+  return src.endsWith('.jpg') ? (
+    <Img src={staticFile(dir + src)} style={style} />
   ) : (
-    <OffthreadVideo src={staticFile(DIR + src)} trimBefore={Math.round((from ?? 0) * FPS)} muted style={style} />
+    <OffthreadVideo src={staticFile(dir + src)} trimBefore={Math.round((from ?? 0) * FPS)} muted style={style} />
   );
+};
 
 const look = 'contrast(1.05) saturate(1.06) brightness(1.02)';
 
-const MediaShot: React.FC<{src: string; from?: number; frames: number; wide?: boolean; zoom?: number; origin?: string}> = ({src, from, frames, wide, zoom = 1, origin = '50% 50%'}) => {
+const MediaShot: React.FC<{src: string; from?: number; frames: number; wide?: boolean; aspect?: number; zoom?: number; origin?: string}> = ({src, from, frames, wide, aspect = 16 / 9, zoom = 1, origin = '50% 50%'}) => {
   const frame = useCurrentFrame();
   const scale = zoom * interpolate(frame, [0, frames], [1.0, 1.06]);
   if (!wide) {
@@ -132,9 +158,9 @@ const MediaShot: React.FC<{src: string; from?: number; frames: number; wide?: bo
       </AbsoluteFill>
     );
   }
-  // لقطة أفقية داخل إطار عمودي: خلفية مموّهة من نفس اللقطة + اللقطة في الوسط
+  // لقطة أعرض من الإطار العمودي: خلفية مموّهة من نفس اللقطة + اللقطة كاملة في الوسط
   const fgW = 1080;
-  const fgH = Math.round((fgW * 9) / 16) + 60;
+  const fgH = Math.round(fgW / aspect);
   return (
     <AbsoluteFill style={{background: INK}}>
       <Media src={src} from={from} style={{width: '100%', height: '100%', objectFit: 'cover', transform: `scale(${1.2 + (scale - 1)})`, transformOrigin: origin, filter: 'blur(26px) brightness(0.55) saturate(1.1)'}} />
@@ -150,6 +176,7 @@ const MediaShot: React.FC<{src: string; from?: number; frames: number; wide?: bo
 const TitleCard: React.FC<{frames: number}> = ({frames}) => {
   const frame = useCurrentFrame();
   const drift = interpolate(frame, [0, frames], [0, -16]);
+  const {subtitle} = useContext(CfgCtx);
   return (
     <Washi>
       <AbsoluteFill style={{direction: 'rtl', justifyContent: 'center', alignItems: 'center', fontFamily, textAlign: 'center', transform: `translateY(${drift}px)`}}>
@@ -160,7 +187,7 @@ const TitleCard: React.FC<{frames: number}> = ({frames}) => {
           الفن الياباني
         </div>
         <Rule width={460} delay={36} />
-        <div style={{...useReveal(44), fontSize: 64, fontWeight: 700, color: CRIMSON}}>اليوم الأول</div>
+        <div style={{...useReveal(44), fontSize: 64, fontWeight: 700, color: CRIMSON}}>{subtitle}</div>
       </AbsoluteFill>
     </Washi>
   );
@@ -192,12 +219,13 @@ const Credits: React.FC = () => (
 const End: React.FC<{frames: number}> = ({frames}) => {
   const frame = useCurrentFrame();
   const fadeOut = interpolate(frame, [frames - 22, frames], [0, 1], clamp);
+  const {subtitle} = useContext(CfgCtx);
   return (
     <Washi>
       <AbsoluteFill style={{direction: 'rtl', justifyContent: 'center', alignItems: 'center', textAlign: 'center', fontFamily}}>
         <Img src={staticFile(LOGO)} style={{...useReveal(4, 26), width: 560, mixBlendMode: 'multiply'}} />
         <Rule width={420} delay={26} />
-        <div style={{...useReveal(34), fontSize: 54, fontWeight: 700, color: CRIMSON}}>دورة الفن الياباني · اليوم الأول</div>
+        <div style={{...useReveal(34), fontSize: 54, fontWeight: 700, color: CRIMSON}}>دورة الفن الياباني · {subtitle}</div>
       </AbsoluteFill>
       <AbsoluteFill style={{background: WASHI, opacity: fadeOut}} />
     </Washi>
@@ -211,7 +239,7 @@ const ShotView: React.FC<{shot: Shot; frames: number}> = ({shot, frames}) => {
     case 'video':
       return <MediaShot src={shot.src} from={shot.from} frames={frames} wide={shot.wide} zoom={shot.zoom} origin={shot.origin} />;
     case 'photo':
-      return <MediaShot src={shot.src} frames={frames} wide={shot.wide} />;
+      return <MediaShot src={shot.src} frames={frames} wide={shot.wide} aspect={shot.aspect} />;
     case 'credits':
       return <Credits />;
     case 'end':
@@ -219,11 +247,12 @@ const ShotView: React.FC<{shot: Shot; frames: number}> = ({shot, frames}) => {
   }
 };
 
-export const JapaneseArtDay1: React.FC = () => {
-  const tl = timeline();
-  const total = totalFrames();
+const JapaneseArt: React.FC<{cfg: Cfg}> = ({cfg}) => {
+  const tl = timeline(cfg.shots);
+  const total = framesOf(cfg.shots);
   const musicVol = (f: number) => interpolate(f, [0, 15, total - 30, total], [0, 0.85, 0.85, 0], {...clamp, easing: Easing.inOut(Easing.sin)});
   return (
+    <CfgCtx.Provider value={cfg}>
     <AbsoluteFill style={{background: WASHI}}>
       <TransitionSeries>
         {tl.map(({shot, frames}, i) => (
@@ -237,5 +266,11 @@ export const JapaneseArtDay1: React.FC = () => {
       </TransitionSeries>
       <Audio src={staticFile('c46/soft.mp3')} volume={musicVol} />
     </AbsoluteFill>
+    </CfgCtx.Provider>
   );
 };
+
+export const JapaneseArtDay1: React.FC = () => <JapaneseArt cfg={DAY1} />;
+export const JapaneseArtClosing: React.FC = () => <JapaneseArt cfg={CLOSING} />;
+export const totalFrames = () => framesOf(DAY1_SHOTS);
+export const closingFrames = () => framesOf(CLOSING_SHOTS);
