@@ -10,12 +10,14 @@ import {FPS as C46_FPS, HEIGHT as C46_H, totalFrames as c46Frames, WIDTH as C46_
 import {Recommendations46} from './conference46/Recommendations';
 import {FPS as C46B_FPS, HEIGHT as C46B_H, Recommendations46V2, totalFrames as c46bFrames, WIDTH as C46B_W} from './conference46/v2/Recommendations2';
 
-import {closingFrames as jaClosingFrames, FPS as JA_FPS, HEIGHT as JA_H, JapaneseArtClosing, JapaneseArtDay1, totalFrames as jaFrames, WIDTH as JA_W} from './japan/JapaneseArtDay1';
+import {fullFrames as jaFullFrames, JapaneseArtFull, closingFrames as jaClosingFrames, FPS as JA_FPS, HEIGHT as JA_H, JapaneseArtClosing, JapaneseArtDay1, totalFrames as jaFrames, WIDTH as JA_W} from './japan/JapaneseArtDay1';
 import {FPS as PR_FPS, HEIGHT as PR_H, PRTeam, totalFrames as prFrames, WIDTH as PR_W} from './pr/PRTeam';
 
 export const RemotionRoot: React.FC = () => {
   return (
     <>
+      {/* دورة الفن الياباني كاملة: اليوم الأول + الختام في فيديو واحد */}
+      <Composition id="JapaneseArtFull" component={JapaneseArtFull} durationInFrames={jaFullFrames()} fps={JA_FPS} width={JA_W} height={JA_H} />
       {/* ختام دورة الفن الياباني — ثانوية فاطمة الهاشمية */}
       <Composition id="JapaneseArtClosing" component={JapaneseArtClosing} durationInFrames={jaClosingFrames()} fps={JA_FPS} width={JA_W} height={JA_H} />
       {/* دورة الفن الياباني — ثانوية فاطمة الهاشمية — اليوم الأول */}

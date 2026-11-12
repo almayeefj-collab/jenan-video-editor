@@ -65,6 +65,18 @@ const CLOSING_SHOTS: Shot[] = [
 type Cfg = {dir: string; shots: Shot[]; lead: string; subtitle?: string; endLine: string};
 const DAY1: Cfg = {dir: 'footage/day1/', shots: DAY1_SHOTS, lead: 'دورة', subtitle: 'اليوم الأول', endLine: 'دورة الفن الياباني · اليوم الأول'};
 const CLOSING: Cfg = {dir: 'footage/closing/', shots: CLOSING_SHOTS, lead: 'ختام دورة', endLine: 'ختام دورة الفن الياباني'};
+
+// الفيديو المدموج: كل لقطات اليوم الأول ثم كل لقطات الختام، بمقدمة واحدة وخاتمة واحدة
+const media = (shots: Shot[], sub: string) =>
+  shots.filter((x) => x.kind === 'video' || x.kind === 'photo').map((x) => ({...x, src: sub + (x as {src: string}).src}) as Shot);
+const FULL_SHOTS: Shot[] = [
+  {kind: 'title', dur: 4.4},
+  ...media(DAY1_SHOTS, 'day1/'),
+  ...media(CLOSING_SHOTS, 'closing/'),
+  {kind: 'credits', dur: 7.6},
+  {kind: 'end', dur: 4.4},
+];
+const FULL: Cfg = {dir: 'footage/', shots: FULL_SHOTS, lead: 'دورة', subtitle: 'لثانوية فاطمة الهاشمية', endLine: 'دورة الفن الياباني لثانوية فاطمة الهاشمية'};
 const CfgCtx = createContext<Cfg>(DAY1);
 
 const shotFrames = (s: Shot) => Math.round(s.dur * FPS);
@@ -277,3 +289,5 @@ export const JapaneseArtDay1: React.FC = () => <JapaneseArt cfg={DAY1} />;
 export const JapaneseArtClosing: React.FC = () => <JapaneseArt cfg={CLOSING} />;
 export const totalFrames = () => framesOf(DAY1_SHOTS);
 export const closingFrames = () => framesOf(CLOSING_SHOTS);
+export const JapaneseArtFull: React.FC = () => <JapaneseArt cfg={FULL} />;
+export const fullFrames = () => framesOf(FULL_SHOTS);
