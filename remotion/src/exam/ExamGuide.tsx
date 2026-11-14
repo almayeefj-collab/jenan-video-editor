@@ -128,9 +128,9 @@ const Footage: React.FC<{src: string; framing: 'close' | 'side' | 'push'; dur: n
   if (punch) {
     // زووم سريع على الوجه (تنبيه)
     const p = interpolate(frame, [s(punch[0]), s(punch[0]) + 5, s(punch[1]) - 6, s(punch[1])], [0, 1, 1, 0], {...clamp, easing: ease});
-    scale += p * 0.42;
-    y += p * 260;
-    x -= p * 40;
+    scale += p * 0.28;
+    y += p * 190;
+    x += p * 50;
   }
   return (
     <AbsoluteFill style={{backgroundColor: BG}}>
@@ -186,12 +186,12 @@ const Header: React.FC<{n: number; title: string}> = ({n, title}) => {
   const p = interpolate(frame, [6, 24], [0, 1], {...clamp, easing: ease});
   const q = interpolate(frame, [14, 32], [0, 1], {...clamp, easing: ease});
   return (
-    <div style={{position: 'absolute', top: 150, left: 50, width: 540, direction: 'ltr'}}>
+    <div style={{position: 'absolute', top: 140, left: 44, width: 290, direction: 'ltr'}}>
       <div
         style={{
           fontFamily,
           fontWeight: 300,
-          fontSize: 300,
+          fontSize: 230,
           lineHeight: 0.9,
           color: 'transparent',
           WebkitTextStroke: `4px ${SKY}`,
@@ -207,8 +207,8 @@ const Header: React.FC<{n: number; title: string}> = ({n, title}) => {
         style={{
           fontFamily,
           fontWeight: 900,
-          fontSize: title.length > 12 ? 54 : 66,
-          whiteSpace: 'nowrap',
+          fontSize: 54,
+          lineHeight: 1.2,
           direction: 'rtl',
           color: 'white',
           textAlign: 'left',
@@ -234,8 +234,8 @@ const Clock: React.FC<{at: number}> = ({at}) => {
   const hour = -150 + turn * 390; // 240° = الساعة 8
   const minute = turn * 720;
   return (
-    <div style={{position: 'absolute', left: 30, top: 545, width: 300, height: 300, transform: `scale(${pop}) rotate(${(1 - pop) * -20}deg)`, filter: glow()}}>
-      <svg viewBox="0 0 200 200" width="300" height="300">
+    <div style={{position: 'absolute', left: 40, top: 600, width: 260, height: 260, transform: `scale(${pop}) rotate(${(1 - pop) * -20}deg)`, filter: glow()}}>
+      <svg viewBox="0 0 200 200" width="260" height="260">
         <circle cx="100" cy="100" r="88" fill="rgba(11,21,48,0.85)" stroke={GOLD} strokeWidth="7" />
         {Array.from({length: 12}).map((_, i) => {
           const a = (i * 30 * Math.PI) / 180;
@@ -246,7 +246,7 @@ const Clock: React.FC<{at: number}> = ({at}) => {
         <line x1="100" y1="100" x2="100" y2="34" stroke={SKY} strokeWidth="5" strokeLinecap="round" transform={`rotate(${minute} 100 100)`} />
         <circle cx="100" cy="100" r="8" fill={GOLD} />
       </svg>
-      <div style={{position: 'absolute', top: 302, width: 300, textAlign: 'center', fontFamily, fontWeight: 900, fontSize: 54, color: GOLD, direction: 'rtl', opacity: turn, textShadow: '0 2px 12px rgba(0,0,0,0.9)'}}>
+      <div style={{position: 'absolute', top: 270, width: 260, textAlign: 'center', fontFamily, fontWeight: 900, fontSize: 54, color: GOLD, direction: 'rtl', opacity: turn, textShadow: '0 2px 12px rgba(0,0,0,0.9)'}}>
         8:00 <span style={{fontSize: 38}}>صباحاً</span>
       </div>
     </div>
@@ -258,7 +258,7 @@ const CivilId: React.FC<{at: number}> = ({at}) => {
   const pop = usePop(at, 15);
   const float = Math.sin(frame / 14) * 6;
   return (
-    <div style={{position: 'absolute', left: 30, top: 560, width: 470, transform: `perspective(1200px) translateY(${float}px) rotateY(${(1 - pop) * 70 + 14}deg) rotateZ(-5deg) scale(${0.6 + pop * 0.4})`, opacity: Math.min(1, pop * 1.5), filter: `drop-shadow(0 18px 30px rgba(0,0,0,0.7)) ${glow(GOLD, 16)}`}}>
+    <div style={{position: 'absolute', left: 28, top: 640, width: 300, transform: `perspective(1200px) translateY(${float}px) rotateY(${(1 - pop) * 70 + 14}deg) rotateZ(-5deg) scale(${0.6 + pop * 0.4})`, opacity: Math.min(1, pop * 1.5), filter: `drop-shadow(0 18px 30px rgba(0,0,0,0.7)) ${glow(GOLD, 16)}`}}>
       <Img src={staticFile('exam/civil-id.png')} style={{width: '100%'}} />
     </div>
   );
@@ -344,8 +344,8 @@ const Warning: React.FC<{from: number; to: number}> = ({from, to}) => {
   const out = interpolate(frame, [s(to) - 6, s(to)], [1, 0], clamp);
   const pulse = 1 + Math.sin(frame / 3) * 0.04;
   return (
-    <div style={{position: 'absolute', left: 70, top: 560, opacity: out}}>
-      <svg viewBox="0 0 120 110" width="230" style={{transform: `scale(${pop * pulse})`, filter: `drop-shadow(0 0 20px ${RED})`}}>
+    <div style={{position: 'absolute', left: 60, top: 610, opacity: out}}>
+      <svg viewBox="0 0 120 110" width="210" style={{transform: `scale(${pop * pulse})`, filter: `drop-shadow(0 0 20px ${RED})`}}>
         <path d="M60 8 L114 102 L6 102 Z" fill="rgba(40,6,12,0.85)" stroke={RED} strokeWidth="8" strokeLinejoin="round" />
         <line x1="60" y1="40" x2="60" y2="72" stroke="white" strokeWidth="10" strokeLinecap="round" />
         <circle cx="60" cy="88" r="6" fill="white" />
@@ -363,17 +363,16 @@ const Books: React.FC = () => (
 );
 
 // ───────── شعار الوزارة ─────────
-const Brand: React.FC<{show: number; hide?: number}> = ({show, hide}) => {
+// شعار الوزارة: ثابت في الزاوية العلوية اليمنى، بعيد عن المذيعة
+const LOGO = 'exam/emblem.png';
+const CornerLogo: React.FC = () => {
   const frame = useCurrentFrame();
-  const p = interpolate(frame, [s(show), s(show) + 16], [0, 1], {...clamp, easing: ease});
-  const o = hide === undefined ? 1 : interpolate(frame, [s(hide) - 8, s(hide)], [1, 0], clamp);
+  const tl = timeline();
+  const fin = tl[tl.length - 1].start;
+  const o = interpolate(frame, [6, 22, fin - 4, fin + 6], [0, 1, 1, 0], clamp);
   return (
-    <div style={{position: 'absolute', top: 90, left: 0, right: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 22, direction: 'rtl', opacity: p * o, transform: `translateY(${(1 - p) * -20}px)`}}>
-      <Img src={staticFile('exam/emblem.png')} style={{width: 110, filter: glow(GOLD, 10)}} />
-      <div style={{fontFamily, color: 'white', textShadow: '0 2px 12px rgba(0,0,0,0.9)'}}>
-        <div style={{fontWeight: 900, fontSize: 46, lineHeight: 1.1}}>وزارة التربية</div>
-        <div style={{fontWeight: 700, fontSize: 34, color: GOLD}}>طلبتنا ثروة وطن</div>
-      </div>
+    <div style={{position: 'absolute', top: 54, right: 44, width: 150, opacity: o, filter: 'drop-shadow(0 2px 10px rgba(0,0,0,0.6))'}}>
+      <Img src={staticFile(LOGO)} style={{width: '100%'}} />
     </div>
   );
 };
@@ -404,13 +403,12 @@ const ClipScene: React.FC<{seg: Extract<Seg, {kind: 'clip'}>}> = ({seg}) => {
 
       {seg.id === 'intro' ? (
         <>
-          <Brand show={0.2} />
           {/* ست نقاط = ست إرشادات */}
-          <div style={{position: 'absolute', top: 1270, left: 0, right: 0, display: 'flex', justifyContent: 'center', gap: 22, direction: 'rtl'}}>
+          <div style={{position: 'absolute', top: 215, left: 0, right: 0, display: 'flex', justifyContent: 'center', gap: 18, direction: 'rtl'}}>
             {[1, 2, 3, 4, 5, 6].map((k) => {
               const p = spring({frame: frame - s(6.1) - k * 3, fps: FPS, config: {damping: 12}});
               return (
-                <div key={k} style={{width: 92, height: 92, borderRadius: 99, border: `4px solid ${k % 2 ? GOLD : SKY}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily, fontWeight: 800, fontSize: 46, color: 'white', background: 'rgba(11,21,48,0.75)', transform: `scale(${p})`, boxShadow: `0 0 18px ${GOLD}66`}}>
+                <div key={k} style={{width: 72, height: 72, borderRadius: 99, border: `4px solid ${k % 2 ? GOLD : SKY}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily, fontWeight: 800, fontSize: 36, color: 'white', background: 'rgba(11,21,48,0.75)', transform: `scale(${p})`, boxShadow: `0 0 18px ${GOLD}66`}}>
                   {k}
                 </div>
               );
@@ -439,9 +437,9 @@ const ClipScene: React.FC<{seg: Extract<Seg, {kind: 'clip'}>}> = ({seg}) => {
 
       {seg.id === 'tools' ? (
         <>
-          <IconPop at={2.6} x={40} y={540} size={190}><Pen /></IconPop>
-          <IconPop at={4.0} x={210} y={640} size={190}><Pencil /></IconPop>
-          <IconPop at={4.8} x={60} y={760} size={190}><Ruler /></IconPop>
+          <IconPop at={2.6} x={70} y={600} size={190}><Pen /></IconPop>
+          <IconPop at={4.0} x={70} y={830} size={190}><Pencil /></IconPop>
+          <IconPop at={4.8} x={70} y={1060} size={190}><Ruler /></IconPop>
           <Sfx src="pop.wav" at={2.6} vol={0.4} />
           <Sfx src="pop.wav" at={4.0} vol={0.4} />
           <Sfx src="pop.wav" at={4.8} vol={0.4} />
@@ -452,12 +450,12 @@ const ClipScene: React.FC<{seg: Extract<Seg, {kind: 'clip'}>}> = ({seg}) => {
         <>
           <Warning from={0.2} to={2.0} />
           <Sfx src="impact.wav" at={0.15} vol={0.28} />
-          <IconPop at={3.4} x={40} y={540} size={200}><Phone /></IconPop>
-          <Cross at={4.2} x={50} y={550} size={180} />
-          <IconPop at={4.9} x={230} y={600} size={190}><Watch /></IconPop>
-          <Cross at={5.7} x={240} y={610} size={170} />
-          <IconPop at={7.8} x={120} y={790} size={200}><Papers /></IconPop>
-          <Cross at={8.8} x={130} y={800} size={180} />
+          <IconPop at={3.4} x={70} y={600} size={190}><Phone /></IconPop>
+          <Cross at={4.2} x={75} y={605} size={180} />
+          <IconPop at={4.9} x={70} y={830} size={190}><Watch /></IconPop>
+          <Cross at={5.7} x={75} y={835} size={180} />
+          <IconPop at={7.8} x={70} y={1060} size={190}><Papers /></IconPop>
+          <Cross at={8.8} x={75} y={1065} size={180} />
           {[3.4, 4.9, 7.8].map((t) => <Sfx key={t} src="pop.wav" at={t} vol={0.4} />)}
           {[4.2, 5.7, 8.8].map((t) => <Sfx key={t} src="swoosh-down.wav" at={t} vol={0.3} />)}
         </>
@@ -465,7 +463,7 @@ const ClipScene: React.FC<{seg: Extract<Seg, {kind: 'clip'}>}> = ({seg}) => {
 
       {seg.id === 'self' ? (
         <>
-          <IconPop at={1.7} x={60} y={560} size={240}><Books /></IconPop>
+          <IconPop at={1.7} x={60} y={620} size={220}><Books /></IconPop>
           <Sfx src="pop.wav" at={1.7} vol={0.4} />
         </>
       ) : null}
@@ -483,8 +481,7 @@ const ClosingOverlay: React.FC = () => {
   const out = interpolate(frame, [s(9.6), s(10.2)], [1, 0], clamp);
   return (
     <>
-      <Brand show={0.3} />
-      <div style={{position: 'absolute', top: 1180, left: 0, right: 0, textAlign: 'center', direction: 'rtl', fontFamily, fontWeight: 900, fontSize: 92, color: GOLD, opacity: out * Math.min(1, p), transform: `scale(${0.7 + p * 0.3})`, textShadow: `0 0 30px ${GOLD}99, 0 4px 18px rgba(0,0,0,0.9)`}}>
+      <div style={{position: 'absolute', top: 195, left: 0, right: 0, textAlign: 'center', direction: 'rtl', fontFamily, fontWeight: 900, fontSize: 80, color: GOLD, opacity: out * Math.min(1, p), transform: `scale(${0.7 + p * 0.3})`, textShadow: `0 0 30px ${GOLD}99, 0 4px 18px rgba(0,0,0,0.9)`}}>
         طلبتنا ثروة وطن
       </div>
       <Sfx src="shimmer.wav" at={7.9} vol={0.22} />
@@ -609,7 +606,7 @@ const FinalScene: React.FC = () => {
     <AbsoluteFill style={{opacity: fadeOut}}>
       <GraphicBg />
       <AbsoluteFill style={{justifyContent: 'center', alignItems: 'center', direction: 'rtl', fontFamily, textAlign: 'center'}}>
-        <Img src={staticFile('exam/emblem.png')} style={{width: 300, transform: `scale(${a})`, filter: glow(GOLD, 22)}} />
+        <Img src={staticFile(LOGO)} style={{width: 300, transform: `scale(${a})`, filter: glow(GOLD, 22)}} />
         <div style={{fontWeight: 900, fontSize: 84, color: 'white', marginTop: 40, opacity: b}}>وزارة التربية</div>
         <div style={{fontWeight: 900, fontSize: 70, color: GOLD, marginTop: 10, opacity: b, textShadow: `0 0 26px ${GOLD}88`}}>طلبتنا ثروة وطن</div>
         <div style={{fontWeight: 700, fontSize: 46, color: '#cfe9ff', marginTop: 50, opacity: c}}>بالتوفيق لجميع أبنائنا الطلبة</div>
@@ -654,6 +651,7 @@ export const ExamGuide: React.FC = () => {
           </Fragment>
         ))}
       </TransitionSeries>
+      <CornerLogo />
     </AbsoluteFill>
   );
 };
