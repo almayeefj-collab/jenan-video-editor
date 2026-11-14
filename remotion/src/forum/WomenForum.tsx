@@ -44,7 +44,7 @@ const VERSE = 'فَزَادَهُمْ إِيمَانًا';
 const NAMES: Record<string, {name: string; role?: string}> = {
   '1652': {name: 'أ. هبات البالول', role: 'عضو مجلس إدارة جمعية المعلمين الكويتية\nرئيس فريق إشراك المعلمين وإدماجهم'},
   '1697': {name: 'أ. هبات البالول', role: 'تقديم المحاضرة'},
-  '1696': {name: 'د. مريم العويش', role: 'محاضرة الملتقى النسائي'},
+  '1696': {name: 'د. مريم العويش', role: 'ضيفة الملتقى النسائي'},
   '1660': {name: 'أ. طيبة', role: 'حضور الملتقى النسائي'},
   '1664': {name: 'أ. جواهر العنزي', role: 'حضور الملتقى النسائي'},
 };
@@ -335,7 +335,7 @@ const ShotView: React.FC<{shot: Shot; frames: number} & Edge> = ({shot, frames, 
       // الغلاف: يبدأ مكتمل من أول فريم عشان يطلع صورة الغلاف واضحة
       return (
         <Sequence from={-COVER_SKIP}>
-          <Card frames={frames + COVER_SKIP} src="1702" from={2.2} fadeOut />
+          <Card frames={frames + COVER_SKIP} src="1702" from={7.0} fadeOut />
         </Sequence>
       );
     case 'broll':
