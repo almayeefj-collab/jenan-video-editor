@@ -205,8 +205,8 @@ const Header: React.FC<{n: number; title: string}> = ({n, title}) => {
   let num: React.ReactNode;
   if (style === 'A') {
     num = (
-      <div style={{width: 170, height: 170, borderRadius: 999, background: `radial-gradient(circle at 35% 30%, #FFF1C9 0%, ${GOLD} 45%, #B8862F 100%)`, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 0 0 6px rgba(11,21,48,0.85), 0 0 0 10px ${GOLD}88, 0 0 36px ${GOLD}aa`}}>
-        <span style={{fontFamily, fontWeight: 900, fontSize: 112, lineHeight: 1, color: NAVY, marginTop: 8}}>{n}</span>
+      <div style={{width: 170, height: 170, borderRadius: 999, background: `radial-gradient(circle at 40% 30%, #1E3468 0%, ${NAVY} 70%)`, border: `6px solid ${GOLD}`, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 0 22px ${GOLD}77, 0 8px 22px rgba(0,0,0,0.6)`}}>
+        <span style={{fontFamily, fontWeight: 900, fontSize: 108, lineHeight: 1, color: GOLD, marginTop: 8}}>{n}</span>
       </div>
     );
   } else if (style === 'B') {
@@ -405,7 +405,7 @@ const CornerLogo: React.FC = () => {
   const fin = tl[tl.length - 1].start;
   const o = interpolate(frame, [6, 22, fin - 4, fin + 6], [0, 1, 1, 0], clamp);
   return (
-    <div style={{position: 'absolute', top: 46, right: 34, width: 200, opacity: o, filter: 'drop-shadow(0 0 3px rgba(255,255,255,0.9)) drop-shadow(0 0 16px rgba(255,255,255,0.45)) drop-shadow(0 4px 10px rgba(0,0,0,0.7))'}}>
+    <div style={{position: 'absolute', top: 46, right: 34, width: 200, opacity: o, filter: 'drop-shadow(0 0 2px rgba(0,0,0,0.95)) drop-shadow(0 0 10px rgba(0,0,0,0.9)) drop-shadow(0 6px 18px rgba(0,0,0,0.85))'}}>
       <Img src={staticFile(LOGO)} style={{width: '100%', display: 'block'}} />
     </div>
   );
@@ -512,26 +512,12 @@ const ClipScene: React.FC<{seg: Extract<Seg, {kind: 'clip'}>}> = ({seg}) => {
         </>
       ) : null}
 
-      {seg.id === 'close' ? <ClosingOverlay /> : null}
 
       <Subtitles subs={seg.subs} />
     </AbsoluteFill>
   );
 };
 
-const ClosingOverlay: React.FC = () => {
-  const frame = useCurrentFrame();
-  const p = spring({frame: frame - s(7.92), fps: FPS, config: {damping: 14}});
-  const out = interpolate(frame, [s(9.6), s(10.2)], [1, 0], clamp);
-  return (
-    <>
-      <div style={{position: 'absolute', top: 195, left: 0, right: 0, textAlign: 'center', direction: 'rtl', fontFamily, fontWeight: 900, fontSize: 80, color: GOLD, opacity: out * Math.min(1, p), transform: `scale(${0.7 + p * 0.3})`, textShadow: `0 0 30px ${GOLD}99, 0 4px 18px rgba(0,0,0,0.9)`}}>
-        طلبتنا ثروة وطن
-      </div>
-      <Sfx src="shimmer.wav" at={7.9} vol={0.22} />
-    </>
-  );
-};
 
 // العبارة الأولى: جرافيك كامل وصوت المعلمة فقط
 const QuoteScene: React.FC<{seg: Extract<Seg, {kind: 'quote'}>}> = ({seg}) => {
@@ -617,9 +603,8 @@ const FinalScene: React.FC = () => {
     <AbsoluteFill style={{opacity: fadeOut}}>
       <GraphicBg />
       <AbsoluteFill style={{justifyContent: 'center', alignItems: 'center', direction: 'rtl', fontFamily, textAlign: 'center'}}>
-        <div style={{width: 460, transform: `scale(${a})`, filter: 'drop-shadow(0 0 4px rgba(255,255,255,0.9)) drop-shadow(0 0 26px rgba(255,255,255,0.4))'}}><Img src={staticFile(LOGO)} style={{width: '100%', display: 'block'}} /></div>
+        <div style={{width: 460, transform: `scale(${a})`, filter: 'drop-shadow(0 0 3px rgba(0,0,0,0.95)) drop-shadow(0 0 16px rgba(0,0,0,0.9)) drop-shadow(0 10px 26px rgba(0,0,0,0.85))'}}><Img src={staticFile(LOGO)} style={{width: '100%', display: 'block'}} /></div>
         <div style={{fontWeight: 900, fontSize: 84, color: 'white', marginTop: 40, opacity: b}}>وزارة التربية</div>
-        <div style={{fontWeight: 900, fontSize: 70, color: GOLD, marginTop: 10, opacity: b, textShadow: `0 0 26px ${GOLD}88`}}>طلبتنا ثروة وطن</div>
         <div style={{fontWeight: 700, fontSize: 46, color: '#cfe9ff', marginTop: 50, opacity: c}}>بالتوفيق لجميع أبنائنا الطلبة</div>
       </AbsoluteFill>
     </AbsoluteFill>
