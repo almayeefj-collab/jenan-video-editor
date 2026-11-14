@@ -10,11 +10,14 @@ import {FPS as C46_FPS, HEIGHT as C46_H, totalFrames as c46Frames, WIDTH as C46_
 import {Recommendations46} from './conference46/Recommendations';
 import {FPS as C46B_FPS, HEIGHT as C46B_H, Recommendations46V2, totalFrames as c46bFrames, WIDTH as C46B_W} from './conference46/v2/Recommendations2';
 
+import {ExamGuide, FPS as EG_FPS, HEIGHT as EG_H, totalFrames as egFrames, WIDTH as EG_W} from './exam/ExamGuide';
 import {FPS as PR_FPS, HEIGHT as PR_H, PRTeam, totalFrames as prFrames, WIDTH as PR_W} from './pr/PRTeam';
 
 export const RemotionRoot: React.FC = () => {
   return (
     <>
+      {/* إرشادات الاختبارات — وزارة التربية */}
+      <Composition id="ExamGuide" component={ExamGuide} durationInFrames={egFrames()} fps={EG_FPS} width={EG_W} height={EG_H} />
       {/* فريق العلاقات العامة — فاطمة الهاشمية، نسخة رسمية */}
       <Composition id="PRTeam" component={PRTeam} durationInFrames={prFrames()} fps={PR_FPS} width={PR_W} height={PR_H} />
       {/* ريل مستقبل التعليم بكلمة — جمعية المعلمين الكويتية */}
