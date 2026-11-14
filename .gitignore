@@ -8,3 +8,5 @@ __pycache__/
 !remotion/public/**
 # لقطات المقابلات ومقاطع الاختبار ما ترفع للمستودع
 remotion/public/footage/
+# معاينات ترسل للمستخدم بس
+review/
