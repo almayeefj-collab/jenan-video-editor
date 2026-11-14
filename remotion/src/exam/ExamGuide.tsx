@@ -124,11 +124,12 @@ const glow = (c = GOLD, r = 18) => `drop-shadow(0 0 ${r}px ${c}aa) drop-shadow(0
 // المذيعة بحجمها الطبيعي بدون أي زوم: إما بالنص، أو مزاحة يمين عشان عمود الجرافيك
 const Footage: React.FC<{src: string; framing: 'close' | 'side' | 'push'}> = ({src, framing}) => {
   const scale = 1;
+  const SLIM = 0.94; // تنحيف أفقي خفيف للمذيعة (يلطّف الوجه)
   const x = framing === 'close' ? 0 : 165;
   const y = 0;
   return (
     <AbsoluteFill style={{backgroundColor: BG}}>
-      <AbsoluteFill style={{transform: `translate(${x}px, ${y}px) scale(${scale})`, transformOrigin: '50% 18%'}}>
+      <AbsoluteFill style={{transform: `translate(${x}px, ${y}px) scale(${scale * SLIM}, ${scale})`, transformOrigin: '50% 18%'}}>
         <OffthreadVideo src={staticFile(`footage/exam/${src}`)} style={{width: '100%', height: '100%'}} />
       </AbsoluteFill>
       {framing !== 'close' ? (
