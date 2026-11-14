@@ -329,6 +329,36 @@ const VoiceBed: React.FC = () => {
   );
 };
 
+// الموسيقى أقصر من الفيديو. ما نستخدم loop لأن Remotion يصفّر الفريم مع كل تكرار
+// فتتلخبط دالة الصوت؛ بدالها نحط نسخ ورا بعض، وكل نسخة جديدة تبدأ داخل مقطع كلام
+// (الموسيقى ساكتة فيه) عشان ما ينسمع مكان الوصلة
+const MUSIC_FRAMES = Math.floor(160.9 * FPS);
+const musicStarts = () => {
+  const talks = timeline().filter((s) => s.shot.kind === 'talk');
+  const end = totalFrames();
+  const starts = [0];
+  while (starts[starts.length - 1] + MUSIC_FRAMES < end) {
+    const prev = starts[starts.length - 1];
+    const cut = talks.filter((s) => s.start + 20 > prev && s.start + 20 < prev + MUSIC_FRAMES).pop();
+    starts.push(cut ? cut.start + 20 : prev + MUSIC_FRAMES);
+  }
+  return starts;
+};
+
+const Music: React.FC = () => {
+  const starts = musicStarts();
+  const end = totalFrames();
+  return (
+    <>
+      {starts.map((st, i) => (
+        <Sequence key={i} from={st} durationInFrames={(i + 1 < starts.length ? starts[i + 1] : end) - st}>
+          <Audio src={staticFile('c46/soft.mp3')} volume={(f) => musicVolume(st + f)} />
+        </Sequence>
+      ))}
+    </>
+  );
+};
+
 export const WomenForum: React.FC = () => {
   const tl = timeline();
   return (
@@ -343,7 +373,7 @@ export const WomenForum: React.FC = () => {
           </Fragment>
         ))}
       </TransitionSeries>
-      <Audio src={staticFile('c46/soft.mp3')} volume={musicVolume} loop />
+      <Music />
       <VoiceBed />
     </AbsoluteFill>
   );
