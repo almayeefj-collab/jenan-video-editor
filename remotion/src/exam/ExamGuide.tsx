@@ -184,46 +184,53 @@ const Subtitles: React.FC<{subs: Sub[]}> = ({subs}) => {
 };
 
 // ───────── رأس الإرشاد: رقم مفرّغ + عنوان ─────────
+export type HeaderStyle = 'A' | 'B' | 'C';
+const HeaderCtx = React.createContext<HeaderStyle>('A');
+
+// رأس الإرشاد: رقم + عنوان، في نص العمود اليسار (ثلاث خيارات للشكل)
 const Header: React.FC<{n: number; title: string}> = ({n, title}) => {
+  const style = React.useContext(HeaderCtx);
   const frame = useCurrentFrame();
-  const p = interpolate(frame, [6, 24], [0, 1], {...clamp, easing: ease});
-  const q = interpolate(frame, [14, 32], [0, 1], {...clamp, easing: ease});
+  const p = spring({frame: frame - 5, fps: FPS, config: {damping: 13}});
+  const q = interpolate(frame, [14, 30], [0, 1], {...clamp, easing: ease});
+  const titleEl = (
+    <div style={{fontFamily, fontWeight: 900, fontSize: 50, lineHeight: 1.2, direction: 'rtl', color: 'white', textAlign: 'center', marginTop: 18, opacity: q, transform: `translateY(${(1 - q) * 16}px)`, textShadow: '0 3px 16px rgba(0,0,0,0.85)'}}>
+      {style === 'C' ? (
+        <span style={{display: 'inline-block', padding: '6px 26px', borderRadius: 999, border: `3px solid ${GOLD}`, background: 'rgba(11,21,48,0.75)', boxShadow: `0 0 16px ${GOLD}55`}}>{title}</span>
+      ) : (
+        title
+      )}
+    </div>
+  );
+  let num: React.ReactNode;
+  if (style === 'A') {
+    num = (
+      <div style={{width: 170, height: 170, borderRadius: 999, background: `radial-gradient(circle at 35% 30%, #FFF1C9 0%, ${GOLD} 45%, #B8862F 100%)`, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 0 0 6px rgba(11,21,48,0.85), 0 0 0 10px ${GOLD}88, 0 0 36px ${GOLD}aa`}}>
+        <span style={{fontFamily, fontWeight: 900, fontSize: 112, lineHeight: 1, color: NAVY, marginTop: 8}}>{n}</span>
+      </div>
+    );
+  } else if (style === 'B') {
+    num = (
+      <div style={{width: 200, height: 200, borderRadius: 36, background: 'linear-gradient(160deg, rgba(30,50,100,0.85), rgba(8,14,34,0.85))', border: `3px solid ${SKY}`, boxShadow: `0 0 26px ${SKY}66, inset 0 0 30px ${SKY}22`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', direction: 'rtl'}}>
+        <span style={{fontFamily, fontWeight: 700, fontSize: 34, color: SKY, lineHeight: 1}}>الإرشاد</span>
+        <span style={{fontFamily, fontWeight: 900, fontSize: 118, lineHeight: 1.05, color: GOLD, textShadow: `0 0 22px ${GOLD}88`}}>{n}</span>
+      </div>
+    );
+  } else {
+    num = (
+      <div style={{position: 'relative', width: 210, height: 210, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+        <svg viewBox="0 0 100 100" width="210" height="210" style={{position: 'absolute', inset: 0, transform: `rotate(${-90 + frame * 0.6}deg)`}}>
+          <circle cx="50" cy="50" r="46" fill="rgba(11,21,48,0.55)" stroke={`${SKY}44`} strokeWidth="2" />
+          <circle cx="50" cy="50" r="46" fill="none" stroke={SKY} strokeWidth="3" strokeLinecap="round" strokeDasharray="289" strokeDashoffset={289 * (1 - 0.7 * p)} />
+        </svg>
+        <span style={{fontFamily, fontWeight: 900, fontSize: 150, lineHeight: 1, marginTop: 14, background: `linear-gradient(180deg, #FFFFFF 0%, ${GOLD} 75%)`, WebkitBackgroundClip: 'text', color: 'transparent', filter: `drop-shadow(0 0 14px ${GOLD}88)`}}>{n}</span>
+      </div>
+    );
+  }
   return (
-    <div style={{position: 'absolute', top: 140, left: 44, width: 290, direction: 'ltr'}}>
-      <div
-        style={{
-          fontFamily,
-          fontWeight: 300,
-          fontSize: 230,
-          lineHeight: 0.9,
-          color: 'transparent',
-          WebkitTextStroke: `4px ${SKY}`,
-          textAlign: 'left',
-          opacity: p,
-          transform: `translateX(${(1 - p) * -60}px)`,
-          filter: `drop-shadow(0 0 14px ${SKY}66)`,
-        }}
-      >
-        {n}
-      </div>
-      <div
-        style={{
-          fontFamily,
-          fontWeight: 900,
-          fontSize: 54,
-          lineHeight: 1.2,
-          direction: 'rtl',
-          color: 'white',
-          textAlign: 'left',
-          marginTop: 6,
-          opacity: q,
-          transform: `translateY(${(1 - q) * 20}px)`,
-          textShadow: '0 3px 16px rgba(0,0,0,0.8)',
-        }}
-      >
-        {title}
-      </div>
-      <div style={{height: 6, width: 160 * q, background: `linear-gradient(90deg, ${GOLD}, ${SKY})`, borderRadius: 3, marginTop: 12, boxShadow: `0 0 14px ${GOLD}`}} />
+    <div style={{position: 'absolute', top: 130, left: 34, width: 310, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+      <div style={{transform: `scale(${p})`}}>{num}</div>
+      {titleEl}
     </div>
   );
 };
@@ -294,6 +301,14 @@ const Pen: React.FC = () => (
       <line x1="72" y1="16" x2="80" y2="16" stroke={SKY} />
       <line x1="80" y1="16" x2="80" y2="50" stroke={SKY} />
     </g>
+  </svg>
+);
+
+const Calculator: React.FC = () => (
+  <svg viewBox="0 0 120 120" width="100%" height="100%">
+    <rect x="24" y="6" width="72" height="108" rx="10" fill="rgba(11,21,48,0.85)" stroke={GOLD} strokeWidth="6" />
+    <rect x="34" y="16" width="52" height="22" rx="4" fill="none" stroke={SKY} strokeWidth="4" />
+    {[0, 1, 2].map((r) => [0, 1, 2].map((c) => <rect key={`${r}${c}`} x={35 + c * 18} y={48 + r * 19} width="12" height="12" rx="3" fill={r === 2 && c === 2 ? GOLD : SKY} />))}
   </svg>
 );
 
@@ -390,7 +405,7 @@ const CornerLogo: React.FC = () => {
   const fin = tl[tl.length - 1].start;
   const o = interpolate(frame, [6, 22, fin - 4, fin + 6], [0, 1, 1, 0], clamp);
   return (
-    <div style={{position: 'absolute', top: 50, right: 40, width: 170, padding: 10, borderRadius: 22, background: 'rgba(255,255,255,0.94)', opacity: o, boxShadow: '0 6px 22px rgba(0,0,0,0.45)'}}>
+    <div style={{position: 'absolute', top: 46, right: 34, width: 200, opacity: o, filter: 'drop-shadow(0 0 3px rgba(255,255,255,0.9)) drop-shadow(0 0 16px rgba(255,255,255,0.45)) drop-shadow(0 4px 10px rgba(0,0,0,0.7))'}}>
       <Img src={staticFile(LOGO)} style={{width: '100%', display: 'block'}} />
     </div>
   );
@@ -459,6 +474,8 @@ const ClipScene: React.FC<{seg: Extract<Seg, {kind: 'clip'}>}> = ({seg}) => {
           <IconPop at={2.6} x={70} y={600} size={190}><Pen /></IconPop>
           <IconPop at={4.0} x={70} y={830} size={190}><Pencil /></IconPop>
           <IconPop at={4.8} x={70} y={1060} size={190}><Ruler /></IconPop>
+          <IconPop at={5.6} x={70} y={1290} size={190}><Calculator /></IconPop>
+          <Sfx src="pop.wav" at={5.6} vol={0.4} />
           <Sfx src="pop.wav" at={2.6} vol={0.4} />
           <Sfx src="pop.wav" at={4.0} vol={0.4} />
           <Sfx src="pop.wav" at={4.8} vol={0.4} />
@@ -600,7 +617,7 @@ const FinalScene: React.FC = () => {
     <AbsoluteFill style={{opacity: fadeOut}}>
       <GraphicBg />
       <AbsoluteFill style={{justifyContent: 'center', alignItems: 'center', direction: 'rtl', fontFamily, textAlign: 'center'}}>
-        <div style={{width: 380, padding: 18, borderRadius: 34, background: 'white', transform: `scale(${a})`, boxShadow: `0 0 40px ${GOLD}55`}}><Img src={staticFile(LOGO)} style={{width: '100%', display: 'block'}} /></div>
+        <div style={{width: 460, transform: `scale(${a})`, filter: 'drop-shadow(0 0 4px rgba(255,255,255,0.9)) drop-shadow(0 0 26px rgba(255,255,255,0.4))'}}><Img src={staticFile(LOGO)} style={{width: '100%', display: 'block'}} /></div>
         <div style={{fontWeight: 900, fontSize: 84, color: 'white', marginTop: 40, opacity: b}}>وزارة التربية</div>
         <div style={{fontWeight: 900, fontSize: 70, color: GOLD, marginTop: 10, opacity: b, textShadow: `0 0 26px ${GOLD}88`}}>طلبتنا ثروة وطن</div>
         <div style={{fontWeight: 700, fontSize: 46, color: '#cfe9ff', marginTop: 50, opacity: c}}>بالتوفيق لجميع أبنائنا الطلبة</div>
@@ -626,8 +643,9 @@ const musicVolume = (f: number) => {
   return v * fadeIn * fadeOut;
 };
 
-export const ExamGuide: React.FC = () => {
+export const ExamGuide: React.FC<{header?: HeaderStyle}> = ({header = 'A'}) => {
   return (
+    <HeaderCtx.Provider value={header}>
     <AbsoluteFill style={{backgroundColor: BG}}>
       <Audio src={staticFile('c46/soft.mp3')} volume={musicVolume} />
       <TransitionSeries>
@@ -646,5 +664,6 @@ export const ExamGuide: React.FC = () => {
       </TransitionSeries>
       <CornerLogo />
     </AbsoluteFill>
+    </HeaderCtx.Provider>
   );
 };
