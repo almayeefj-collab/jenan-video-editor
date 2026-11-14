@@ -34,8 +34,10 @@ const INK = '#1B140E';
 
 // أسماء الضيفات حسب رقم المقطع؛ اللي فاضي ما يطلع له اسم
 const NAMES: Record<string, {name: string; role?: string}> = {
-  '1652': {name: 'هيبات'},
-  '1696': {name: 'د. مريم العويش'},
+  '1652': {name: 'أ. هبات البالول', role: 'عضو مجلس إدارة جمعية المعلمين الكويتية\nرئيس فريق إشراك المعلمين وإدماجهم'},
+  '1696': {name: 'د. مريم العويش', role: 'محاضرة الملتقى النسائي'},
+  '1660': {name: 'أ. طيبة', role: 'حضور الملتقى النسائي'},
+  '1664': {name: 'أ. جواهر العنزي', role: 'حضور الملتقى النسائي'},
 };
 // عنوان مقتطفات المحاضرة
 const LECTURE_TITLE = 'محاضرة د. مريم العويش';
@@ -243,14 +245,18 @@ const Card: React.FC<{frames: number; src: string; title: string; sub: string; f
 // الاسم تحت: بطاقة بيضاء بخط برتقالي وأزرق
 const NameTag: React.FC<{name: string; role?: string; frames: number}> = ({name, role, frames}) => {
   const frame = useCurrentFrame();
-  const end = Math.min(frames - 10, 7 * FPS);
+  const end = Math.min(frames - 10, 8 * FPS);
   const show = interpolate(frame, [12, 30, end - 16, end], [0, 1, 1, 0], {...clamp, easing: ease});
   const bar = interpolate(frame, [12, 36], [0, 1], {...clamp, easing: ease});
   return (
     <div style={{position: 'absolute', bottom: 230, left: 0, right: 0, display: 'flex', justifyContent: 'center', opacity: show, transform: `translateY(${(1 - show) * 40}px)`}}>
-      <div style={{direction: 'rtl', background: `${IVORY}f2`, borderRadius: 26, padding: '22px 52px 24px', boxShadow: '0 12px 40px rgba(0,0,0,0.3)', textAlign: 'center', minWidth: 420}}>
+      <div style={{direction: 'rtl', background: `${IVORY}f2`, borderRadius: 26, padding: '22px 52px 24px', boxShadow: '0 12px 40px rgba(0,0,0,0.3)', textAlign: 'center', minWidth: 420, maxWidth: 980}}>
         <div style={{fontFamily: BODY_FONT, fontSize: 60, fontWeight: 800, color: BROWN, lineHeight: 1.25}}>{name}</div>
-        {role ? <div style={{fontFamily: BODY_FONT, fontSize: 34, fontWeight: 700, color: BLUE, marginTop: 6}}>{role}</div> : null}
+        {role
+          ? role.split('\n').map((line, i) => (
+              <div key={i} style={{fontFamily: BODY_FONT, fontSize: 32, fontWeight: 700, color: BLUE, marginTop: i ? 2 : 8, lineHeight: 1.35}}>{line}</div>
+            ))
+          : null}
         <div style={{display: 'flex', justifyContent: 'center', gap: 8, marginTop: 14}}>
           <div style={{width: 120 * bar, height: 5, borderRadius: 3, background: ORANGE}} />
           <div style={{width: 40 * bar, height: 5, borderRadius: 3, background: BLUE}} />
