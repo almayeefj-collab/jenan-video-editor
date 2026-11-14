@@ -2,10 +2,10 @@
 // المقاطع مرتبة حسب السيناريو، وكل إرشاد له رقم مفرّغ + أيقونة بتوهج ذهبي + ترجمة
 // اللقطات في public/footage/exam/ (ما ترفع للمستودع)
 import {linearTiming, TransitionSeries} from '@remotion/transitions';
+import type {TransitionPresentation, TransitionPresentationComponentProps} from '@remotion/transitions';
 import React, {Fragment} from 'react';
 import {AbsoluteFill, Audio, Easing, Img, interpolate, OffthreadVideo, Sequence, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {fontFamily} from '../reel/font';
-import {zoomBlur} from '../reel/zoomBlur';
 
 export const FPS = 30;
 export const WIDTH = 1080;
@@ -32,7 +32,7 @@ type Seg =
   | {kind: 'final'; id: string; dur: number};
 
 const SEGS: Seg[] = [
-  {kind: 'clip', id: 'intro', src: 'c21.mp4', dur: 8.38, framing: 'close', subs: [
+  {kind: 'clip', id: 'intro', src: 'c21.mp4', dur: 8.38, framing: 'side', subs: [
     [0.0, 1.64, 'عزيزي الطالب'],
     [1.64, 3.8, 'هل أنت مستعد للاختبار؟', 'مستعد'],
     [3.8, 5.6, 'قبل أن تخرج من المنزل'],
@@ -95,6 +95,16 @@ export const totalFrames = () => {
   return last.start + last.frames;
 };
 
+// انتقال ناعم بدون زوم: تلاشي مع تضبيب خفيف
+const BlurDissolve: React.FC<TransitionPresentationComponentProps<Record<string, never>>> = ({children, presentationDirection, presentationProgress}) => {
+  const p = Easing.bezier(0.65, 0, 0.35, 1)(presentationProgress);
+  const exiting = presentationDirection === 'exiting';
+  const blur = exiting ? p * 16 : (1 - p) * 16;
+  const opacity = exiting ? 1 : p;
+  return <AbsoluteFill style={{opacity, filter: `blur(${blur}px)`}}>{children}</AbsoluteFill>;
+};
+const blurDissolve = (): TransitionPresentation<Record<string, never>> => ({component: BlurDissolve, props: {}});
+
 // ───────── أدوات حركة ─────────
 const usePop = (at: number, damping = 13) => {
   const frame = useCurrentFrame();
@@ -111,30 +121,11 @@ const Sfx: React.FC<{src: string; at: number; vol?: number}> = ({src, at, vol = 
 const glow = (c = GOLD, r = 18) => `drop-shadow(0 0 ${r}px ${c}aa) drop-shadow(0 0 ${r / 3}px ${c})`;
 
 // ───────── الفيديو ─────────
-const Footage: React.FC<{src: string; framing: 'close' | 'side' | 'push'; dur: number; punch?: [number, number]}> = ({src, framing, dur, punch}) => {
-  const frame = useCurrentFrame();
-  const drift = interpolate(frame, [0, s(dur)], [0, 1], clamp);
-  let scale = 1;
-  let x = 0;
-  let y = 0;
-  if (framing === 'close') {
-    scale = 1.38 + drift * 0.05;
-    y = 210;
-  } else if (framing === 'side') {
-    scale = 1.0 + drift * 0.035;
-    x = 165;
-  } else {
-    scale = interpolate(drift, [0, 1], [1.08, 1.3]);
-    x = 165 - drift * 120;
-    y = drift * 150;
-  }
-  if (punch) {
-    // زووم سريع على الوجه (تنبيه)
-    const p = interpolate(frame, [s(punch[0]), s(punch[0]) + 5, s(punch[1]) - 6, s(punch[1])], [0, 1, 1, 0], {...clamp, easing: ease});
-    scale += p * 0.28;
-    y += p * 190;
-    x += p * 50;
-  }
+// المذيعة بحجمها الطبيعي بدون أي زوم: إما بالنص، أو مزاحة يمين عشان عمود الجرافيك
+const Footage: React.FC<{src: string; framing: 'close' | 'side' | 'push'}> = ({src, framing}) => {
+  const scale = 1;
+  const x = framing === 'close' ? 0 : 165;
+  const y = 0;
   return (
     <AbsoluteFill style={{backgroundColor: BG}}>
       <AbsoluteFill style={{transform: `translate(${x}px, ${y}px) scale(${scale})`, transformOrigin: '50% 18%'}}>
@@ -429,16 +420,15 @@ const GraphicBg: React.FC = () => {
 // ───────── المشاهد ─────────
 const ClipScene: React.FC<{seg: Extract<Seg, {kind: 'clip'}>}> = ({seg}) => {
   const frame = useCurrentFrame();
-  const punch: [number, number] | undefined = seg.id === 'ban' ? [0.15, 2.0] : undefined;
   return (
     <AbsoluteFill>
-      <Footage src={seg.src} framing={seg.framing} dur={seg.dur} punch={punch} />
+      <Footage src={seg.src} framing={seg.framing} />
       {seg.n ? <Header n={seg.n} title={seg.title ?? ''} /> : null}
 
       {seg.id === 'intro' ? (
         <>
           {/* ست نقاط = ست إرشادات */}
-          <div style={{position: 'absolute', top: 215, left: 0, right: 0, display: 'flex', justifyContent: 'center', gap: 18, direction: 'rtl'}}>
+          <div style={{position: 'absolute', top: 470, left: 110, display: 'flex', flexDirection: 'column', gap: 22}}>
             {[1, 2, 3, 4, 5, 6].map((k) => {
               const p = spring({frame: frame - s(6.1) - k * 3, fps: FPS, config: {damping: 12}});
               return (
@@ -636,7 +626,7 @@ export const ExamGuide: React.FC<{header?: HeaderStyle}> = ({header = 'A'}) => {
       <TransitionSeries>
         {SEGS.map((seg, i) => (
           <Fragment key={seg.id}>
-            {i > 0 ? <TransitionSeries.Transition presentation={zoomBlur()} timing={linearTiming({durationInFrames: XF})} /> : null}
+            {i > 0 ? <TransitionSeries.Transition presentation={blurDissolve()} timing={linearTiming({durationInFrames: XF})} /> : null}
             <TransitionSeries.Sequence durationInFrames={s(seg.dur)}>
               {seg.kind === 'clip' ? <ClipScene seg={seg} /> : null}
               {seg.kind === 'quote' ? <QuoteScene seg={seg} /> : null}
