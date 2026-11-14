@@ -1,12 +1,13 @@
 // الملتقى النسائي — جمعية المعلمين الكويتية (عمودي 9:16)
-// عنوان ← لقطات الاستقبال ← مقدمة المذيعة ← أسئلة وأجوبة بينها لقطات من الملتقى ← ختام
+// عنوان ← لقطات الاستقبال ← مقدمة المذيعة ← أسئلة وأجوبة بينها لقطات من الملتقى
+// ← ترحيب المقدّمة (بني) ← كلمة المحاضِرة (أسود) عن السكينة كاملة ← مقتطفات صامتة وصوتها خلفية ← ختام
 // اللقطات في public/footage/forum/<رقم IMG>.mp4 (ما ترفع للمستودع):
 // محوّلة لـ 1080×1920 / 30fps، والصوت مطبّع بـ loudnorm
 // الموسيقى بس على العنوان واللقطات الصامتة؛ تحت الكلام تسكت
 import {fade} from '@remotion/transitions/fade';
 import {linearTiming, TransitionSeries} from '@remotion/transitions';
 import {Fragment} from 'react';
-import {AbsoluteFill, Audio, Easing, Img, interpolate, OffthreadVideo, random, staticFile, useCurrentFrame} from 'remotion';
+import {AbsoluteFill, Audio, Easing, Img, interpolate, OffthreadVideo, random, Sequence, staticFile, useCurrentFrame} from 'remotion';
 import {fontFamily} from '../reel/font';
 
 export const FPS = 30;
@@ -25,9 +26,11 @@ type Shot =
   | {kind: 'title'; dur: number}
   | {kind: 'broll'; clip: Clip}
   | {kind: 'talk'; clip: Clip}
+  | {kind: 'excerpt'; clip: Clip}
   | {kind: 'final'; dur: number};
 
 const b = (src: string, from: number, to: number): Shot => ({kind: 'broll', clip: {src, from, to}});
+const e = (src: string, from: number, to: number): Shot => ({kind: 'excerpt', clip: {src, from, to}});
 const t = (src: string, from: number, to: number): Shot => ({kind: 'talk', clip: {src, from, to}});
 
 const SHOTS: Shot[] = [
@@ -63,12 +66,36 @@ const SHOTS: Shot[] = [
   t('1696', 0.0, 36.4),
   b('1692', 0.0, 2.9),
   b('1693', 0.6, 3.6),
+  // ترحيب المقدّمة على المنصة (لابسة بني)
+  b('1681', 0.8, 3.8),
+  t('1697', 0.0, 62.3),
+  // المحاضِرة (لابسة أسود) — كلامها عن السكينة كامل بصوته
+  t('1700', 0.0, 23.35),
+  // مقتطفات بدون صوتها الأصلي؛ صوت المحاضِرة يمشي تحتها خلفية (VOICE_BED)
+  e('1701', 2.0, 5.2),
+  e('1704', 0.3, 3.3),
+  e('1709', 1.0, 4.4),
+  e('1705', 1.0, 4.2),
+  e('1702', 2.0, 5.4),
+  e('1688', 0.5, 3.6),
+  e('1703', 1.2, 4.6),
+  e('1699', 4.0, 7.4),
+  e('1709', 13.0, 16.6),
   {kind: 'final', dur: 5},
 ];
 
+// صوت المحاضِرة الخلفي تحت المقتطفات: مقاطع من كلامها ورا بعض
+const VOICE_BED: Clip[] = [
+  {src: '1709', from: 0.89, to: 18.3},
+  {src: '1702', from: 1.47, to: 15.1},
+];
+const VOICE = 0.8;
+const BED_MUSIC = 0.18;
+
 const shotFrames = (s: Shot) => Math.round((s.kind === 'title' || s.kind === 'final' ? s.dur : s.clip.to - s.clip.from) * FPS);
 // كلام ورا كلام = قطع مباشر عشان السؤال والجواب يتواصلون؛ غير كذا كروس فيد
-const xfadeBefore = (i: number) => (i === 0 ? 0 : SHOTS[i - 1].kind === 'talk' && SHOTS[i].kind === 'talk' ? 0 : XFADE);
+const xfadeBefore = (i: number) =>
+  i === 0 ? 0 : SHOTS[i - 1].kind === 'talk' && SHOTS[i].kind === 'talk' ? 0 : SHOTS[i - 1].kind === 'excerpt' && SHOTS[i].kind === 'excerpt' ? 8 : XFADE;
 
 export const timeline = () => {
   let at = 0;
@@ -242,6 +269,7 @@ const ShotView: React.FC<{shot: Shot; frames: number} & Edge> = ({shot, frames, 
     case 'title':
       return <TitleCard frames={frames} />;
     case 'broll':
+    case 'excerpt':
       return <BRoll clip={shot.clip} frames={frames} />;
     case 'talk':
       return <Talk clip={shot.clip} frames={frames} fadeIn={fadeIn} fadeOut={fadeOut} />;
@@ -256,6 +284,8 @@ const musicVolume = (f: number) => {
   const tl = timeline();
   const end = totalFrames();
   let v = MUSIC;
+  const ex = excerptSpan();
+  if (f >= ex.a - 15 && f <= ex.z) v = Math.min(v, interpolate(f, [ex.a - 15, ex.a], [MUSIC, BED_MUSIC], clamp));
   for (const s of tl) {
     if (s.shot.kind !== 'talk') continue;
     const a = s.start;
@@ -266,6 +296,37 @@ const musicVolume = (f: number) => {
     }
   }
   return v * interpolate(f, [0, 15, end - 30, end], [0, 1, 1, 0], clamp);
+};
+
+const excerptSpan = () => {
+  const ex = timeline().filter((s) => s.shot.kind === 'excerpt');
+  const last = ex[ex.length - 1];
+  return {a: ex[0].start, z: last.start + last.frames};
+};
+
+// الصوت الخلفي يبدأ مع أول مقتطف، ويخفت آخرها
+const VoiceBed: React.FC = () => {
+  const {a, z} = excerptSpan();
+  let at = a;
+  return (
+    <>
+      {VOICE_BED.map((c, i) => {
+        const len = Math.round((c.to - c.from) * FPS);
+        const start = at;
+        at += len;
+        if (start >= z) return null;
+        const vol = (f: number) => {
+          const g = start + f;
+          return VOICE * Math.min(interpolate(f, [0, 6], [0, 1], clamp), interpolate(f, [len - 6, len], [1, 0], clamp), interpolate(g, [a, a + 12, z - 40, z], [0, 1, 1, 0], clamp));
+        };
+        return (
+          <Sequence key={i} from={start} durationInFrames={Math.min(len, z - start)}>
+            <Audio src={staticFile(`${DIR}${c.src}.mp4`)} trimBefore={Math.round(c.from * FPS)} volume={vol} />
+          </Sequence>
+        );
+      })}
+    </>
+  );
 };
 
 export const WomenForum: React.FC = () => {
@@ -283,6 +344,7 @@ export const WomenForum: React.FC = () => {
         ))}
       </TransitionSeries>
       <Audio src={staticFile('c46/soft.mp3')} volume={musicVolume} loop />
+      <VoiceBed />
     </AbsoluteFill>
   );
 };
