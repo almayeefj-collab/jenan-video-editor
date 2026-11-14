@@ -28,7 +28,6 @@ type Sub = [number, number, string, string?];
 type Seg =
   | {kind: 'clip'; id: string; src: string; dur: number; n?: number; title?: string; subs: Sub[]; framing: 'close' | 'side' | 'push'}
   | {kind: 'quote'; id: string; src: string; dur: number}
-  | {kind: 'cover'; id: string; dur: number}
   | {kind: 'check'; id: string; dur: number}
   | {kind: 'final'; id: string; dur: number};
 
@@ -61,7 +60,11 @@ const SEGS: Seg[] = [
     [6.7, 9.34, 'كذلك الأوراق'],
     [9.34, 13.8, 'احرص أن تكون خارج قاعة الاختبار', 'خارج'],
   ]},
-  {kind: 'cover', id: 'cover', dur: 4.8},
+  {kind: 'clip', id: 'cover', src: 'c24.mp4', dur: 8.37, n: 5, title: 'ورقة الغلاف', framing: 'side', subs: [
+    [0.0, 2.0, 'عبّئ بياناتك', 'بياناتك'],
+    [2.0, 4.3, 'في الجزء المخصص للطالب فقط', 'للطالب'],
+    [4.3, 8.37, 'ولا تكتب شيئاً آخر في ورقة الغلاف', 'الغلاف'],
+  ]},
   {kind: 'clip', id: 'self', src: 'c16.mp4', dur: 8.0, n: 6, title: 'الاعتماد على النفس', framing: 'push', subs: [
     [0.0, 1.6, 'وأخيراً…'],
     [1.6, 3.38, 'اعتمد على جهدك', 'جهدك'],
@@ -363,16 +366,32 @@ const Books: React.FC = () => (
 );
 
 // ───────── شعار الوزارة ─────────
+// ورقة الغلاف في العمود اليسار، والجزء المخصص للطالب يضيء
+const PaperIcon: React.FC<{at: number; litAt: number}> = ({at, litAt}) => {
+  const frame = useCurrentFrame();
+  const pop = usePop(at, 15);
+  const lit = interpolate(frame, [s(litAt), s(litAt) + 10], [0, 1], clamp);
+  const pulse = 0.75 + Math.sin(frame / 5) * 0.25;
+  const W = 280;
+  const k = W / 992;
+  return (
+    <div style={{position: 'absolute', left: 40, top: 600, width: W, transform: `rotate(${-4 + (1 - pop) * -12}deg) scale(${0.6 + pop * 0.4})`, opacity: Math.min(1, pop * 1.5), boxShadow: '0 18px 40px rgba(0,0,0,0.6)'}}>
+      <Img src={staticFile('exam/exam-paper.jpg')} style={{width: '100%', display: 'block', filter: `brightness(${1 - lit * 0.3})`}} />
+      <div style={{position: 'absolute', left: 40 * k, top: 85 * k, width: 400 * k, height: 355 * k, borderRadius: 8, border: `4px solid ${GOLD}`, boxShadow: `0 0 ${30 * pulse}px ${GOLD}, inset 0 0 24px ${GOLD}66`, background: `${GOLD}22`, opacity: lit}} />
+    </div>
+  );
+};
+
 // شعار الوزارة: ثابت في الزاوية العلوية اليمنى، بعيد عن المذيعة
-const LOGO = 'exam/emblem.png';
+const LOGO = 'exam/logo.png'; // شعار منطقة مبارك الكبير التعليمية
 const CornerLogo: React.FC = () => {
   const frame = useCurrentFrame();
   const tl = timeline();
   const fin = tl[tl.length - 1].start;
   const o = interpolate(frame, [6, 22, fin - 4, fin + 6], [0, 1, 1, 0], clamp);
   return (
-    <div style={{position: 'absolute', top: 54, right: 44, width: 150, opacity: o, filter: 'drop-shadow(0 2px 10px rgba(0,0,0,0.6))'}}>
-      <Img src={staticFile(LOGO)} style={{width: '100%'}} />
+    <div style={{position: 'absolute', top: 50, right: 40, width: 170, padding: 10, borderRadius: 22, background: 'rgba(255,255,255,0.94)', opacity: o, boxShadow: '0 6px 22px rgba(0,0,0,0.45)'}}>
+      <Img src={staticFile(LOGO)} style={{width: '100%', display: 'block'}} />
     </div>
   );
 };
@@ -468,6 +487,14 @@ const ClipScene: React.FC<{seg: Extract<Seg, {kind: 'clip'}>}> = ({seg}) => {
         </>
       ) : null}
 
+      {seg.id === 'cover' ? (
+        <>
+          <PaperIcon at={0.5} litAt={1.6} />
+          <Sfx src="swoosh-up.wav" at={0.45} vol={0.35} />
+          <Sfx src="shimmer.wav" at={1.6} vol={0.2} />
+        </>
+      ) : null}
+
       {seg.id === 'close' ? <ClosingOverlay /> : null}
 
       <Subtitles subs={seg.subs} />
@@ -530,39 +557,6 @@ const QuoteScene: React.FC<{seg: Extract<Seg, {kind: 'quote'}>}> = ({seg}) => {
   );
 };
 
-// ٥ ورقة الغلاف: جرافيك، والجزء المخصص للطالب يضيء
-const CoverScene: React.FC = () => {
-  const frame = useCurrentFrame();
-  const paper = spring({frame: frame - 8, fps: FPS, config: {damping: 15}});
-  const lit = interpolate(frame, [s(1.3), s(1.8)], [0, 1], clamp);
-  const pulse = 0.75 + Math.sin(frame / 5) * 0.25;
-  const t1 = interpolate(frame, [s(1.6), s(2.1)], [0, 1], {...clamp, easing: ease});
-  const t2 = interpolate(frame, [s(2.6), s(3.1)], [0, 1], {...clamp, easing: ease});
-  const W = 560; // عرض الورقة على الشاشة (الأصل 992×1403)
-  const k = W / 992;
-  return (
-    <AbsoluteFill>
-      <GraphicBg />
-      <Header n={5} title="ورقة الغلاف" />
-      <div style={{position: 'absolute', left: 470, top: 300, width: W, transform: `rotate(${4 - paper * 1}deg) translateY(${(1 - paper) * 700}px)`, boxShadow: '0 30px 60px rgba(0,0,0,0.6)'}}>
-        <Img src={staticFile('exam/exam-paper.jpg')} style={{width: '100%', display: 'block', filter: `brightness(${1 - lit * 0.35})`}} />
-        {/* الجزء المخصص للطالب */}
-        <div style={{position: 'absolute', left: 40 * k, top: 85 * k, width: 400 * k, height: 355 * k, borderRadius: 14, border: `5px solid ${GOLD}`, boxShadow: `0 0 ${40 * pulse}px ${GOLD}, inset 0 0 40px ${GOLD}66`, background: `${GOLD}22`, opacity: lit}} />
-      </div>
-      <div style={{position: 'absolute', left: 60, right: 60, top: 1250, direction: 'rtl', fontFamily, textAlign: 'center', color: 'white', textShadow: '0 3px 16px rgba(0,0,0,0.8)'}}>
-        <div style={{fontWeight: 800, fontSize: 60, opacity: t1, transform: `translateY(${(1 - t1) * 20}px)`}}>
-          عبّئ بياناتك في <span style={{color: GOLD}}>الجزء المخصص للطالب</span> فقط
-        </div>
-        <div style={{fontWeight: 700, fontSize: 50, marginTop: 24, color: '#cfe9ff', opacity: t2, transform: `translateY(${(1 - t2) * 20}px)`}}>
-          ولا تكتب في الأجزاء الأخرى من ورقة الغلاف
-        </div>
-      </div>
-      <Sfx src="swoosh-up.wav" at={0.3} vol={0.35} />
-      <Sfx src="shimmer.wav" at={1.3} vol={0.2} />
-    </AbsoluteFill>
-  );
-};
-
 // الربط: الأرقام من 1 إلى 6 وكل رقم عليه ✔
 const CheckScene: React.FC = () => {
   const frame = useCurrentFrame();
@@ -606,7 +600,7 @@ const FinalScene: React.FC = () => {
     <AbsoluteFill style={{opacity: fadeOut}}>
       <GraphicBg />
       <AbsoluteFill style={{justifyContent: 'center', alignItems: 'center', direction: 'rtl', fontFamily, textAlign: 'center'}}>
-        <Img src={staticFile(LOGO)} style={{width: 300, transform: `scale(${a})`, filter: glow(GOLD, 22)}} />
+        <div style={{width: 380, padding: 18, borderRadius: 34, background: 'white', transform: `scale(${a})`, boxShadow: `0 0 40px ${GOLD}55`}}><Img src={staticFile(LOGO)} style={{width: '100%', display: 'block'}} /></div>
         <div style={{fontWeight: 900, fontSize: 84, color: 'white', marginTop: 40, opacity: b}}>وزارة التربية</div>
         <div style={{fontWeight: 900, fontSize: 70, color: GOLD, marginTop: 10, opacity: b, textShadow: `0 0 26px ${GOLD}88`}}>طلبتنا ثروة وطن</div>
         <div style={{fontWeight: 700, fontSize: 46, color: '#cfe9ff', marginTop: 50, opacity: c}}>بالتوفيق لجميع أبنائنا الطلبة</div>
@@ -621,7 +615,7 @@ const OPEN_VOL = 0.16; // في مشاهد الجرافيك بدون كلام
 const musicVolume = (f: number) => {
   const tl = timeline();
   const total = totalFrames();
-  const open = tl.filter((t) => t.seg.kind === 'cover' || t.seg.kind === 'check' || t.seg.kind === 'final');
+  const open = tl.filter((t) => t.seg.kind === 'check' || t.seg.kind === 'final');
   let v = SPEECH_VOL;
   for (const o of open) {
     const ramp = interpolate(f, [o.start - 6, o.start + 10, o.start + o.frames - 10, o.start + o.frames + 6], [0, 1, 1, 0], clamp);
@@ -643,7 +637,6 @@ export const ExamGuide: React.FC = () => {
             <TransitionSeries.Sequence durationInFrames={s(seg.dur)}>
               {seg.kind === 'clip' ? <ClipScene seg={seg} /> : null}
               {seg.kind === 'quote' ? <QuoteScene seg={seg} /> : null}
-              {seg.kind === 'cover' ? <CoverScene /> : null}
               {seg.kind === 'check' ? <CheckScene /> : null}
               {seg.kind === 'final' ? <FinalScene /> : null}
               {i > 0 ? <Sfx src="whoosh.wav" at={0} vol={0.32} /> : null}
