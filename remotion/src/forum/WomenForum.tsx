@@ -226,6 +226,11 @@ const Card: React.FC<{frames: number; src: string; from?: number; fadeOut?: bool
     <AbsoluteFill style={{background: DEEP}}>
       <Footage clip={{src, from, to: from + 6}} frames={frames} muted filter="brightness(0.95) saturate(0.85)" zoom={[1.05, 1.12]} />
       <AbsoluteFill style={{background: `linear-gradient(180deg, ${DEEP} 0%, ${NAVY} 22%, ${NAVY}cc 33%, ${NAVY}33 48%, ${NAVY}22 58%, ${NAVY}cc 72%, ${DEEP} 86%)`}} />
+      {/* زخرفة إسلامية (من المستخدم) بخطوط ذهبية خفيفة فوق وتحت، وتختفي عند الصورة */}
+      <AbsoluteFill style={{opacity: 0.16}}>
+        <Img src={staticFile('brand/ornament.png')} style={{position: 'absolute', top: -60, left: 0, width: WIDTH, maskImage: 'linear-gradient(180deg, black 30%, transparent 95%)', WebkitMaskImage: 'linear-gradient(180deg, black 30%, transparent 95%)'}} />
+        <Img src={staticFile('brand/ornament.png')} style={{position: 'absolute', bottom: -60, left: 0, width: WIDTH, transform: 'scaleY(-1)', maskImage: 'linear-gradient(180deg, black 30%, transparent 95%)', WebkitMaskImage: 'linear-gradient(180deg, black 30%, transparent 95%)'}} />
+      </AbsoluteFill>
       <AbsoluteFill style={{direction: 'rtl', alignItems: 'center', textAlign: 'center', opacity: out}}>
         {/* الترويسة: الشعار واسم الجمعية */}
         <div style={{...useReveal(0), marginTop: 150, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
@@ -330,7 +335,7 @@ const ShotView: React.FC<{shot: Shot; frames: number} & Edge> = ({shot, frames, 
       // الغلاف: يبدأ مكتمل من أول فريم عشان يطلع صورة الغلاف واضحة
       return (
         <Sequence from={-COVER_SKIP}>
-          <Card frames={frames + COVER_SKIP} src="1683" from={1.5} fadeOut />
+          <Card frames={frames + COVER_SKIP} src="1702" from={2.2} fadeOut />
         </Sequence>
       );
     case 'broll':
@@ -345,7 +350,7 @@ const ShotView: React.FC<{shot: Shot; frames: number} & Edge> = ({shot, frames, 
     case 'talk':
       return <Talk clip={shot.clip} frames={frames} name={shot.name} role={shot.role} fadeIn={fadeIn} fadeOut={fadeOut} />;
     case 'final':
-      return <Card frames={frames} src="1687" from={2} toBlack />;
+      return <Card frames={frames} src="1709" from={10} toBlack />;
   }
 };
 
