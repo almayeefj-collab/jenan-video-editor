@@ -48,7 +48,8 @@ const NAMES: Record<string, {name: string; role?: string}> = {
   '1664': {name: 'أ. جواهر العنزي', role: 'حضور الملتقى النسائي'},
 };
 // عنوان مقتطفات المحاضرة
-const LECTURE_TITLE = 'محاضرة د. مريم العويش';
+const LECTURE_TITLE = 'موعظةٌ من القلب';
+const LECTURE_SUB = 'مع د. مريم العويش';
 
 type Clip = {src: string; from: number; to: number};
 type Shot =
@@ -317,7 +318,10 @@ const LectureTitle: React.FC<{frames: number}> = ({frames}) => {
   return (
     <div style={{position: 'absolute', bottom: 250, left: 60, right: 60, direction: 'rtl', textAlign: 'center', opacity: show, transform: `translateY(${(1 - show) * 30}px)`}}>
       <div style={{display: 'inline-block', background: `linear-gradient(180deg, ${NAVY}f0, ${DEEP}f5)`, borderRadius: 18, overflow: 'hidden', boxShadow: '0 12px 36px rgba(0,0,0,0.35)'}}>
-        <div style={{fontFamily: BODY_FONT, fontSize: 60, fontWeight: 800, color: GOLD, padding: '18px 50px'}}>{LECTURE_TITLE}</div>
+        <div style={{padding: '18px 56px 20px'}}>
+          <div style={{fontFamily: TITLE_FONT, fontSize: 76, fontWeight: 700, color: GOLD, lineHeight: 1.35}}>{LECTURE_TITLE}</div>
+          <div style={{fontFamily: BODY_FONT, fontSize: 42, fontWeight: 800, color: '#fff', marginTop: 4}}>{LECTURE_SUB}</div>
+        </div>
         <div style={{height: 7, background: BAR}} />
       </div>
     </div>
