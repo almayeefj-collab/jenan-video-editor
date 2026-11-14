@@ -3,7 +3,7 @@
 // ← سؤال وجواب د. مريم العويش ← مقتطفات من محاضرتها وصوتها خلفية مع موسيقى ناعمة ← باقي المقابلات ← ختام
 // الكلام كامل بدون قص. الأسماء تحت كل وحدة من NAMES (اللي ما لها اسم ما يطلع لها شي).
 // اللقطات في public/footage/forum/<رقم IMG>.mp4 (ما ترفع للمستودع): 1080×1920 / 30fps والصوت مطبّع بـ loudnorm
-// الموسيقى music/forum_soft.wav (بيانو هادي، مولّدة بـ tools/compose_romantic.py) أطول من الفيديو، فما تحتاج loop
+// الموسيقى music/forum_user.m4a (من المستخدم، مطبّعة) أطول من الفيديو، فما تحتاج loop؛ خافتة جداً وتحت الكلام شبه ما تنسمع
 import {fade} from '@remotion/transitions/fade';
 import {linearTiming, TransitionSeries} from '@remotion/transitions';
 import {loadFont} from '@remotion/fonts';
@@ -107,8 +107,9 @@ const SHOTS: Shot[] = [
 // صوت المحاضِرة تحت المقتطفات: كلامها عن السكينة كامل
 const VOICE_BED: Clip[] = [{src: '1700', from: 0.0, to: 23.35}];
 const VOICE = 0.95;
-const MUSIC = 0.5;
-const BED_MUSIC = 0.16;
+const MUSIC = 0.22;
+const UNDER_TALK = 0.05;
+const BED_MUSIC = 0.08;
 
 const shotFrames = (s: Shot) => Math.round((s.kind === 'title' || s.kind === 'final' ? s.dur : s.clip.to - s.clip.from) * FPS);
 // كلام ورا كلام = قطع مباشر؛ اللقطات السريعة والمقتطفات كروس فيد قصير؛ غير كذا كروس فيد عادي
@@ -369,7 +370,7 @@ const excerptSpan = () => {
   return {a: ex[0].start, z: last.start + last.frames};
 };
 
-// الموسيقى: عادية على العنوان واللقطات، خفيفة جداً تحت صوت المحاضرة، ساكتة تحت الكلام
+// الموسيقى: خفيفة على العنوان واللقطات، أخف تحت صوت المحاضرة، وشبه ما تنسمع تحت الكلام
 const musicVolume = (f: number) => {
   const tl = timeline();
   const end = totalFrames();
@@ -383,7 +384,7 @@ const musicVolume = (f: number) => {
     const z = s.start + s.frames;
     if (f >= a - 15 && f <= z + 15) {
       const k = Math.min(interpolate(f, [a - 15, a], [1, 0], clamp), interpolate(f, [z, z + 15], [0, 1], clamp));
-      v = Math.min(v, MUSIC * k);
+      v = Math.min(v, UNDER_TALK + (MUSIC - UNDER_TALK) * k);
     }
   }
   return v * interpolate(f, [0, 15, end - 30, end], [0, 1, 1, 0], clamp);
@@ -425,7 +426,7 @@ export const WomenForum: React.FC = () => {
           </Fragment>
         ))}
       </TransitionSeries>
-      <Audio src={staticFile('music/forum_soft.wav')} volume={musicVolume} />
+      <Audio src={staticFile('music/forum_user.m4a')} volume={musicVolume} />
       <VoiceBed />
     </AbsoluteFill>
   );
