@@ -28,7 +28,6 @@ loadFont({family: BODY_FONT, url: staticFile('fonts/almarai-arabic-800-normal.wo
 // ثيم أزرق رسمي مع زخارف إسلامية بسيطة (نجمة ثمانية وقوس)
 // ثيم الجمعية المعتمد: كحلي، ذهبي للعناوين، أبيض للنص، وشريط سفلي من الذهبي للأزرق
 const NAVY = '#13264D';
-const VEIL = '#1F5296';
 const DEEP = '#0B1834';
 const BLUE = '#2F7FD6';
 const GOLD = '#E3C28A';
@@ -224,10 +223,9 @@ const Card: React.FC<{frames: number; src: string; from?: number; fadeOut?: bool
   const black = toBlack ? interpolate(frame, [frames - 22, frames], [0, 1], clamp) : 0;
   const goldText = {background: GOLD_GRAD, WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent'} as const;
   return (
-    <AbsoluteFill style={{background: VEIL}}>
-      <Footage clip={{src, from, to: from + 6}} frames={frames} muted filter="brightness(1.05) saturate(0.9)" zoom={[1.05, 1.12]} />
-      {/* طبقة زرقاء شفافة: الصورة تبان من تحت واللون أزرق مو كحلي غامق */}
-      <AbsoluteFill style={{background: `linear-gradient(180deg, ${VEIL}e0 0%, ${VEIL}b8 25%, ${VEIL}55 45%, ${VEIL}40 58%, ${VEIL}b0 76%, ${VEIL}d8 100%)`}} />
+    <AbsoluteFill style={{background: DEEP}}>
+      <Footage clip={{src, from, to: from + 6}} frames={frames} muted filter="brightness(0.95) saturate(0.85)" zoom={[1.05, 1.12]} />
+      <AbsoluteFill style={{background: `linear-gradient(180deg, ${DEEP} 0%, ${NAVY} 22%, ${NAVY}cc 33%, ${NAVY}33 48%, ${NAVY}22 58%, ${NAVY}cc 72%, ${DEEP} 86%)`}} />
       <AbsoluteFill style={{direction: 'rtl', alignItems: 'center', textAlign: 'center', opacity: out}}>
         {/* الترويسة: الشعار واسم الجمعية */}
         <div style={{...useReveal(0), marginTop: 150, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
@@ -261,16 +259,16 @@ const NameTag: React.FC<{name: string; role?: string; frames: number}> = ({name,
   const bar = interpolate(frame, [14, 40], [0, 1], {...clamp, easing: ease});
   return (
     <div style={{position: 'absolute', bottom: 230, left: 0, right: 0, display: 'flex', justifyContent: 'center', opacity: show, transform: `translateY(${(1 - show) * 40}px)`}}>
-      <div style={{direction: 'rtl', background: `linear-gradient(180deg, ${VEIL}d9, ${NAVY}d9)`, backdropFilter: 'blur(6px)', borderRadius: 18, overflow: 'hidden', boxShadow: '0 12px 40px rgba(0,0,0,0.35)', textAlign: 'center', minWidth: 460, maxWidth: 980}}>
+      <div style={{direction: 'rtl', borderRadius: 18, overflow: 'hidden', textAlign: 'center', maxWidth: 980}}>
         <div style={{padding: '22px 52px 22px'}}>
-          <div style={{fontFamily: BODY_FONT, fontSize: 60, fontWeight: 800, color: GOLD, lineHeight: 1.25}}>{name}</div>
+          <div style={{fontFamily: BODY_FONT, fontSize: 64, fontWeight: 800, color: GOLD, lineHeight: 1.25, textShadow: '0 2px 4px rgba(0,0,0,0.6), 0 4px 22px rgba(0,0,0,0.55)'}}>{name}</div>
           {role
             ? role.split('\n').map((line, i) => (
-                <div key={i} style={{fontFamily: BODY_FONT, fontSize: 32, fontWeight: 700, color: '#fff', marginTop: i ? 2 : 8, lineHeight: 1.35}}>{line}</div>
+                <div key={i} style={{fontFamily: BODY_FONT, fontSize: 34, fontWeight: 800, color: '#fff', marginTop: i ? 2 : 8, lineHeight: 1.35, textShadow: '0 2px 4px rgba(0,0,0,0.6), 0 4px 22px rgba(0,0,0,0.55)'}}>{line}</div>
               ))
             : null}
         </div>
-        <div style={{height: 7, background: BAR, transform: `scaleX(${bar})`, transformOrigin: 'right'}} />
+        <div style={{height: 5, width: 260, margin: '0 auto', borderRadius: 3, background: BAR, transform: `scaleX(${bar})`}} />
       </div>
     </div>
   );
@@ -315,12 +313,12 @@ const LectureTitle: React.FC<{frames: number}> = ({frames}) => {
   const show = interpolate(frame, [6, 24, frames + 60, frames + 80], [0, 1, 1, 0], {...clamp, easing: ease});
   return (
     <div style={{position: 'absolute', bottom: 250, left: 60, right: 60, direction: 'rtl', textAlign: 'center', opacity: show, transform: `translateY(${(1 - show) * 30}px)`}}>
-      <div style={{display: 'inline-block', background: `linear-gradient(180deg, ${VEIL}d9, ${NAVY}d9)`, backdropFilter: 'blur(6px)', borderRadius: 18, overflow: 'hidden', boxShadow: '0 12px 36px rgba(0,0,0,0.35)'}}>
+      <div style={{display: 'inline-block', }}>
         <div style={{padding: '18px 56px 20px'}}>
-          <div style={{fontFamily: TITLE_FONT, fontSize: 76, fontWeight: 700, color: GOLD, lineHeight: 1.35}}>{LECTURE_TITLE}</div>
-          <div style={{fontFamily: BODY_FONT, fontSize: 42, fontWeight: 800, color: '#fff', marginTop: 4}}>{LECTURE_SUB}</div>
+          <div style={{fontFamily: TITLE_FONT, fontSize: 80, fontWeight: 700, color: GOLD, lineHeight: 1.35, textShadow: '0 2px 4px rgba(0,0,0,0.6), 0 4px 22px rgba(0,0,0,0.55)'}}>{LECTURE_TITLE}</div>
+          <div style={{fontFamily: BODY_FONT, fontSize: 44, fontWeight: 800, color: '#fff', marginTop: 4, textShadow: '0 2px 4px rgba(0,0,0,0.6), 0 4px 22px rgba(0,0,0,0.55)'}}>{LECTURE_SUB}</div>
         </div>
-        <div style={{height: 7, background: BAR}} />
+        <div style={{height: 5, width: 300, margin: '0 auto', borderRadius: 3, background: BAR}} />
       </div>
     </div>
   );
