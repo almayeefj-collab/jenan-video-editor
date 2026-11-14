@@ -20,16 +20,23 @@ const TITLE_FONT = 'El Messiri';
 const BODY_FONT = 'Almarai';
 loadFont({family: TITLE_FONT, url: staticFile('fonts/ElMessiri-700.woff2'), weight: '700'});
 loadFont({family: TITLE_FONT, url: staticFile('fonts/ElMessiri-400.woff2'), weight: '400'});
+loadFont({family: 'Cairo', url: staticFile('fonts/Cairo.ttf'), weight: '200 1000'});
 loadFont({family: BODY_FONT, url: staticFile('fonts/almarai-arabic-400-normal.woff2'), weight: '400'});
 loadFont({family: BODY_FONT, url: staticFile('fonts/almarai-arabic-700-normal.woff2'), weight: '700'});
 loadFont({family: BODY_FONT, url: staticFile('fonts/almarai-arabic-800-normal.woff2'), weight: '800'});
 
 // ثيم أزرق رسمي مع زخارف إسلامية بسيطة (نجمة ثمانية وقوس)
-const NAVY = '#0A2A55';
-const BLUE = '#1565B0';
-const SKY = '#7CC4F0';
+// ثيم الجمعية المعتمد: كحلي، ذهبي للعناوين، أبيض للنص، وشريط سفلي من الذهبي للأزرق
+const NAVY = '#13264D';
+const DEEP = '#0B1834';
+const BLUE = '#2F7FD6';
+const GOLD = '#E3C28A';
+const GOLD_GRAD = 'linear-gradient(180deg, #F3DDB0 0%, #D9AE6A 100%)';
+const STEEL = '#AFC2DD';
+const SKY = '#9CC9EE';
 const MIST = '#DCEBF8';
 const INK = '#06162E';
+const BAR = `linear-gradient(90deg, ${GOLD} 0%, #C9B48E 35%, ${BLUE} 100%)`;
 const COVER_SKIP = 60;
 const VERSE = 'فَزَادَهُمْ إِيمَانًا';
 
@@ -183,44 +190,7 @@ const Pattern: React.FC = () => {
   );
 };
 
-// إطار على شكل قوس (محراب) بخطين رفيعين ونجمة فوق
-const ArchFrame: React.FC = () => {
-  const frame = useCurrentFrame();
-  const p = interpolate(frame, [0, 40], [0, 1], {...clamp, easing: ease});
-  const W = 900;
-  const H = 1500;
-  const path = (inset: number) => {
-    const l = inset;
-    const r = W - inset;
-    const top = 330 + inset;
-    const bot = H - inset;
-    const cx = W / 2;
-    return `M ${l} ${bot} L ${l} ${top} Q ${l} ${inset + 60} ${cx} ${inset} Q ${r} ${inset + 60} ${r} ${top} L ${r} ${bot} Z`;
-  };
-  const len = 5200;
-  return (
-    <AbsoluteFill style={{justifyContent: 'center', alignItems: 'center'}}>
-      <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={{overflow: 'visible'}}>
-        <path d={path(0)} fill={`${NAVY}66`} stroke={SKY} strokeWidth={3} strokeDasharray={len} strokeDashoffset={len * (1 - p)} />
-        <path d={path(18)} fill="none" stroke={MIST} strokeOpacity={0.6} strokeWidth={1.5} strokeDasharray={len} strokeDashoffset={len * (1 - p)} />
-        <g transform={`translate(${W / 2} -6) scale(${p})`} opacity={p}>
-          <rect x={-22} y={-22} width={44} height={44} fill={SKY} />
-          <rect x={-22} y={-22} width={44} height={44} fill={SKY} transform="rotate(45)" />
-          <circle r={10} fill={NAVY} />
-        </g>
-      </svg>
-    </AbsoluteFill>
-  );
-};
 
-// خلفية زرقاء: لقطة مضببة + تدرج أزرق + نقشة
-const BlueBackdrop: React.FC<{src: string; frames: number}> = ({src, frames}) => (
-  <>
-    <Footage clip={{src, from: 0.5, to: 5}} frames={frames} muted filter="blur(26px) brightness(0.55) saturate(0.7)" zoom={[1.15, 1.25]} />
-    <AbsoluteFill style={{background: `radial-gradient(ellipse at 50% 40%, ${BLUE}e6 0%, ${NAVY}f2 60%, ${INK}fa 100%)`}} />
-    <Pattern />
-  </>
-);
 
 const Logo: React.FC<{delay: number; height: number}> = ({delay, height}) => {
   const frame = useCurrentFrame();
@@ -236,33 +206,47 @@ const Divider: React.FC<{delay: number}> = ({delay}) => {
   const frame = useCurrentFrame();
   const p = interpolate(frame - delay, [0, 24], [0, 1], {...clamp, easing: ease});
   return (
-    <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 18, margin: '26px 0'}}>
-      <div style={{width: 200 * p, height: 2, background: `linear-gradient(to left, ${SKY}, transparent)`}} />
-      <svg width={34} height={34} viewBox="-17 -17 34 34" style={{opacity: p, transform: `rotate(${(1 - p) * 90}deg)`}}>
-        <rect x={-11} y={-11} width={22} height={22} fill="none" stroke={SKY} strokeWidth={2} />
-        <rect x={-11} y={-11} width={22} height={22} fill="none" stroke={SKY} strokeWidth={2} transform="rotate(45)" />
+    <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 18, margin: '34px 0 18px'}}>
+      <div style={{width: 260 * p, height: 1.5, background: `linear-gradient(to left, ${GOLD}cc, transparent)`}} />
+      <svg width={30} height={30} viewBox="-15 -15 30 30" style={{opacity: p}}>
+        <rect x={-9} y={-9} width={18} height={18} fill="none" stroke={GOLD} strokeWidth={1.8} />
+        <rect x={-9} y={-9} width={18} height={18} fill="none" stroke={GOLD} strokeWidth={1.8} transform="rotate(45)" />
       </svg>
-      <div style={{width: 200 * p, height: 2, background: `linear-gradient(to right, ${SKY}, transparent)`}} />
+      <div style={{width: 260 * p, height: 1.5, background: `linear-gradient(to right, ${GOLD}cc, transparent)`}} />
     </div>
   );
 };
 
-const Card: React.FC<{frames: number; src: string; fadeOut?: boolean; toBlack?: boolean}> = ({frames, src, fadeOut, toBlack}) => {
+// غلاف/ختام بنفس تصميم منشورات الجمعية: صورة من الملتقى تذوب في الكحلي فوق وتحت
+const Card: React.FC<{frames: number; src: string; from?: number; fadeOut?: boolean; toBlack?: boolean}> = ({frames, src, from = 1, fadeOut, toBlack}) => {
   const frame = useCurrentFrame();
   const out = fadeOut ? interpolate(frame, [frames - 16, frames - 2], [1, 0], clamp) : 1;
   const black = toBlack ? interpolate(frame, [frames - 22, frames], [0, 1], clamp) : 0;
+  const goldText = {background: GOLD_GRAD, WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent'} as const;
   return (
-    <AbsoluteFill style={{background: NAVY}}>
-      <BlueBackdrop src={src} frames={frames} />
-      <AbsoluteFill style={{opacity: out}}>
-        <ArchFrame />
-        <AbsoluteFill style={{direction: 'rtl', justifyContent: 'center', alignItems: 'center', textAlign: 'center', padding: '120px 110px 0'}}>
-          <Logo delay={4} height={400} />
-          <div style={{...useReveal(12), fontFamily: TITLE_FONT, fontSize: 140, fontWeight: 700, color: '#fff', lineHeight: 1.1, textShadow: '0 6px 30px rgba(0,0,0,0.4)'}}>الملتقى النسائي</div>
-          <Divider delay={22} />
-          <div style={{...useReveal(28), fontFamily: TITLE_FONT, fontSize: 84, fontWeight: 400, color: SKY, lineHeight: 1.3}}>{VERSE}</div>
-          <div style={{...useReveal(40), fontFamily: BODY_FONT, fontSize: 44, fontWeight: 700, color: MIST, marginTop: 40}}>جمعية المعلمين الكويتية</div>
-        </AbsoluteFill>
+    <AbsoluteFill style={{background: DEEP}}>
+      <Footage clip={{src, from, to: from + 6}} frames={frames} muted filter="brightness(0.95) saturate(0.85)" zoom={[1.05, 1.12]} />
+      <AbsoluteFill style={{background: `linear-gradient(180deg, ${DEEP} 0%, ${NAVY} 22%, ${NAVY}cc 33%, ${NAVY}33 48%, ${NAVY}22 58%, ${NAVY}cc 72%, ${DEEP} 86%)`}} />
+      <AbsoluteFill style={{opacity: 0.5, maskImage: 'linear-gradient(180deg, black 0%, transparent 35%)', WebkitMaskImage: 'linear-gradient(180deg, black 0%, transparent 35%)'}}>
+        <Pattern />
+      </AbsoluteFill>
+      <AbsoluteFill style={{direction: 'rtl', alignItems: 'center', textAlign: 'center', opacity: out}}>
+        {/* الترويسة: الشعار واسم الجمعية */}
+        <div style={{...useReveal(0), marginTop: 150, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+          <Img src={staticFile('brand/kts-logo-clear.png')} style={{height: 230, filter: 'drop-shadow(0 10px 26px rgba(0,0,0,0.45))'}} />
+          <div style={{fontFamily: BODY_FONT, fontSize: 54, fontWeight: 800, color: '#fff', marginTop: 26}}>جمعية المعلمين الكويتية</div>
+          <div style={{fontFamily: 'Cairo', fontSize: 22, fontWeight: 700, color: STEEL, letterSpacing: 7, marginTop: 8, direction: 'ltr'}}>KUWAIT TEACHERS SOCIETY</div>
+        </div>
+        <Divider delay={10} />
+        <div style={{...useReveal(16), fontFamily: TITLE_FONT, fontSize: 64, fontWeight: 700, ...goldText, lineHeight: 1.4}}>{VERSE}</div>
+        {/* العنوان تحت */}
+        <div style={{position: 'absolute', bottom: 190, left: 0, right: 0, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+          <div style={{...useReveal(22), border: `2px solid ${STEEL}88`, borderRadius: 50, padding: '10px 40px', fontFamily: BODY_FONT, fontSize: 36, fontWeight: 700, color: MIST}}>أجواء ولقاءات الملتقى</div>
+          <div style={{...useReveal(30), fontFamily: TITLE_FONT, fontSize: 132, fontWeight: 700, ...goldText, lineHeight: 1.3, marginTop: 20, whiteSpace: 'nowrap', filter: 'drop-shadow(0 6px 20px rgba(0,0,0,0.5))'}}>الملتقى النسائي</div>
+        </div>
+      </AbsoluteFill>
+      <AbsoluteFill style={{justifyContent: 'flex-end'}}>
+        <div style={{height: 14, background: BAR}} />
       </AbsoluteFill>
       <AbsoluteFill style={{background: 'black', opacity: black}} />
     </AbsoluteFill>
@@ -270,24 +254,24 @@ const Card: React.FC<{frames: number; src: string; fadeOut?: boolean; toBlack?: 
 };
 
 // الاسم تحت: بطاقة بيضاء بخط برتقالي وأزرق
+// الاسم تحت: لوحة كحلية، الاسم ذهبي، المسمى أبيض، وشريط ذهبي-أزرق
 const NameTag: React.FC<{name: string; role?: string; frames: number}> = ({name, role, frames}) => {
   const frame = useCurrentFrame();
   const end = Math.min(frames - 10, 8 * FPS);
   const show = interpolate(frame, [12, 30, end - 16, end], [0, 1, 1, 0], {...clamp, easing: ease});
-  const bar = interpolate(frame, [12, 36], [0, 1], {...clamp, easing: ease});
+  const bar = interpolate(frame, [14, 40], [0, 1], {...clamp, easing: ease});
   return (
     <div style={{position: 'absolute', bottom: 230, left: 0, right: 0, display: 'flex', justifyContent: 'center', opacity: show, transform: `translateY(${(1 - show) * 40}px)`}}>
-      <div style={{direction: 'rtl', background: `linear-gradient(180deg, ${NAVY}f2, ${BLUE}eb)`, border: `1.5px solid ${SKY}88`, borderRadius: 26, padding: '22px 52px 24px', boxShadow: '0 12px 40px rgba(0,0,0,0.3)', textAlign: 'center', minWidth: 420, maxWidth: 980}}>
-        <div style={{fontFamily: BODY_FONT, fontSize: 60, fontWeight: 800, color: '#fff', lineHeight: 1.25}}>{name}</div>
-        {role
-          ? role.split('\n').map((line, i) => (
-              <div key={i} style={{fontFamily: BODY_FONT, fontSize: 32, fontWeight: 700, color: SKY, marginTop: i ? 2 : 8, lineHeight: 1.35}}>{line}</div>
-            ))
-          : null}
-        <div style={{display: 'flex', justifyContent: 'center', gap: 8, marginTop: 14}}>
-          <div style={{width: 120 * bar, height: 3, borderRadius: 2, background: SKY}} />
-          <div style={{width: 40 * bar, height: 3, borderRadius: 2, background: MIST}} />
+      <div style={{direction: 'rtl', background: `linear-gradient(180deg, ${NAVY}f0, ${DEEP}f5)`, borderRadius: 18, overflow: 'hidden', boxShadow: '0 12px 40px rgba(0,0,0,0.35)', textAlign: 'center', minWidth: 460, maxWidth: 980}}>
+        <div style={{padding: '22px 52px 22px'}}>
+          <div style={{fontFamily: BODY_FONT, fontSize: 60, fontWeight: 800, color: GOLD, lineHeight: 1.25}}>{name}</div>
+          {role
+            ? role.split('\n').map((line, i) => (
+                <div key={i} style={{fontFamily: BODY_FONT, fontSize: 32, fontWeight: 700, color: '#fff', marginTop: i ? 2 : 8, lineHeight: 1.35}}>{line}</div>
+              ))
+            : null}
         </div>
+        <div style={{height: 7, background: BAR, transform: `scaleX(${bar})`, transformOrigin: 'right'}} />
       </div>
     </div>
   );
@@ -331,9 +315,10 @@ const LectureTitle: React.FC<{frames: number}> = ({frames}) => {
   const frame = useCurrentFrame();
   const show = interpolate(frame, [6, 24, frames + 60, frames + 80], [0, 1, 1, 0], {...clamp, easing: ease});
   return (
-    <div style={{position: 'absolute', bottom: 260, left: 60, right: 60, direction: 'rtl', textAlign: 'center', opacity: show, transform: `translateY(${(1 - show) * 30}px)`}}>
-      <div style={{display: 'inline-block', background: `linear-gradient(90deg, ${NAVY}, ${BLUE})`, border: `1.5px solid ${SKY}99`, borderRadius: 24, padding: '18px 46px', boxShadow: '0 12px 36px rgba(0,0,0,0.3)'}}>
-        <div style={{fontFamily: TITLE_FONT, fontSize: 64, fontWeight: 700, color: '#fff'}}>{LECTURE_TITLE}</div>
+    <div style={{position: 'absolute', bottom: 250, left: 60, right: 60, direction: 'rtl', textAlign: 'center', opacity: show, transform: `translateY(${(1 - show) * 30}px)`}}>
+      <div style={{display: 'inline-block', background: `linear-gradient(180deg, ${NAVY}f0, ${DEEP}f5)`, borderRadius: 18, overflow: 'hidden', boxShadow: '0 12px 36px rgba(0,0,0,0.35)'}}>
+        <div style={{fontFamily: BODY_FONT, fontSize: 60, fontWeight: 800, color: GOLD, padding: '18px 50px'}}>{LECTURE_TITLE}</div>
+        <div style={{height: 7, background: BAR}} />
       </div>
     </div>
   );
@@ -345,7 +330,7 @@ const ShotView: React.FC<{shot: Shot; frames: number} & Edge> = ({shot, frames, 
       // الغلاف: يبدأ مكتمل من أول فريم عشان يطلع صورة الغلاف واضحة
       return (
         <Sequence from={-COVER_SKIP}>
-          <Card frames={frames + COVER_SKIP} src="1683" fadeOut />
+          <Card frames={frames + COVER_SKIP} src="1683" from={1.5} fadeOut />
         </Sequence>
       );
     case 'broll':
@@ -360,7 +345,7 @@ const ShotView: React.FC<{shot: Shot; frames: number} & Edge> = ({shot, frames, 
     case 'talk':
       return <Talk clip={shot.clip} frames={frames} name={shot.name} role={shot.role} fadeIn={fadeIn} fadeOut={fadeOut} />;
     case 'final':
-      return <Card frames={frames} src="1687" toBlack />;
+      return <Card frames={frames} src="1687" from={2} toBlack />;
   }
 };
 
