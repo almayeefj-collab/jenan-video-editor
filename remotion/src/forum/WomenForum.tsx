@@ -211,10 +211,7 @@ const Divider: React.FC<{delay: number}> = ({delay}) => {
   return (
     <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 18, margin: '34px 0 18px'}}>
       <div style={{width: 260 * p, height: 1.5, background: `linear-gradient(to left, ${GOLD}cc, transparent)`}} />
-      <svg width={30} height={30} viewBox="-15 -15 30 30" style={{opacity: p}}>
-        <rect x={-9} y={-9} width={18} height={18} fill="none" stroke={GOLD} strokeWidth={1.8} />
-        <rect x={-9} y={-9} width={18} height={18} fill="none" stroke={GOLD} strokeWidth={1.8} transform="rotate(45)" />
-      </svg>
+      <div style={{width: 8, height: 8, borderRadius: 4, background: GOLD, opacity: p}} />
       <div style={{width: 260 * p, height: 1.5, background: `linear-gradient(to right, ${GOLD}cc, transparent)`}} />
     </div>
   );
@@ -231,9 +228,6 @@ const Card: React.FC<{frames: number; src: string; from?: number; fadeOut?: bool
       <Footage clip={{src, from, to: from + 6}} frames={frames} muted filter="brightness(1.05) saturate(0.9)" zoom={[1.05, 1.12]} />
       {/* طبقة زرقاء شفافة: الصورة تبان من تحت واللون أزرق مو كحلي غامق */}
       <AbsoluteFill style={{background: `linear-gradient(180deg, ${VEIL}e0 0%, ${VEIL}b8 25%, ${VEIL}55 45%, ${VEIL}40 58%, ${VEIL}b0 76%, ${VEIL}d8 100%)`}} />
-      <AbsoluteFill style={{opacity: 0.5, maskImage: 'linear-gradient(180deg, black 0%, transparent 35%)', WebkitMaskImage: 'linear-gradient(180deg, black 0%, transparent 35%)'}}>
-        <Pattern />
-      </AbsoluteFill>
       <AbsoluteFill style={{direction: 'rtl', alignItems: 'center', textAlign: 'center', opacity: out}}>
         {/* الترويسة: الشعار واسم الجمعية */}
         <div style={{...useReveal(0), marginTop: 150, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
@@ -245,8 +239,9 @@ const Card: React.FC<{frames: number; src: string; from?: number; fadeOut?: bool
         <div style={{...useReveal(16), fontFamily: TITLE_FONT, fontSize: 64, fontWeight: 700, ...goldText, lineHeight: 1.4}}>{VERSE}</div>
         {/* العنوان تحت */}
         <div style={{position: 'absolute', bottom: 190, left: 0, right: 0, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-          <div style={{...useReveal(22), border: `2px solid ${STEEL}88`, borderRadius: 50, padding: '10px 40px', fontFamily: BODY_FONT, fontSize: 36, fontWeight: 700, color: MIST}}>أجواء ولقاءات الملتقى</div>
-          <div style={{...useReveal(30), fontFamily: TITLE_FONT, fontSize: 132, fontWeight: 700, ...goldText, lineHeight: 1.3, marginTop: 20, whiteSpace: 'nowrap', filter: 'drop-shadow(0 6px 20px rgba(0,0,0,0.5))'}}>الملتقى النسائي</div>
+          <div style={{...useReveal(22), fontFamily: TITLE_FONT, fontSize: 132, fontWeight: 700, ...goldText, lineHeight: 1.3, whiteSpace: 'nowrap', filter: 'drop-shadow(0 6px 20px rgba(0,0,0,0.5))'}}>الملتقى النسائي</div>
+          <div style={{...useReveal(32), fontFamily: TITLE_FONT, fontSize: 70, fontWeight: 700, color: '#fff', lineHeight: 1.35, marginTop: 8, textShadow: '0 4px 18px rgba(0,0,0,0.5)'}}>{LECTURE_TITLE}</div>
+          <div style={{...useReveal(40), fontFamily: BODY_FONT, fontSize: 44, fontWeight: 800, color: MIST, marginTop: 6, textShadow: '0 3px 14px rgba(0,0,0,0.5)'}}>{LECTURE_SUB}</div>
         </div>
       </AbsoluteFill>
       <AbsoluteFill style={{justifyContent: 'flex-end'}}>
