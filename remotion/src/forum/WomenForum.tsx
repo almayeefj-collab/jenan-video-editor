@@ -74,32 +74,34 @@ const SHOTS: Shot[] = [
   b('1690', 0.3, 1.6),
   b('1683', 1.5, 2.8),
   // المذيعة
-  t('1674', 0.0, 26.3),
+  t('1674', 0.0, 12.42),
   // السؤال (مقطعين) ← أ. هبات (مقطعين) — كاملة
   t('1649', 0.0, 3.0),
   t('1654', 0.0, 8.84),
   t('1652', 0.0, 21.75),
-  t('1655', 0.0, 25.3),
+  t('1655', 0.0, 16.63),
   // السؤال ← د. مريم العويش — كاملة
   t('1695', 0.95, 14.85),
-  t('1696', 0.0, 36.4),
+  t('1696', 0.0, 27.21),
   // استفتاحية المحاضرة: ترحيب أ. هبات مختصر (أول جملة لين أول وقفة)
   t('1697', 0.0, 5.27),
   // مقتطفات من محاضرتها بدون صوتها الأصلي؛ صوتها خلفية مع موسيقى خافتة
-  e('1709', 1.0, 4.0, true),
-  e('1704', 0.3, 2.6),
-  e('1702', 2.0, 4.6),
-  e('1703', 1.2, 3.8),
+  e('1709', 1.0, 4.2, true),
+  e('1704', 0.3, 2.8),
+  e('1702', 2.0, 5.0),
+  e('1701', 2.0, 4.6),
+  e('1703', 1.2, 4.2),
   // باقي المقابلات — كاملة
   t('1659', 0.0, 4.97),
   t('1660', 0.0, 11.5),
   t('1667', 0.45, 10.95),
-  t('1664', 0.5, 23.75),
-  {kind: 'final', dur: 3.5},
+  t('1664', 0.5, 16.27),
+  {kind: 'final', dur: 3.2},
 ];
 
 // صوت المحاضِرة تحت المقتطفات: كلامها عن السكينة كامل
-const VOICE_BED: Clip[] = [{src: '1700', from: 0.0, to: 23.35}];
+// ينتهي داخل الوقفة الطويلة بعد جملتها (12.88–13.91) عشان ما تنقطع كلمة
+const VOICE_BED: Clip[] = [{src: '1700', from: 0.0, to: 13.4}];
 const VOICE = 0.95;
 const MUSIC = 0.28;
 const UNDER_TALK = 0.08; // الموسيقى تمشي تحت كل الكلام بصوت خافت
@@ -141,8 +143,8 @@ const useReveal = (delay: number, dur = 20) => {
   return {opacity: p, transform: `translateY(${(1 - p) * 30}px) scale(${0.96 + 0.04 * p})`};
 };
 
-const Footage: React.FC<{clip: Clip; frames: number; volume?: (f: number) => number; muted?: boolean; filter?: string; zoom?: [number, number]}> = ({
-  clip, frames, volume, muted, filter = GRADE, zoom = [1.0, 1.05],
+const Footage: React.FC<{clip: Clip; frames: number; volume?: (f: number) => number; muted?: boolean; filter?: string; zoom?: [number, number]; origin?: string}> = ({
+  clip, frames, volume, muted, filter = GRADE, zoom = [1.0, 1.05], origin = '50% 50%',
 }) => {
   const frame = useCurrentFrame();
   const scale = interpolate(frame, [0, frames], zoom);
@@ -153,7 +155,7 @@ const Footage: React.FC<{clip: Clip; frames: number; volume?: (f: number) => num
         trimBefore={Math.round(clip.from * FPS)}
         muted={muted}
         volume={volume}
-        style={{width: '100%', height: '100%', objectFit: 'cover', transform: `scale(${scale})`, filter}}
+        style={{width: '100%', height: '100%', objectFit: 'cover', transform: `scale(${scale})`, transformOrigin: origin, filter}}
       />
     </AbsoluteFill>
   );
@@ -276,13 +278,19 @@ const Badge: React.FC = () => {
 };
 
 type Edge = {fadeIn: number; fadeOut: number};
+// زوم إن على أ. هبات وهي تتكلم في مقابلتها بس (مو في تقديم المحاضرة)
+const ZOOM_IN: Record<string, {zoom: [number, number]; origin: string}> = {
+  '1652': {zoom: [1.12, 1.3], origin: '50% 32%'},
+  '1655': {zoom: [1.18, 1.32], origin: '50% 32%'},
+};
+
 const Talk: React.FC<{clip: Clip; frames: number; name?: string; role?: string} & Edge> = ({clip, frames, name, role, fadeIn, fadeOut}) => {
   const inF = fadeIn || 3;
   const outF = fadeOut || 3;
   const vol = (f: number) => Math.min(interpolate(f, [0, inF], [0, 1], clamp), interpolate(f, [frames - outF, frames], [1, 0], clamp));
   return (
     <AbsoluteFill>
-      <Footage clip={clip} frames={frames} volume={vol} zoom={[1.0, 1.04]} />
+      <Footage clip={clip} frames={frames} volume={vol} zoom={ZOOM_IN[clip.src]?.zoom ?? [1.0, 1.04]} origin={ZOOM_IN[clip.src]?.origin} />
       <AbsoluteFill style={{background: 'linear-gradient(180deg, rgba(0,0,0,0.35) 0%, transparent 15%, transparent 75%, rgba(0,0,0,0.35) 100%)'}} />
       <Badge />
       {name ? <NameTag name={name} role={role} frames={frames} /> : null}
