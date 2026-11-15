@@ -101,9 +101,9 @@ const SHOTS: Shot[] = [
 // صوت المحاضِرة تحت المقتطفات: كلامها عن السكينة كامل
 const VOICE_BED: Clip[] = [{src: '1700', from: 0.0, to: 23.35}];
 const VOICE = 0.95;
-const MUSIC = 0.22;
-const UNDER_TALK = 0; // تحت كلام المقابلات والمذيعة: بدون موسيقى
-const BED_MUSIC = 0.08;
+const MUSIC = 0.28;
+const UNDER_TALK = 0.08; // الموسيقى تمشي تحت كل الكلام بصوت خافت
+const BED_MUSIC = 0.1;
 
 const shotFrames = (s: Shot) => Math.round((s.kind === 'title' || s.kind === 'final' ? s.dur : s.clip.to - s.clip.from) * FPS);
 // كلام ورا كلام = قطع مباشر؛ اللقطات السريعة والمقتطفات كروس فيد قصير؛ غير كذا كروس فيد عادي
