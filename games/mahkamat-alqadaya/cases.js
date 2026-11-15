@@ -1,0 +1,318 @@
+/* ---------- محكمة القضايا: animated case clips, sort each into its court type ---------- */
+(function(){
+const K='#2b2233',SK='#EDBE96',GR=395,PS=1.45;
+const CAT={
+  tij:{n:'التجارية',ic:'🏪',c:'#D9850A',def:'هي القضايا التي تنشأ بين التجار أو الشركات بسبب المعاملات التجارية.',ex:'تاجر لم يدفع قيمة البضاعة.'},
+  mad:{n:'المدنية',ic:'🏠',c:'#2F86D6',def:'هي القضايا المتعلقة بحقوق الأفراد والتزاماتهم المالية أو ممتلكاتهم.',ex:'شخص لم يُرجع المبلغ الذي اقترضه.'},
+  jaz:{n:'الجزائية',ic:'⚖️',c:'#D93B41',def:'هي القضايا التي تتعلق بارتكاب الجرائم والمخالفات التي يعاقب عليها القانون.',ex:'شخص سرق هاتفاً.'},
+  ahw:{n:'الأحوال الشخصية',ic:'👪',c:'#C93F8E',def:'هي القضايا المتعلقة بالأسرة والعلاقات الزوجية وما يترتب عليها.',ex:'أم تطالب بحضانة أطفالها.'},
+  idr:{n:'الإدارية',ic:'🏢',c:'#14957F',def:'هي القضايا التي تنشأ بين الأفراد أو الموظفين والجهات الحكومية بسبب القرارات الإدارية.',ex:'موظف يعترض على قرار فصله من الحكومة.'}};
+const CK=Object.keys(CAT);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const st=(w=2)=>`stroke="${K}" stroke-width="${w}" stroke-linejoin="round"`;
+const T=(x,y,s,fs,fill,fw=700)=>`<text x="${x}" y="${y}" font-size="${fs}" fill="${fill}" font-weight="${fw}" text-anchor="middle" direction="rtl" font-family="Tajawal,Tahoma,sans-serif">${esc(s)}</text>`;
+const EM=(x,y,e,fs)=>`<text x="${x}" y="${y}" font-size="${fs}" text-anchor="middle">${e}</text>`;
+
+/* ---------- people (origin = feet) ---------- */
+function face(m,y){
+  const L=`fill="none" stroke="${K}" stroke-width="2.3" stroke-linecap="round"`,my=y+10;
+  const e=`<circle cx="-6.5" cy="${y}" r="2.3" fill="${K}"/><circle cx="6.5" cy="${y}" r="2.3" fill="${K}"/>`;
+  const M={h:`<path d="M-6.5 ${my-1} Q0 ${my+6} 6.5 ${my-1}" ${L}/>`,
+    n:`<path d="M-5 ${my} H5" ${L}/>`,
+    a:`<path d="M-6 ${my+2} Q0 ${my-4} 6 ${my+2}" ${L}/><path d="M-11 ${y-8} L-3 ${y-5} M11 ${y-8} L3 ${y-5}" ${L}/>`,
+    s:`<path d="M-6 ${my+2} Q0 ${my-4} 6 ${my+2}" ${L}/><path d="M-10 ${y-6} L-3 ${y-8} M10 ${y-6} L3 ${y-8}" ${L}/><path d="M9 ${y+3} q2.5 5 0 7 q-2.5 -2 0 -7" fill="#5AB0F0"/>`,
+    o:`<ellipse cx="0" cy="${my+1}" rx="3.6" ry="4.6" fill="${K}"/><path d="M-10 ${y-9} L-3 ${y-9} M10 ${y-9} L3 ${y-9}" ${L}/>`,
+    w:`<path d="M-5 ${my+1} Q-2.5 ${my-2} 0 ${my+1} Q2.5 ${my+4} 5 ${my+1}" ${L}/>`,
+    sly:`<path d="M-6 ${my} Q2 ${my+4} 7 ${my-3}" ${L}/><path d="M-10 ${y-6} L-3 ${y-7} M10 ${y-8} L3 ${y-6}" ${L}/>`};
+  return e+(M[m]||M.n)}
+const POSE={d:[27,-46],f:[48,-80],u:[34,-136],p:[54,-100],h:[40,-60],c:[14,-66]};
+function arm(sx,p,col,hold,ff){
+  if(!p)return '';let[hx,hy]=POSE[p]||POSE.d;
+  if(sx<0)hx=(p==='f'||p==='p'||p==='c')?hx*.62:-hx;
+  const mx=(sx+hx)/2+(sx<0?-8:8),my=(-90+hy)/2+6,d=`M${sx} -90 Q${mx} ${my} ${hx} ${hy}`;
+  return `<path d="${d}" fill="none" stroke="${K}" stroke-width="12" stroke-linecap="round"/><path d="${d}" fill="none" stroke="${col}" stroke-width="8" stroke-linecap="round"/>`+
+    (hold?`<g transform="translate(${hx} ${hy+14}) scale(${ff?-.55:.55} .55)">${hold}</g>`:'')+
+    `<circle cx="${hx}" cy="${hy}" r="5.5" fill="${SK}" stroke="${K}" stroke-width="1.6"/>`}
+const HAIR='#2a1d14';
+function person(o={}){
+  const k=o.k||'man',m=o.m||'n',a=o.a||'dd';
+  if(k==='boy'||k==='girl')return `<g transform="scale(.6)">${person(Object.assign({},o,{k:k+'x'}))}</g>`;
+  let col,body,head,y=-116;
+  const legs=(c)=>`<rect x="-16" y="-42" width="13" height="40" fill="${c}" ${st(1.5)}/><rect x="3" y="-42" width="13" height="40" fill="${c}" ${st(1.5)}/><path d="M-19 -2 H-2 M2 -2 H19" stroke="#1a1a1a" stroke-width="5" stroke-linecap="round"/>`;
+  const bald=`<circle cx="0" cy="-120" r="18" fill="${SK}" ${st()}/>`;
+  if(k==='woman'){col=o.c||'#1F1D26';const h=o.h||'#7B55F0';y=-119;
+    body=`<path d="M-32 -2 L-19 -95 Q0 -103 19 -95 L32 -2 Z" fill="${col}" ${st()}/>`;
+    head=`<circle cx="0" cy="-121" r="24" fill="${h}" ${st()}/><path d="M-21 -110 Q-18 -92 0 -92 Q18 -92 21 -110 Z" fill="${h}"/><ellipse cx="0" cy="-117" rx="15.5" ry="17" fill="${SK}"/>`+face(m,y);
+  }else if(k==='rep'||k==='thief'||k==='boyx'){
+    col=o.c||(k==='thief'?'#3b3f4a':k==='boyx'?'#F2F1EA':'#2E3A59');y=-119;
+    if(k==='boyx')body=`<path d="M-24 -2 L-20 -95 Q0 -103 20 -95 L24 -2 Z" fill="${col}" ${st()}/>`;
+    else body=legs(k==='thief'?'#34495E':'#262c40')+`<path d="M-25 -38 L-21 -95 Q0 -103 21 -95 L25 -38 Z" fill="${col}" ${st()}/>`+
+      (k==='rep'?`<path d="M-9 -97 L0 -76 L9 -97 Z" fill="#fff"/><path d="M-3 -93 H3 L5 -72 L0 -65 L-5 -72 Z" fill="${o.t||'#D7263D'}"/>`:'');
+    head=bald+`<path d="M-18 -122 Q-19 -142 0 -142 Q19 -142 18 -122 Q14 -133 -2 -131 Q-12 -130 -18 -122 Z" fill="${HAIR}"/>`+face(m,y);
+    if(k==='thief')head=bald+face(m,y)+`<rect x="-19" y="-127" width="38" height="10" rx="3" fill="#111"/><circle cx="-6.5" cy="-122" r="2.6" fill="#fff"/><circle cx="6.5" cy="-122" r="2.6" fill="#fff"/><path d="M-19 -128 Q-18 -144 0 -144 Q18 -144 19 -128 Z" fill="#111"/><rect x="2" y="-131" width="30" height="5" rx="2.5" fill="#111"/>`;
+  }else if(k==='girlx'){col=o.c||'#E8559A';y=-119;
+    body=`<path d="M-30 -2 L-17 -95 Q0 -103 17 -95 L30 -2 Z" fill="${col}" ${st()}/>`;
+    head=`<circle cx="0" cy="-143" r="10" fill="${HAIR}"/>`+bald+`<path d="M-19 -116 Q-22 -142 0 -142 Q22 -142 19 -116 Q16 -132 0 -132 Q-16 -132 -19 -116 Z" fill="${HAIR}"/>`+face(m,y);
+  }else{ /* man / emp: dishdasha + ghutra */
+    col=o.c||'#F7F6F0';const g=o.g==='r'?'url(#cvShm)':(o.g||'#fff');
+    body=`<path d="M-26 -2 L-21 -95 Q0 -103 21 -95 L26 -2 Z" fill="${col}" ${st()}/><path d="M0 -96 V-70" stroke="rgba(0,0,0,.18)" stroke-width="2"/>`;
+    if(k==='emp')body+=`<path d="M-11 -97 L0 -74 L11 -97" stroke="#2F95E8" stroke-width="3" fill="none"/><rect x="-8" y="-76" width="16" height="19" rx="2" fill="#fff" stroke="#2F95E8" stroke-width="2"/><rect x="-5" y="-72" width="10" height="5" fill="#9CC9F0"/>`;
+    head=bald+(o.b!==false?`<path d="M-15 -113 Q-14 -98 0 -97 Q14 -98 15 -113 Q8 -104 0 -104 Q-8 -104 -15 -113 Z" fill="${o.bc||'#3a2a1f'}"/>`:'')+face(m,y)+
+      `<path d="M-21 -118 Q-22 -146 0 -146 Q22 -146 21 -118 L27 -90 Q20 -95 17 -100 L16 -121 Q0 -131 -16 -121 L-17 -100 Q-20 -95 -27 -90 Z" fill="${g}" ${st()}/><rect x="-19" y="-145" width="38" height="6" rx="3" fill="#222"/>`;
+  }
+  const sh=`<ellipse cx="0" cy="0" rx="30" ry="6" fill="rgba(0,0,0,.18)"/>`;
+  return `<g>${sh}${arm(-19,a[0],col,o.hb,o.ff)}${body}${arm(19,a[1],col,o.hold,o.ff)}${head}</g>`}
+
+/* ---------- props (origin = bottom centre) ---------- */
+const wheel=x=>`<circle cx="${x}" cy="-20" r="18" fill="#222"/><circle cx="${x}" cy="-20" r="7" fill="#bbb"/>`;
+const P={
+  box:(c='#C98B4E')=>`<rect x="-24" y="-44" width="48" height="44" rx="2" fill="${c}" ${st()}/><rect x="-5" y="-44" width="10" height="44" fill="#E9C08A"/><path d="M-17 -14 H-9" stroke="${K}" stroke-width="2"/>`,
+  boxes:()=>[[-26,0],[26,0],[0,-44]].map(([x,y])=>`<g transform="translate(${x} ${y})">${P.box()}</g>`).join(''),
+  money:()=>[0,1,2].map(i=>`<g transform="translate(${i*4} ${-i*7-15})"><rect x="-30" y="-15" width="60" height="30" rx="3" fill="#6CC070" stroke="#2E7D32" stroke-width="2"/><circle cx="0" cy="0" r="9" fill="#B8E2BA"/>${T(0,4,'د.ك',9,'#1B5E20')}</g>`).join(''),
+  phone:()=>`<rect x="-11" y="-36" width="22" height="36" rx="4" fill="#222" ${st(1.5)}/><rect x="-8" y="-32" width="16" height="25" rx="1.5" fill="#6CB8FF"/>`,
+  doc:(t,o={})=>{let s=`<rect x="-55" y="-124" width="110" height="124" rx="4" fill="#fff" ${st()}/><rect x="-55" y="-124" width="110" height="28" rx="4" fill="${o.col||'#2F5D8A'}"/>${T(0,-104,t,o.tf||15,'#fff')}`;
+    const ls=o.lines||[];ls.forEach((l,i)=>s+=T(0,-74+i*22,l,o.lf||14,o.lc||K));
+    for(let i=ls.length;i<4;i++)s+=`<path d="M-40 ${-80+i*18} H40" stroke="#C9CCD6" stroke-width="3" stroke-linecap="round"/>`;
+    if(o.sign)s+=`<path d="M-40 -14 q8 -12 14 0 t14 -2 t10 2" stroke="#2F5D8A" stroke-width="2" fill="none"/>`;
+    return s},
+  stamp:(t,c='#D7263D')=>`<g transform="rotate(-12)"><rect x="-46" y="-20" width="92" height="40" rx="6" fill="rgba(255,255,255,.75)" stroke="${c}" stroke-width="4"/>${T(0,8,t,22,c,800)}</g>`,
+  car:(c,dmg)=>`<path d="M-100 -22 V-46 Q-98 -58 -78 -60 L-52 -88 Q-46 -94 -34 -94 H34 Q46 -94 54 -86 L78 -60 Q98 -58 100 -44 V-22 Z" fill="${c}" ${st()}/><path d="M-44 -64 L-26 -84 H-4 V-64 Z M6 -64 V-84 H30 Q38 -84 44 -76 L54 -64 Z" fill="#CFE8F7" ${st(1.5)}/><rect x="86" y="-52" width="12" height="8" rx="2" fill="#FFE08A"/>${wheel(-58)}${wheel(58)}`+
+    (dmg?`<path d="M-100 -46 L-86 -40 L-96 -34 L-84 -28 L-100 -24" fill="#555" stroke="${K}" stroke-width="2"/><path d="M-80 -60 l10 9 l-7 4 l9 8" stroke="${K}" stroke-width="2.5" fill="none"/><path d="M-62 -84 l8 10" stroke="${K}" stroke-width="2"/>`:''),
+  house:()=>`<rect x="-85" y="-140" width="170" height="140" fill="#F2C78E" ${st()}/><path d="M-102 -138 L0 -210 L102 -138 Z" fill="#C0504D" ${st()}/><rect x="-20" y="-72" width="40" height="72" fill="#7A4A2A" ${st()}/><circle cx="12" cy="-36" r="3" fill="#F2B134"/><rect x="-68" y="-114" width="36" height="34" fill="#BFE3F7" ${st(1.5)}/><rect x="32" y="-114" width="36" height="34" fill="#BFE3F7" ${st(1.5)}/>`,
+  land:()=>`<path d="M-210 0 L-170 -70 L210 -70 L250 0 Z" fill="#D9C08A" stroke="#9C7B3E" stroke-width="3" stroke-dasharray="10 7"/>`+[[-210,0],[-170,-70],[210,-70],[250,0]].map(([x,y])=>`<rect x="${x-4}" y="${y-26}" width="8" height="26" fill="#8A5A3B"/>`).join('')+`<rect x="-6" y="-150" width="8" height="90" fill="#8A5A3B"/><rect x="-62" y="-176" width="120" height="44" rx="6" fill="#fff" ${st()}/>${T(-2,-146,'قطعة أرض',19,K,800)}`,
+  truck:(l)=>`<rect x="-120" y="-130" width="150" height="104" rx="4" fill="#fff" ${st()}/>${T(-45,-72,l,18,'#2F5D8A',800)}<path d="M34 -26 V-96 H78 Q92 -96 98 -80 L110 -56 V-26 Z" fill="#2F95E8" ${st()}/><path d="M44 -88 H74 Q84 -88 88 -78 L96 -60 H44 Z" fill="#CFE8F7" ${st(1.5)}/>${wheel(-80)}${wheel(70)}`,
+  flag:()=>`<rect x="-2" y="-150" width="4" height="150" fill="#777"/><g transform="translate(2 -148)"><rect width="66" height="13" fill="#007A3D"/><rect y="13" width="66" height="13" fill="#fff"/><rect y="26" width="66" height="13" fill="#CE1126"/><path d="M0 0 L16 10 V29 L0 39 Z" fill="#000"/><rect width="66" height="39" fill="none" stroke="#555" stroke-width="1"/></g>`,
+  govb:()=>`<rect x="-200" y="-38" width="400" height="38" fill="#D9D2C3" ${st()}/><rect x="-175" y="-200" width="350" height="162" fill="#EFE8DA" ${st()}/><path d="M-196 -198 L0 -262 L196 -198 Z" fill="#E2D8C4" ${st()}/>`+[-135,-75,75,135].map(x=>`<rect x="${x-12}" y="-190" width="24" height="152" fill="#fff" ${st(1.5)}/>`).join('')+`<rect x="-36" y="-118" width="72" height="80" fill="#6B4A2E" ${st()}/>${T(0,-150,'جهة حكومية',22,K,800)}`,
+  cal:(t)=>`<rect x="-62" y="-86" width="124" height="86" rx="10" fill="#fff" ${st()}/><path d="M-62 -76 Q-62 -86 -52 -86 H52 Q62 -86 62 -76 V-60 H-62 Z" fill="#E5484D"/><circle cx="-30" cy="-86" r="5" fill="#555"/><circle cx="30" cy="-86" r="5" fill="#555"/>${T(0,-24,t,20,K,800)}`,
+  clock:()=>`<circle cx="0" cy="-34" r="32" fill="#fff" ${st(3)}/><g class="cv-spin"><path d="M0 -34 V-58" stroke="${K}" stroke-width="4" stroke-linecap="round"/></g><path d="M0 -34 H16" stroke="${K}" stroke-width="4" stroke-linecap="round"/><circle cx="0" cy="-34" r="4" fill="${K}"/>`,
+  desk:(pc=true)=>`<rect x="-130" y="-92" width="260" height="16" rx="3" fill="#8A5A3B" ${st()}/><rect x="-118" y="-76" width="18" height="76" fill="#6E4630" ${st(1.5)}/><rect x="100" y="-76" width="18" height="76" fill="#6E4630" ${st(1.5)}/>`+(pc?`<rect x="40" y="-150" width="74" height="50" rx="4" fill="#333" ${st()}/><rect x="45" y="-145" width="64" height="40" fill="#6CB8FF"/><rect x="72" y="-100" width="10" height="8" fill="#555"/>`:''),
+  env:(t)=>`<rect x="-46" y="-60" width="92" height="60" rx="4" fill="#F5E6C4" ${st()}/><path d="M-46 -60 L0 -26 L46 -60" fill="none" ${st()}/><circle cx="0" cy="-28" r="9" fill="#D7263D"/>${T(0,-6,t,13,K,800)}`,
+  bench:(br)=>br?`<g transform="rotate(8 -60 0)"><rect x="-70" y="-46" width="62" height="10" fill="#A0522D" ${st(1.5)}/></g><g transform="rotate(-14 60 0)"><rect x="4" y="-40" width="62" height="10" fill="#A0522D" ${st(1.5)}/></g><rect x="-62" y="-36" width="8" height="36" fill="#555"/><rect x="54" y="-30" width="8" height="30" fill="#555"/><path d="M-6 -50 l6 10 l-4 4 l8 8" stroke="${K}" stroke-width="2.5" fill="none"/>`
+    :`<rect x="-70" y="-74" width="140" height="10" fill="#A0522D" ${st(1.5)}/><rect x="-70" y="-46" width="140" height="10" fill="#A0522D" ${st(1.5)}/><rect x="-62" y="-36" width="8" height="36" fill="#555"/><rect x="54" y="-36" width="8" height="36" fill="#555"/>`,
+  sign:(t,gr)=>`<rect x="-4" y="-110" width="8" height="110" fill="#666"/><rect x="-80" y="-170" width="160" height="66" rx="8" fill="#14957F" ${st()}/>${T(0,-130,t,20,'#fff',800)}`+(gr?`<path d="M-66 -160 q20 30 40 0 t40 4 t40 -4 M-60 -118 q30 -24 60 0 t50 -8" stroke="#E8559A" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M-30 -150 l50 34 M20 -154 l-36 40" stroke="#F2B134" stroke-width="6" stroke-linecap="round"/>`:''),
+  lamp:(br)=>`<rect x="-4" y="-200" width="8" height="200" fill="#555"/><path d="M-4 -200 Q-4 -214 18 -214 H30" stroke="#555" stroke-width="8" fill="none"/><path d="M18 -214 h28 l-6 14 h-16 Z" fill="${br?'#888':'#FFE08A'}" ${st(1.5)}/>`+(br?`<path d="M26 -196 l4 10 l-6 4 l6 8" stroke="${K}" stroke-width="2" fill="none"/>`:''),
+  bag:()=>`<rect x="-26" y="-50" width="52" height="50" rx="6" fill="#9C5B2E" ${st()}/><path d="M-12 -50 V-60 H12 V-50" fill="none" ${st(3)}/><path d="M-26 -30 H26" stroke="#7A4521" stroke-width="3"/>`,
+  frame:()=>`<rect x="-46" y="-104" width="92" height="104" rx="4" fill="#C9A46B" ${st()}/><rect x="-36" y="-94" width="72" height="84" fill="#E8DCC2"/><g transform="translate(0 -6) scale(.55)">${person({m:'h',a:''})}</g><path d="M14 -104 L46 -72 V-58 L0 -104 Z" fill="#111"/>`,
+  arrow:(t)=>`<path d="M-80 -34 H40 V-58 L90 -20 L40 18 V-6 H-80 Z" fill="#F2B134" ${st()}/>${t?T(-10,-14,t,19,K,800):''}`,
+  pen:()=>`<g transform="rotate(35)"><rect x="-4" y="-50" width="8" height="44" rx="2" fill="#2F5D8A"/><path d="M-4 -6 L0 4 L4 -6 Z" fill="${K}"/></g>`,
+  tree:()=>`<rect x="-8" y="-90" width="16" height="90" fill="#7A4A2A"/><circle cx="0" cy="-120" r="46" fill="#4CAF50"/><circle cx="-30" cy="-96" r="28" fill="#43A047"/><circle cx="30" cy="-98" r="30" fill="#43A047"/>`,
+  shelf:(items)=>{let s='';for(let r=0;r<3;r++){const y=-r*80;s+=`<rect x="-160" y="${y-8}" width="320" height="10" fill="#8A5A3B"/>`;
+    if(items==='phones')for(let i=0;i<7;i++)s+=`<g transform="translate(${-138+i*46} ${y-8})">${P.phone()}</g>`;
+    else if(items)for(let i=0;i<9;i++)s+=`<rect x="${-150+i*34}" y="${y-48}" width="26" height="40" rx="3" fill="${['#E5484D','#F2B134','#2F95E8','#18A98F','#E8559A','#7B55F0'][(i+r)%6]}" ${st(1.2)}/>`;}
+    return s+`<rect x="-166" y="-232" width="8" height="234" fill="#6E4630"/><rect x="158" y="-232" width="8" height="234" fill="#6E4630"/>`}
+};
+
+/* ---------- backgrounds 800×450 ---------- */
+const floor=(c)=>`<rect y="${GR-10}" width="800" height="${460-GR}" fill="${c}"/>`;
+const BG={
+  shop:(it=true,ph)=>`<rect width="800" height="450" fill="#F6E7C8"/>${floor('#D9B98C')}`+`<g>${[...Array(10)].map((_,i)=>`<path d="M${i*80} 0 h80 v34 q-20 14 -40 0 q-20 14 -40 0 Z" fill="${i%2?'#fff':'#E5484D'}"/>`).join('')}</g>`+
+    `<g transform="translate(210 330)">${P.shelf(ph?'phones':it)}</g><rect x="540" y="300" width="250" height="90" fill="#A8754A" ${st()}/><rect x="530" y="292" width="270" height="14" fill="#8A5A3B" ${st()}/>`,
+  warehouse:(full)=>`<rect width="800" height="450" fill="#D8DDE3"/>${[...Array(20)].map((_,i)=>`<path d="M${i*40+20} 0 V${GR-10}" stroke="#C3C9D1" stroke-width="3"/>`).join('')}<rect x="300" y="70" width="200" height="${GR-80}" fill="#9AA4B1" ${st()}/>${[...Array(8)].map((_,i)=>`<path d="M300 ${90+i*36} H500" stroke="#7F8A98" stroke-width="3"/>`).join('')}${floor('#B9C0C8')}`+
+    (full?`<g transform="translate(110 ${GR})">${P.boxes()}</g><g transform="translate(690 ${GR})">${P.boxes()}</g>`:''),
+  street:()=>`<rect width="800" height="450" fill="#BFE3F7"/><circle cx="700" cy="70" r="36" fill="#FFE08A"/>`+
+    [[0,120,'#D9C9B0'],[130,90,'#C7B79D'],[240,150,'#E3D4BC'],[400,110,'#CDBDA3'],[520,170,'#DCCAB0'],[660,100,'#C9B89D']].map(([x,h,c])=>`<rect x="${x}" y="${320-h-60}" width="${x===660?140:120}" height="${h+60}" fill="${c}"/>${[0,1].map(r=>[0,1,2].map(k=>`<rect x="${x+16+k*34}" y="${320-h-44+r*44}" width="20" height="24" fill="#9FC4DD"/>`).join('')).join('')}`).join('')+
+    `<rect y="320" width="800" height="30" fill="#CFC6B8"/><rect y="350" width="800" height="100" fill="#4a4a52"/>${[...Array(8)].map((_,i)=>`<rect x="${i*110+20}" y="${398}" width="60" height="6" fill="#fff"/>`).join('')}`,
+  home:()=>`<rect width="800" height="450" fill="#F3E1D3"/><rect x="0" y="300" width="800" height="8" fill="#E2C7B1"/>${floor('#C99E73')}<rect x="540" y="80" width="170" height="140" fill="#BFE3F7" ${st(4)}/><path d="M625 80 V220 M540 150 H710" stroke="${K}" stroke-width="4"/><rect x="90" y="90" width="90" height="70" fill="#E8DCC2" ${st(3)}/><path d="M100 150 l25 -30 l20 20 l15 -14 l20 24 Z" fill="#7FB77E"/>`,
+  office:(gov)=>`<rect width="800" height="450" fill="#E3ECF4"/>${floor('#9FB1C2')}<rect x="560" y="70" width="180" height="150" fill="#BFE3F7" ${st(3)}/>${[...Array(9)].map((_,i)=>`<path d="M560 ${82+i*15} H740" stroke="#E8EEF3" stroke-width="7"/>`).join('')}<g transform="translate(60 ${GR})"><rect x="-20" y="-50" width="40" height="50" fill="#C0504D" ${st()}/><circle cx="0" cy="-80" r="30" fill="#4CAF50"/><circle cx="-16" cy="-64" r="18" fill="#43A047"/><circle cx="16" cy="-66" r="18" fill="#43A047"/></g>`+
+    (gov?`<g transform="translate(110 250)">${P.flag()}</g><rect x="250" y="58" width="220" height="50" rx="8" fill="#14957F"/>${T(360,92,'جهة حكومية',24,'#fff',800)}`:''),
+  night:()=>`<rect width="800" height="450" fill="#1E2A4A"/>${floor('#141c33')}<rect x="560" y="70" width="170" height="140" fill="#0f1730" stroke="#3a4a7a" stroke-width="4"/><circle cx="680" cy="110" r="22" fill="#F5E6A8"/><circle cx="690" cy="104" r="20" fill="#0f1730"/>${[[590,100],[620,160],[650,90],[600,190]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="2" fill="#fff"/>`).join('')}<path d="M330 120 L230 ${GR-90} H530 Z" fill="rgba(255,224,138,.16)"/>`,
+  gov:()=>`<rect width="800" height="450" fill="#BFE3F7"/><circle cx="90" cy="70" r="34" fill="#FFE08A"/>${floor('#D9C9A6')}<g transform="translate(400 ${GR-10})">${P.govb()}</g><g transform="translate(650 ${GR-10})">${P.flag()}</g>`,
+  park:()=>`<rect width="800" height="450" fill="#BFE3F7"/><circle cx="700" cy="70" r="34" fill="#FFE08A"/><rect y="300" width="800" height="150" fill="#8BC97A"/><path d="M0 ${GR+5} H800" stroke="#D9C9A6" stroke-width="40"/><g transform="translate(90 305)">${P.tree()}</g><g transform="translate(720 300)">${P.tree()}</g>`,
+  desert:()=>`<rect width="800" height="450" fill="#CFE9F7"/><circle cx="100" cy="80" r="36" fill="#FFE08A"/><path d="M0 280 Q200 250 400 275 T800 265 V450 H0 Z" fill="#EAD1A0"/>`
+};
+const DEFS=`<defs><pattern id="cvShm" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="#fff"/><path d="M0 0H4V4H0Z M4 4H8V8H4Z" fill="#D7263D" opacity=".85"/></pattern></defs>`;
+
+/* ---------- placement helpers ---------- */
+function E(x,y,svg,o={}){
+  let g=svg;const s=o.s||1;if(s!==1||o.f)g=`<g transform="scale(${o.f?-s:s} ${s})">${g}</g>`;
+  (o.a||'').split(' ').filter(Boolean).reverse().forEach(t=>{const[n,d]=t.split('@');g=`<g class="cv-${n}" style="--dl:${d||0}s;--dx:${o.dx||0}px;--dy:${o.dy||0}px;--du:${o.du||.9}s;--n:${o.n||8}">${g}</g>`});
+  return `<g transform="translate(${x} ${y})">${g}</g>`}
+const H=(x,po,a,o={})=>E(x,o.y||GR,person(o.f?Object.assign({ff:1},po):po),Object.assign({s:o.s||PS,a},o));
+function B(x,t,dl,o={}){
+  const fs=o.fs||21,ls=t.split('\n'),w=Math.round(Math.max(...ls.map(l=>l.length))*fs*.52+38),h=Math.round(ls.length*fs*1.3+18);
+  const cx=Math.max(w/2+8,Math.min(792-w/2,x)),tx=x-cx,y=o.y||170;
+  const svg=`<path d="M${tx-10} -18 L${tx} 0 L${tx+10} -18" fill="#fff" ${st()}/><rect x="${-w/2}" y="${-h-17}" width="${w}" height="${h}" rx="15" fill="#fff" ${st()}/><path d="M${tx-8.5} -19 L${tx} -3 L${tx+8.5} -19 Z" fill="#fff"/>`+
+    ls.map((l,i)=>T(0,-h-17+9+fs*1.02+i*fs*1.3,l,fs,K,800)).join('');
+  return E(cx,y,svg,{a:(o.a||'pop')+'@'+dl})}
+const X=(x,y,svg,a,o={})=>E(x,y,svg,Object.assign({a},o));
+const FX=(x,y,e,a,fs=56,o={})=>E(x,y,EM(0,0,e,fs),Object.assign({a},o));
+
+/* ---------- the 20 cases (from the class sheet) ---------- */
+const MAN='#F7F6F0',BEIGE='#E8DCC2',GREYB='#C9D6E3',MINT='#D6EBDD';
+const CASES=[
+/* التجارية */
+{c:'tij',t:'تاجر اشترى بضاعة من شركة ولم يدفع قيمتها.',b:[
+ {bg:BG.shop(),d:4600,cap:'شركة توصل شحنة بضاعة كبيرة لمحل تاجر',e:[X(250,GR+8,P.truck('شركة التوريد'),'inL@0',{du:1.4}),H(640,{g:'r',m:'h',a:'dh'},'pop@.3'),X(470,GR,P.boxes(),'pop@1.6'),B(640,'هلا والله! نزّلوا البضاعة',2.0)]},
+ {bg:BG.shop(),d:5200,cap:'مندوب الشركة يطلب من التاجر قيمة البضاعة',e:[X(470,GR,P.boxes(),''),H(220,{k:'rep',m:'n',a:'df'},'inL@0'),H(640,{g:'r',m:'n'},''),X(400,300,P.doc('فاتورة',{lines:['قيمة البضاعة','٣٠٠٠ د.ك']}),'pop@1.0',{s:.85}),B(220,'المبلغ المطلوب ٣٠٠٠ دينار',1.4)]},
+ {bg:BG.shop(),d:5600,cap:'مرّت الشهور… والتاجر ما دفع قيمة البضاعة',e:[H(220,{k:'rep',m:'a',a:'dp'},'shake@2.4'),H(640,{g:'r',m:'sly',a:'uu'},'talk@.3'),B(640,'باجر… بعدين!',.3),X(420,150,P.cal('بعد ٣ شهور'),'pop@1.6'),B(220,'وين الفلوس؟!',2.6)]}]},
+{c:'tij',t:'شركة رفعت قضية على شركة أخرى بسبب عدم الالتزام بالعقد.',b:[
+ {bg:BG.office(),d:5200,cap:'شركتان توقّعان عقد توريد بينهم',e:[H(220,{k:'rep',m:'h',a:'df'},'inL@0'),H(580,{k:'rep',c:'#5B4636',t:'#2F95E8',m:'h',a:'df'},'inR@0',{f:true}),X(400,300,P.doc('عقد توريد',{lines:['٥٠٠ جهاز','خلال شهر'],sign:true}),'pop@1.0'),B(580,'نلتزم نسلّمكم ٥٠٠ جهاز خلال شهر',1.6)]},
+ {bg:BG.warehouse(false),d:4600,cap:'انتهت المدة… والأجهزة ما وصلت',e:[H(230,{k:'rep',m:'w',a:'dh'},'pop@0'),X(560,170,P.cal('مرّ شهرين'),'pop@.8'),X(560,320,P.clock(),'pop@1.4'),B(230,'وين الأجهزة؟!',2.0)]},
+ {bg:BG.office(),d:5600,cap:'الشركة الأولى ترفع قضية على الشركة الثانية',e:[H(220,{k:'rep',m:'a',a:'dp'},'shake@1.6'),H(580,{k:'rep',c:'#5B4636',t:'#2F95E8',m:'n',a:'uu'},'',{f:true}),X(400,300,P.doc('عقد توريد',{lines:['٥٠٠ جهاز','خلال شهر'],sign:true}),''),X(400,240,P.stamp('ما التزموا'),'stamp@.6'),B(220,'ما التزمتوا بالعقد!',1.4)]}]},
+{c:'tij',t:'صاحب محل اختلف مع مورد البضائع بسبب عدم تسليم الطلبية.',b:[
+ {bg:BG.shop(),d:4800,cap:'صاحب محل يطلب بضاعة من مورّد البضائع',e:[H(620,{g:'#fff',m:'h',a:'du',hold:P.phone()},'talk@.4'),B(600,'أبي طلبية ٢٠٠ كرتون عصير',.5),X(330,140,P.doc('طلبية',{lines:['٢٠٠ كرتون']}),'pop@1.8',{s:.8})]},
+ {bg:BG.shop(false),d:4600,cap:'الأيام تمر… والرفوف فاضية والطلبية ما وصلت',e:[H(620,{g:'#fff',m:'w',a:'hh'},'pop@0'),X(460,170,P.cal('مرّ أسبوعين'),'pop@.8'),X(460,330,P.clock(),'pop@1.4')]},
+ {bg:BG.shop(false),d:5600,cap:'خلاف بين صاحب المحل والمورّد',e:[H(230,{c:GREYB,g:'r',m:'n',a:'uu'},'inL@0'),H(620,{g:'#fff',m:'a',a:'dp'},'shake@1.0',{f:true}),B(620,'وين الطلبية؟!',.6),B(230,'مو ذنبي!',1.8),FX(425,170,'💢','pulse@2.4')]}]},
+/* المدنية */
+{c:'mad',t:'شخص أقرض صديقه مبلغ 5000 دينار ولم يُرجعه.',b:[
+ {bg:BG.home(),d:5600,cap:'شخص يسلّف صديقه ٥٠٠٠ دينار',e:[H(250,{m:'h',a:'df'},'pop@0'),H(560,{c:BEIGE,g:'r',m:'h',a:'df'},'inR@0',{f:true}),X(320,300,P.money(),'pop@.6 mv@2.0',{dx:170,du:.9}),B(250,'خذ ٥٠٠٠ دينار\nوترجعها بعد شهرين',.6),B(560,'تسلم! أكيد برجعها',3.0)]},
+ {bg:BG.street(),d:5200,cap:'مرّت المدة… وكل مرة الصديق يأجّل',e:[H(220,{m:'w',a:'du',hold:P.phone()},'pop@0'),X(400,150,P.cal('بعد سنة'),'pop@.4'),B(220,'وين الفلوس؟ مرّت سنة!',1.2),H(600,{c:BEIGE,g:'r',m:'sly',a:'du',hold:P.phone()},'pop@0',{f:true}),B(600,'باجر… باجر',2.6)]},
+ {bg:BG.home(),d:4600,cap:'والصديق ما رجّع المبلغ',e:[H(250,{m:'s',a:'hh'},''),H(560,{c:BEIGE,g:'r',m:'n'},'outR@1.6',{du:1.4}),B(560,'ما عندي شي!',.3)]}]},
+{c:'mad',t:'شخص تسبب في إتلاف سيارة شخص آخر ورفض دفع التعويض.',b:[
+ {bg:BG.street(),d:4400,cap:'شخص يصدم سيارة واقفة ويخرّبها',e:[X(560,GR+30,P.car('#E5484D'),'shake@1.1',{s:1.1}),X(345,GR+30,P.car('#2F95E8'),'inL@0',{s:1.1,du:1.1}),FX(452,320,'💥','pop@1.05',80)]},
+ {bg:BG.street(),d:6000,cap:'صاحب السيارة يطالبه يدفع التصليح… والثاني يرفض',e:[X(500,GR+30,P.car('#E5484D',true),'',{s:1.1}),H(700,{g:'r',m:'a',a:'dp'},'inR@0',{f:true}),B(700,'خرّبت سيارتي! صلّحها',.8),H(200,{c:MINT,m:'sly',a:'uu'},'pop@1.6'),B(200,'مو مسؤوليتي!',2.0),X(470,160,P.doc('فاتورة تصليح',{lines:['٩٠٠ د.ك'],tf:13}),'pop@3.0',{s:.8})]}]},
+{c:'mad',t:'خلاف بين شخصين على ملكية أرض أو عقار.',b:[
+ {bg:BG.desert(),d:4800,cap:'شخص يقول إن هذي الأرض ملكه',e:[X(430,GR-15,P.land(),'fade@0'),H(170,{m:'h',a:'dp',hold:P.doc('وثيقة')},'inL@.3'),B(180,'هذي الأرض ملكي!',1.4)]},
+ {bg:BG.desert(),d:5600,cap:'وشخص ثاني يقول لا… الأرض أرضه هو',e:[X(430,GR-15,P.land(),''),H(170,{m:'a',a:'dp',hold:P.doc('وثيقة')},'shake@2.6'),H(650,{c:BEIGE,g:'r',m:'a',a:'dp',hold:P.doc('وثيقة')},'inR@0',{f:true}),B(650,'لا! الأرض أرضي أنا',1.0),FX(420,190,'💢','pulse@2.2')]}]},
+{c:'mad',t:'مستأجر لم يدفع إيجار المنزل لصاحبه.',b:[
+ {bg:BG.street(),d:5200,cap:'صاحب بيت يأجّر بيته على مستأجر',e:[X(600,GR-40,P.house(),'fade@0'),H(170,{g:'r',m:'h',a:'df'},'inL@0'),H(380,{c:MINT,m:'h'},'inR@.2',{f:true}),FX(275,250,'🔑','pop@1.2 mv@1.8',44,{dx:80}),X(275,190,P.doc('عقد إيجار',{lines:['٤٠٠ د.ك','كل شهر']}),'pop@2.6',{s:.75})]},
+ {bg:BG.street(),d:5600,cap:'المستأجر ساكن في البيت… بس ما يدفع الإيجار',e:[X(600,GR-40,P.house(),''),H(330,{g:'r',m:'a',a:'dp'},'pop@0',{f:true}),B(330,'صار لك ٣ شهور ما دفعت الإيجار!',.4),H(600,{c:MINT,m:'sly',a:'uu'},'pop@1.6',{s:1.2}),B(610,'ما راح أدفع',2.2,{y:205})]}]},
+/* الجزائية */
+{c:'jaz',t:'شخص سرق هاتفاً من أحد المحلات.',b:[
+ {bg:BG.shop(true,true),d:4400,cap:'شخص يدخل محل هواتف… والبائع مشغول',e:[H(660,{c:'#2F95E8',b:false,m:'n',a:'ff'},'',{f:false}),H(330,{k:'thief',m:'sly',a:'dd'},'inL@0 walk@0',{du:2.2,n:10})]},
+ {bg:BG.shop(true,true),d:4400,cap:'ياخذ هاتف من الرف ويخبّيه',e:[H(660,{c:'#2F95E8',b:false,m:'n',a:'ff'},''),H(330,{k:'thief',m:'sly',a:'dp'},''),X(300,250,P.phone(),'mv@.8',{dx:40,dy:70,du:.8,s:1.2}),FX(380,170,'🤫','pop@1.6',44)]},
+ {bg:BG.shop(true,true),d:5200,cap:'ويطلع من المحل بدون ما يدفع',e:[H(330,{k:'thief',m:'sly',a:'pd'},'outL@.2',{du:1.2}),H(660,{c:'#2F95E8',b:false,m:'o',a:'pd'},'turn@.8',{}),B(640,'حرامي! وقّف!',1.3),FX(500,200,'❗','pulse@1.3',60)]}]},
+{c:'jaz',t:'شخص اعتدى بالضرب على شخص آخر.',b:[
+ {bg:BG.street(),d:4200,cap:'نقاش بين شخصين في الشارع',e:[H(300,{c:GREYB,g:'r',m:'a',a:'dp'},'talk@.2'),H(520,{c:MAN,m:'w',a:'dd'},'',{f:true}),B(300,'شنو قلت؟!',.4)]},
+ {bg:BG.street(),d:4400,cap:'واحد منهم يعتدي بالضرب على الثاني',e:[H(300,{c:GREYB,g:'r',m:'a',a:'dp'},'mv@.4',{dx:90,du:.35}),H(500,{c:MAN,m:'o',a:'uu'},'fall@.75',{f:true}),FX(455,210,'💥','pop@.7',90)]},
+ {bg:BG.street(),d:4600,cap:'والمعتدى عليه انصاب',e:[E(480,GR,person({c:MAN,m:'s',a:'dd'}),{s:PS,f:true,a:'fall@0'}),FX(680,372,'🤕','pop@.8',48),H(300,{c:GREYB,g:'r',m:'a'},'outL@1.6',{du:1.4})]}]},
+{c:'jaz',t:'شخص زوّر مستنداً رسمياً.',b:[
+ {bg:BG.night(),d:4600,cap:'شخص في الليل عنده شهادة رسمية',e:[H(450,{c:'#3b3f4a',g:'#ccc',m:'sly'},''),X(380,GR,P.desk(false),''),X(310,GR-92,P.doc('شهادة رسمية',{lines:['النتيجة: راسب'],tf:14}),'pop@.5',{s:.9})]},
+ {bg:BG.night(),d:5200,cap:'يغيّر البيانات ويحط عليها ختم مزيّف',e:[H(450,{c:'#3b3f4a',g:'#ccc',m:'sly',a:'cf'},''),X(380,GR,P.desk(false),''),X(310,GR-92,P.doc('شهادة رسمية',{lines:['النتيجة: ناجح'],lc:'#18A98F',tf:14}),'fade@.6',{s:.9}),X(365,GR-110,P.pen(),'pop@.2 shake@.4',{s:1}),X(330,GR-125,P.stamp('مختوم','#2F5D8A'),'stamp@2.0',{s:.6})]},
+ {bg:BG.office(true),d:5200,cap:'ويقدّمها لجهة رسمية على إنها صحيحة',e:[H(560,{k:'emp',m:'n'},'',{f:true}),X(560,GR,P.desk(),''),H(220,{c:'#3b3f4a',g:'#ccc',m:'sly',a:'df'},'inL@0'),X(300,300,P.doc('شهادة رسمية',{lines:['ناجح'],tf:13}),'pop@1.0 mv@1.5',{dx:160,dy:-10,s:.7}),B(220,'تفضل الشهادة',1.0)]}]},
+{c:'jaz',t:'شخص أتلف ممتلكات عامة عمداً.',b:[
+ {bg:BG.park(),d:4000,cap:'حديقة عامة للناس كلهم',e:[X(560,GR,P.bench(),''),X(720,GR+20,P.lamp(),''),X(290,GR,P.sign('حديقة عامة'),''),H(150,{k:'thief',m:'sly'},'inL@.6',{du:1.2})]},
+ {bg:BG.park(),d:5200,cap:'شخص يكسر الكراسي ويشخبط على اللوحات عمداً',e:[X(560,GR,P.bench(true),'pop@1.2'),FX(560,330,'💥','pop@1.1',80),X(720,GR+20,P.lamp(true),''),X(290,GR,P.sign('حديقة عامة',true),'fade@2.6'),H(430,{k:'thief',m:'sly',a:'dp'},''),FX(400,180,'😈','pop@3.0',44)]}]},
+/* الأحوال الشخصية */
+{c:'ahw',t:'زوجة رفعت قضية طلاق على زوجها.',b:[
+ {bg:BG.home(),d:4200,cap:'زوج وزوجة… بداية حياتهم حلوة',e:[H(320,{m:'h',a:'df'},'pop@0'),H(480,{k:'woman',h:'#E8559A',m:'h',a:'df'},'pop@.2',{f:true}),FX(400,200,'💍','pop@.8',50),FX(400,140,'❤️','pulse@1.2',40)]},
+ {bg:BG.home(),d:4800,cap:'كثرت المشاكل بينهم',e:[H(260,{m:'a',a:'dp'},'talk@.2'),H(540,{k:'woman',h:'#E8559A',m:'a',a:'dp'},'talk@1.2',{f:true}),FX(400,180,'💔','pop@2.2',56),B(260,'!!',.3),B(540,'ما عاد أتحمّل!',1.3)]},
+ {bg:BG.home(),d:5000,cap:'الزوجة ترفع قضية طلاق على زوجها',e:[H(260,{m:'s',a:'dd'},''),H(540,{k:'woman',h:'#E8559A',m:'a',a:'dd',hold:P.bag()},'',{f:true}),B(540,'أبي الطلاق',.4),X(420,200,P.doc('دعوى طلاق',{tf:14}),'pop@1.6',{s:.8})]}]},
+{c:'ahw',t:'أم تطالب بحضانة أطفالها بعد الطلاق.',b:[
+ {bg:BG.home(),d:5000,cap:'أم انفصلت عن زوجها… وعندها طفلين',e:[H(250,{k:'woman',h:'#2F95E8',m:'w',a:'dd'},'pop@0'),H(330,{k:'boy',m:'w'},'pop@.4'),H(380,{k:'girl',m:'w'},'pop@.5'),H(620,{c:BEIGE,m:'n'},'inR@.6',{f:true}),FX(450,200,'💔','pop@1.4',40)]},
+ {bg:BG.home(),d:5600,cap:'الأم تطالب إن العيال يعيشون معاها',e:[H(250,{k:'woman',h:'#2F95E8',m:'a',a:'dp'},''),H(330,{k:'boy',m:'w'},''),H(380,{k:'girl',m:'s'},''),H(620,{c:BEIGE,m:'a',a:'dp'},'',{f:true}),B(250,'عيالي يعيشون معاي',.4),B(620,'لا، عندي أنا',2.0),FX(355,230,'❓','pop@3.0',40)]}]},
+{c:'ahw',t:'زوجة تطالب زوجها بالنفقة.',b:[
+ {bg:BG.home(),d:5000,cap:'زوجة تصرف على البيت والعيال بروحها',e:[H(260,{k:'woman',h:'#18A98F',m:'w',a:'dd'},''),H(340,{k:'girl',m:'n'},''),X(500,180,P.doc('فاتورة كهرباء',{tf:13}),'pop@.6',{s:.7}),X(600,190,P.doc('رسوم المدرسة',{tf:13}),'pop@1.0',{s:.7}),X(550,330,P.doc('إيجار',{tf:13}),'pop@1.4',{s:.7}),FX(260,180,'😰','pop@2.0',40)]},
+ {bg:BG.home(),d:5800,cap:'الزوجة تطالب زوجها يصرف على البيت والعيال',e:[H(250,{k:'woman',h:'#18A98F',m:'a',a:'dp'},''),H(330,{k:'girl',m:'w'},''),H(600,{c:MAN,m:'n',a:'hh'},'',{f:true}),B(250,'مصاريف البيت والعيال\nواجبة عليك',.4),B(600,'دبّري نفسج!',2.4)]}]},
+{c:'ahw',t:'خلاف بين الورثة حول تقسيم الميراث.',b:[
+ {bg:BG.home(),d:5000,cap:'توفّى الأب الله يرحمه… وترك بيت وفلوس',e:[X(400,250,P.frame(),'fade@0',{s:1.1}),X(330,GR-10,P.money(),'pop@1.0',{s:1.2}),X(470,GR-10,P.house(),'pop@1.3',{s:.45}),H(130,{m:'s'},'pop@1.8'),H(680,{k:'woman',h:'#7B55F0',m:'s'},'pop@2.0',{f:true})]},
+ {bg:BG.home(),d:5800,cap:'الورثة اختلفوا على تقسيم الميراث',e:[X(330,GR-10,P.money(),'shake@1.0',{s:1.2}),X(470,GR-10,P.house(),'',{s:.45}),H(130,{m:'a',a:'dp'},''),H(680,{k:'woman',h:'#7B55F0',m:'a',a:'dp'},'',{f:true}),H(560,{c:GREYB,g:'r',m:'a',a:'dp'},'inR@0',{f:true}),B(140,'نصيبي أكبر!',.6),B(640,'لا، أنا أحق!',1.6),FX(400,150,'💢','pulse@2.4')]}]},
+{c:'ahw',t:'قضية إثبات زواج أو نسب.',b:[
+ {bg:BG.home(),d:5000,cap:'زوجين تزوّجوا… بس زواجهم مو موثّق رسمياً',e:[H(300,{m:'h',a:'df'},'pop@0'),H(470,{k:'woman',h:'#E8950F',m:'h'},'pop@.2',{f:true}),H(390,{k:'boy',m:'h'},'pop@.6'),FX(390,170,'💍','pop@1.0',44),X(620,200,P.doc('عقد الزواج',{lines:['؟؟؟'],lf:24,tf:14}),'pop@2.0',{s:.8})]},
+ {bg:BG.office(true),d:5800,cap:'ويبون يثبتون زواجهم ونسب ولدهم رسمياً',e:[H(240,{m:'w',a:'df'},''),H(410,{k:'woman',h:'#E8950F',m:'w'},'',{f:true}),H(320,{k:'boy',m:'n'},''),X(560,GR,P.desk(),''),X(600,240,P.doc('شهادة ميلاد',{lines:['اسم الأب: ؟'],tf:14}),'pop@.6',{s:.75}),B(240,'نبي نثبت زواجنا\nونسب ولدنا',1.4)]}]},
+/* الإدارية */
+{c:'idr',t:'موظف حكومي اعترض على قرار فصله من العمل.',b:[
+ {bg:BG.gov(),d:3800,cap:'موظف يشتغل في جهة حكومية',e:[H(250,{k:'emp',m:'h'},'inL@0 walk@0',{du:1.6,n:8})]},
+ {bg:BG.office(true),d:5000,cap:'يوصله قرار من الجهة الحكومية',e:[H(400,{k:'emp',m:'n'},''),X(400,GR,P.desk(),''),X(820,200,P.env('قرار'),'mv@.3',{dx:-240,dy:40,du:.9}),X(215,300,P.doc('قرار إداري',{lines:['فصل الموظف','من العمل'],col:'#D93B41'}),'pop@1.8',{s:.9}),FX(470,140,'😨','pop@2.6',40)]},
+ {bg:BG.office(true),d:4800,cap:'والموظف يعترض على قرار فصله',e:[H(400,{k:'emp',m:'a',a:'dp'},'talk@.2'),X(400,GR,P.desk(),''),B(400,'القرار ظالم… راح أعترض عليه!',.4)]}]},
+{c:'idr',t:'موظف تظلّم من قرار نقله إلى جهة أخرى.',b:[
+ {bg:BG.office(true),d:5000,cap:'موظف يوصله قرار نقله لجهة ثانية',e:[H(400,{k:'emp',m:'o'},''),X(400,GR,P.desk(),''),X(215,300,P.doc('قرار إداري',{lines:['نقل الموظف','إلى جهة أخرى'],col:'#D93B41'}),'pop@.6',{s:.9})]},
+ {bg:BG.gov(),d:5600,cap:'الموظف يتظلّم من قرار نقله',e:[H(200,{k:'emp',m:'s',a:'ff',hold:P.box('#C98B4E')},'mv@.2',{dx:60,du:1.6}),X(560,330,P.arrow('جهة أخرى'),'pop@.8',{f:false}),B(260,'ليش ينقلوني؟\nبتظلّم من القرار',1.8)]}]},
+{c:'idr',t:'شخص اعترض على قرار جهة حكومية برفض منحه ترخيصاً.',b:[
+ {bg:BG.office(true),d:5000,cap:'شخص يقدّم طلب ترخيص محل عند جهة حكومية',e:[H(600,{k:'emp',m:'n'},'',{f:true}),X(600,GR,P.desk(),''),H(230,{g:'r',m:'h',a:'df'},'inL@0'),X(310,300,P.doc('طلب ترخيص',{lines:['فتح محل'],tf:14}),'pop@1.0 mv@1.6',{dx:200,dy:-20,s:.7})]},
+ {bg:BG.office(true),d:5800,cap:'الجهة ترفض تعطيه الترخيص… وهو يعترض على القرار',e:[H(600,{k:'emp',m:'n'},'',{f:true}),X(600,GR,P.desk(),''),H(230,{g:'r',m:'a',a:'dp'},''),X(500,180,P.doc('طلب ترخيص',{lines:['فتح محل'],tf:14}),'',{s:.8}),X(500,120,P.stamp('مرفوض'),'stamp@.6',{s:.8}),B(230,'ليش رفضتوا؟ أوراقي كاملة!',1.6)]}]},
+{c:'idr',t:'موظف حكومي طعن على قرار توقيع عقوبة إدارية عليه.',b:[
+ {bg:BG.office(true),d:5000,cap:'موظف حكومي يوصله قرار بعقوبة',e:[H(400,{k:'emp',m:'o'},''),X(400,GR,P.desk(),''),X(215,300,P.doc('قرار إداري',{lines:['عقوبة: خصم','٥ أيام من الراتب'],col:'#D93B41',lf:13}),'pop@.6',{s:.9}),FX(470,140,'😟','pop@1.6',40)]},
+ {bg:BG.office(true),d:5400,cap:'والموظف يطعن على قرار العقوبة',e:[H(400,{k:'emp',m:'a',a:'df'},''),X(400,GR,P.desk(),''),X(330,GR-92,P.doc('طعن على قرار',{lines:['أعترض على','العقوبة'],tf:14}),'pop@.4',{s:.7}),X(355,GR-96,P.pen(),'shake@.6',{s:.8}),B(400,'أطعن على هالقرار!',1.4)]}]}
+];
+
+/* ---------- clip player ---------- */
+let V=null,G=null;
+const $=id=>document.getElementById(id);
+function stopVid(){if(V&&V.raf)cancelAnimationFrame(V.raf);V=null;try{speechSynthesis.cancel()}catch(e){}}
+function playCase(C){stopVid();V={C,bi:-1,el:0,paused:false,t0:performance.now(),tot:C.b.reduce((s,b)=>s+b.d,0)};
+  const cv=$('cv');if(cv)cv.classList.remove('paused');const en=$('cvend');if(en)en.hidden=true;setPP();V.raf=requestAnimationFrame(tick)}
+function tick(now){if(!V)return;if(!V.paused)V.el=now-V.t0;
+  let acc=0,bi=0;for(;bi<V.C.b.length;bi++){acc+=V.C.b[bi].d;if(V.el<acc)break}
+  const pr=$('cvprog');if(pr)pr.style.width=Math.min(100,V.el/V.tot*100)+'%';
+  if(bi>=V.C.b.length){V.done=true;const en=$('cvend');if(en)en.hidden=false;setPP();return}
+  if(bi!==V.bi){V.bi=bi;showBeat(V.C.b[bi])}
+  V.raf=requestAnimationFrame(tick)}
+function showBeat(b){const sv=$('cvsvg'),cp=$('cvcap');if(!sv)return;sv.innerHTML=DEFS+b.bg+b.e.join('');
+  if(cp){cp.textContent=b.cap;cp.classList.remove('in');void cp.offsetWidth;cp.classList.add('in')}speak(b.cap)}
+function setPP(){const b=$('cvpp');if(!b||!V)return;b.textContent=V.done?'↻ من البداية':V.paused?'▶ تشغيل':'⏸ إيقاف'}
+function pp(){if(!V)return;if(V.done){playCase(V.C);return}
+  V.paused=!V.paused;$('cv').classList.toggle('paused',V.paused);if(!V.paused)V.t0=performance.now()-V.el;
+  try{V.paused?speechSynthesis.pause():speechSynthesis.resume()}catch(e){}setPP()}
+let VOICE=false;try{VOICE=localStorage.getItem('cs_voice')==='1'}catch(e){}
+function arVoice(){try{return speechSynthesis.getVoices().find(v=>/^ar/i.test(v.lang))}catch(e){return null}}
+function speak(t){if(!VOICE||!window.speechSynthesis)return;const v=arVoice();if(!v)return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.voice=v;u.lang=v.lang;u.rate=.95;speechSynthesis.speak(u)}catch(e){}}
+
+/* ---------- game ---------- */
+const D=()=>window.__daftar;
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+function deck(n){const by={};CASES.forEach((c,i)=>(by[c.c]=by[c.c]||[]).push(i));CK.forEach(k=>by[k]=shuffle(by[k]));
+  const out=[];let r=0;while(out.length<n&&r<10){CK.forEach(k=>{if(out.length<n&&by[k][r]!=null)out.push(by[k][r])});r++}
+  /* shuffle within each group of 5 so the order of types is not predictable */
+  let res=[];for(let i=0;i<out.length;i+=5)res=res.concat(shuffle(out.slice(i,i+5)));return res}
+function open(){if(!D())return;stopVid();const ov=document.createElement('div');ov.className='cs';ov.id='cs';ov.setAttribute('role','dialog');ov.setAttribute('aria-label','محكمة القضايا');
+  document.body.appendChild(ov);document.body.style.overflow='hidden';ov.addEventListener('click',onClick);
+  G={stage:'menu',n:G&&G.n||10};draw()}
+function close(){stopVid();const ov=$('cs');if(ov)ov.remove();document.body.style.overflow='';G=G?{n:G.n}:null;const d=D();if(d)d.done()}
+function draw(){const ov=$('cs');if(!ov)return;
+  if(G.stage==='menu'){const P=D().pool();
+    ov.innerHTML=`<div class="cs-hud"><span class="cs-title">محكمة القضايا</span><span style="flex:1"></span><button class="cs-x" data-c="exit">رجوع للدفتر</button></div>
+    <div class="cs-center"><div class="cs-menu"><h2>محكمة القضايا</h2>
+      <p>مقطع قصير لكل قضية. الموقع يختار طالبة عشوائياً، تشوف المقطع وتحدد نوع القضية والمحكمة اللي تنظر فيها. الإجابة الصح = نقطة في الدفتر.</p>
+      <div class="cs-legend">${CK.map(k=>`<div style="--cc:${CAT[k].c}"><span>${CAT[k].ic}</span>${CAT[k].n}</div>`).join('')}</div>
+      <div><p style="margin-bottom:8px">عدد القضايا</p><div class="cs-chips">${[[5,'٥ (وحدة لكل نوع)'],[10,'١٠'],[20,'كل القضايا ٢٠']].map(([n,l])=>`<button class="cs-chip" data-c="n" data-v="${n}" aria-pressed="${G.n===n}">${l}</button>`).join('')}</div></div>
+      <div class="cs-chips"><button class="cs-chip" data-c="voice" aria-pressed="${VOICE}">🔊 قراءة الشرح بصوت</button></div>
+      <p class="cs-small">الأسماء من: ${esc(P.from)} · ${P.ids.length} طالبة</p>
+      <div><button class="cs-btn" data-c="start">ابدئي المحاكمة</button></div></div></div>`;return}
+  if(G.stage==='end'){const by=D().byGame(G.id),ws=Object.keys(by).sort((a,b)=>by[b]-by[a]),ok=G.log.filter(x=>x.ok).length;
+    ov.innerHTML=`<div class="cs-hud"><span class="cs-title">محكمة القضايا</span><span style="flex:1"></span><button class="cs-x" data-c="exit">رجوع للدفتر</button></div>
+    <div class="cs-center"><div class="cs-end"><h2>رُفعت الجلسة!</h2>
+      <p class="cs-pill" style="align-self:center">${ok} إجابة صحيحة من ${G.order.length} قضية</p>
+      ${ws.length?`<div><p style="margin:0 0 8px;font-weight:700">نقاط هالجلسة انحفظت في الدفتر</p><div class="cs-winners">${ws.map(id=>`<span>${esc(D().nm(id))}<b>+${by[id]}</b></span>`).join('')}</div></div>`:''}
+      <h3 style="margin:6px 0 0;font-family:var(--display);font-size:22px">طريقة سهلة للتثبيت: تذكّري نوع القضية من خلال المثال</h3>
+      <div class="cs-recap">${CK.map(k=>`<div style="--cc:${CAT[k].c}"><h4>${CAT[k].ic} ${CAT[k].n}</h4><p>${CAT[k].def}</p><em>مثال: ${CAT[k].ex}</em></div>`).join('')}</div>
+      <div class="cs-chips"><button class="cs-btn" data-c="again">جلسة جديدة</button><button class="cs-btn alt" data-c="exit">رجوع للدفتر</button></div></div></div>`;return}
+  const C=CASES[G.order[G.i]];
+  ov.innerHTML=`<div class="cs-hud"><span class="cs-title">محكمة القضايا</span><div class="cs-track">${G.order.map((_,i)=>{const l=G.log.find(x=>x.i===i&&x.final);return `<i class="${i===G.i?'now':l?(l.ok?'ok':'no'):''}"></i>`}).join('')}</div><span class="cs-pill">القضية ${G.i+1} / ${G.order.length}</span><button class="cs-x" data-c="exit">إنهاء</button></div>
+  <div class="cs-main"><div class="cs-stage"><div class="cv" id="cv"><svg id="cvsvg" viewBox="0 0 800 450" role="img" aria-label="${esc(C.t)}"></svg><span class="cv-tag">قضية رقم ${G.i+1}</span><div class="cv-cap" id="cvcap"></div><div class="cv-end" id="cvend" hidden><button data-c="replay">↻ شاهدي المقطع مرة ثانية</button></div></div>
+    <div class="cv-bar"><button id="cvpp" data-c="pp">⏸ إيقاف</button><div class="cv-prog"><i id="cvprog"></i></div><button data-c="replay">↻ إعادة</button><button data-c="voice" aria-pressed="${VOICE}" title="قراءة الشرح بصوت">🔊</button></div></div>
+  <aside class="cs-side" id="csside"></aside></div>`;
+  drawSide()}
+function drawSide(){const el=$('csside');if(!el||!G||G.stage!=='play')return;const C=CASES[G.order[G.i]],wrong=G.tries.map(t=>t.k),fin=G.res==='ok'||G.res==='reveal';
+  let fb='';
+  if(G.res==='ok')fb=`<div class="cs-fb good"><b>✓ صح! قضية ${CAT[C.c].n}</b><br>+١ نقطة لـ ${esc(D().nm(G.cur))}<br>${CAT[C.c].def}</div>`;
+  else if(G.res==='no'){const k=G.tries[G.tries.length-1].k;fb=`<div class="cs-fb no"><b>✗ مو ${CAT[k].n}</b><br>القضايا ${CAT[k].n}: ${CAT[k].def.replace('هي القضايا ','')}<div class="row2"><button class="cs-btn sm" data-c="steal">فرصة لطالبة ثانية</button><button class="cs-btn sm alt" data-c="reveal">كشف الإجابة</button></div></div>`}
+  else if(G.res==='reveal')fb=`<div class="cs-fb rev"><b>الإجابة: قضية ${CAT[C.c].n} ${CAT[C.c].ic}</b><br>${CAT[C.c].def}</div>`;
+  el.innerHTML=`<div class="cs-who"><small>${G.tries.length&&!fin&&G.res!=='no'?'فرصة ثانية لـ':'دور الطالبة'}</small><div class="cs-name${G.rolling?' spin':''}" id="csname">${G.cur?esc(D().nm(G.cur)):'…'}</div>${fin?'':`<button class="cs-sm" data-c="reroll" ${G.rolling?'disabled':''}>غايبة؟ اختاري غيرها</button>`}</div>
+    <h3>من أي نوع هالقضية؟</h3>
+    <div class="cs-opts">${CK.map(k=>{const cls=fin?(k===C.c?'right':'dim'):wrong.includes(k)?'wrong':'';return `<button class="cs-opt ${cls}" style="--cc:${CAT[k].c}" data-c="ans" data-k="${k}" ${fin||wrong.includes(k)||G.rolling||G.res==='no'?'disabled':''}><span>${CAT[k].ic}</span>${CAT[k].n}</button>`}).join('')}</div>
+    ${fb}${fin?`<p class="cs-case">القضية: <b>${esc(C.t)}</b></p><button class="cs-btn" data-c="next">${G.i+1<G.order.length?'القضية التالية ←':'إنهاء الجلسة'}</button>`:''}`}
+function pick(cb){const P=D().pool();let ids=P.ids.filter(x=>!G.used.includes(x)&&x!==G.cur);if(!ids.length){G.used=G.cur?[G.cur]:[];ids=P.ids.filter(x=>x!==G.cur)}if(!ids.length)ids=P.ids;
+  const fin=ids[Math.floor(Math.random()*ids.length)];G.rolling=true;drawSide();let n=0;
+  const iv=setInterval(()=>{const el=$('csname');if(!G||!el){clearInterval(iv);return}
+    if(++n>=14){clearInterval(iv);G.rolling=false;G.cur=fin;G.used.push(fin);drawSide();if(cb)cb();return}
+    el.textContent=D().nm(P.ids[Math.floor(Math.random()*P.ids.length)])},75)}
+function round(){G.tries=[];G.res=null;G.cur=null;draw();playCase(CASES[G.order[G.i]]);pick()}
+function confetti(){const c=document.createElement('div');c.className='cs-conf';const cols=['#F2B134','#3FD19A','#6CB8FF','#FF7B7F','#E8559A','#fff'];
+  for(let i=0;i<36;i++){const s=document.createElement('i');s.style.left=Math.random()*100+'%';s.style.background=cols[i%cols.length];s.style.animationDelay=Math.random()*.5+'s';c.appendChild(s)}
+  document.body.appendChild(c);setTimeout(()=>c.remove(),2400)}
+function onClick(e){const b=e.target.closest('[data-c]');if(!b||b.disabled||!G)return;const c=b.dataset.c;
+  switch(c){
+    case 'exit':close();break;
+    case 'n':G.n=+b.dataset.v;draw();break;
+    case 'voice':VOICE=!VOICE;try{localStorage.setItem('cs_voice',VOICE?'1':'0')}catch(x){}
+      document.querySelectorAll('.cs [data-c="voice"]').forEach(x=>x.setAttribute('aria-pressed',VOICE));if(!VOICE)try{speechSynthesis.cancel()}catch(x){}
+      else if(window.speechSynthesis&&!arVoice()){try{speechSynthesis.getVoices()}catch(x){}}break;
+    case 'start':case 'again':G={stage:'play',n:G.n,id:D().uid(),order:deck(G.n),i:0,used:[],log:[],tries:[],res:null,cur:null};round();break;
+    case 'pp':pp();break;
+    case 'replay':if(V)playCase(V.C);break;
+    case 'reroll':pick();break;
+    case 'ans':{if(!G.cur||G.rolling)return;const C=CASES[G.order[G.i]],k=b.dataset.k;
+      if(k===C.c){D().award(G.id,G.i*10+G.tries.length,G.cur,'نشاط ختامي: محكمة القضايا');G.res='ok';G.log.push({i:G.i,sid:G.cur,ok:true,final:true});drawSide();confetti()}
+      else{G.tries.push({sid:G.cur,k});G.res='no';drawSide();const w=document.querySelector(`.cs-opt[data-k="${k}"]`);if(w)w.classList.add('shake')}
+      updTrack();break}
+    case 'steal':G.res=null;pick();break;
+    case 'reveal':G.res='reveal';G.log.push({i:G.i,ok:false,final:true});drawSide();updTrack();break;
+    case 'next':G.i++;if(G.i>=G.order.length){stopVid();G.stage='end';draw()}else round();break;
+  }}
+function updTrack(){const t=document.querySelector('.cs-track');if(!t||!G||!G.order)return;t.innerHTML=G.order.map((_,i)=>{const l=G.log.find(x=>x.i===i&&x.final);return `<i class="${i===G.i&&!l?'now':l?(l.ok?'ok':'no'):''}"></i>`}).join('')}
+document.addEventListener('click',e=>{if(e.target.closest('[data-act="startcases"]'))open()});
+document.addEventListener('keydown',e=>{if(!G||!$('cs'))return;if(e.key===' '&&G.stage==='play'&&!e.target.closest('button')){e.preventDefault();pp()}});
+if(window.speechSynthesis)try{speechSynthesis.getVoices()}catch(e){}
+window.__cases={CASES,CAT,playCase,open};
+})();
