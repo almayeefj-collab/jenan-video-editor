@@ -65,24 +65,24 @@ const e = (src: string, from: number, to: number, first?: boolean): Shot => ({ki
 const t = (src: string, from: number, to: number): Shot => ({kind: 'talk', clip: {src, from, to}, ...NAMES[src]});
 
 const SHOTS: Shot[] = [
-  {kind: 'title', dur: 3.0},
+  {kind: 'title', dur: 2.6},
   // مقتطفات سريعة: الضيافة، السلام، الحضور
   b('1634', 1.2, 2.5),
   b('1635', 1.0, 2.3),
   b('1668', 1.0, 2.3),
-  b('1683', 1.5, 2.8),
+  b('1683', 1.5, 2.3),
   // المذيعة
   t('1674', 0.0, 26.3),
   // السؤال (مقطعين) ← أ. هبات (مقطعين) — كاملة
-  t('1649', 0.0, 3.0),
+  t('1649', 0.0, 3.3),
   t('1654', 0.0, 8.84),
   t('1652', 0.0, 21.75),
-  t('1655', 0.0, 13.38),
+  t('1655', 0.0, 13.7),
   // السؤال ← د. مريم العويش — كاملة
   t('1695', 0.95, 14.85),
-  t('1696', 0.0, 21.61),
+  t('1696', 0.0, 22.2),
   // استفتاحية المحاضرة: ترحيب أ. هبات مختصر (أول جملة لين أول وقفة)
-  t('1697', 0.0, 5.27),
+  t('1697', 0.0, 5.6),
   // مقتطفات من محاضرتها بدون صوتها الأصلي؛ صوتها خلفية مع موسيقى خافتة
   e('1709', 1.0, 4.2, true),
   e('1704', 0.3, 2.8),
@@ -95,9 +95,9 @@ const SHOTS: Shot[] = [
   e('1709', 13.0, 16.5),
   // باقي المقابلات — كاملة
   t('1667', 0.45, 10.95),
-  t('1664', 0.5, 10.66),
-  t('1660', 0.0, 11.5),
-  {kind: 'final', dur: 2.8},
+  t('1664', 0.5, 11.3),
+  t('1660', 0.0, 11.85),
+  {kind: 'final', dur: 2.5},
 ];
 
 // صوت المحاضِرة تحت المقتطفات: كلامها عن السكينة كامل
@@ -110,11 +110,13 @@ const BED_MUSIC = 0.1;
 
 const shotFrames = (s: Shot) => Math.round((s.kind === 'title' || s.kind === 'final' ? s.dur : s.clip.to - s.clip.from) * FPS);
 // كلام ورا كلام = قطع مباشر؛ اللقطات السريعة والمقتطفات كروس فيد قصير؛ غير كذا كروس فيد عادي
+// مقطعين ورا بعض لنفس المتكلمة: ذوبان ناعم بدل القطع المباشر
+const SMOOTH_PAIRS = new Set(['1649>1654']);
 const xfadeBefore = (i: number) => {
   if (i === 0) return 0;
   const p = SHOTS[i - 1].kind;
   const c = SHOTS[i].kind;
-  if (p === 'talk' && c === 'talk') return 0;
+  if (p === 'talk' && c === 'talk') return SMOOTH_PAIRS.has(`${(SHOTS[i - 1] as {clip: Clip}).clip.src}>${(SHOTS[i] as {clip: Clip}).clip.src}`) ? 10 : 0;
   if ((p === 'broll' && c === 'broll') || (p === 'excerpt' && c === 'excerpt')) return 6;
   return XFADE;
 };
@@ -144,15 +146,16 @@ const useReveal = (delay: number, dur = 20) => {
   return {opacity: p, transform: `translateY(${(1 - p) * 30}px) scale(${0.96 + 0.04 * p})`};
 };
 
-const Footage: React.FC<{clip: Clip; frames: number; volume?: (f: number) => number; muted?: boolean; filter?: string; zoom?: [number, number]; origin?: string}> = ({
-  clip, frames, volume, muted, filter = GRADE, zoom = [1.0, 1.05], origin = '50% 50%',
+const Footage: React.FC<{clip: Clip; frames: number; volume?: (f: number) => number; muted?: boolean; filter?: string; zoom?: [number, number]; origin?: string; file?: string; transparent?: boolean}> = ({
+  clip, frames, volume, muted, filter = GRADE, zoom = [1.0, 1.05], origin = '50% 50%', file, transparent,
 }) => {
   const frame = useCurrentFrame();
   const scale = interpolate(frame, [0, frames], zoom);
   return (
-    <AbsoluteFill style={{background: INK, overflow: 'hidden'}}>
+    <AbsoluteFill style={{background: transparent ? undefined : INK, overflow: 'hidden'}}>
       <OffthreadVideo
-        src={staticFile(`${DIR}${clip.src}.mp4`)}
+        transparent={transparent}
+        src={staticFile(file ?? `${DIR}${clip.src}.mp4`)}
         trimBefore={Math.round(clip.from * FPS)}
         muted={muted}
         volume={volume}
@@ -280,6 +283,9 @@ const Badge: React.FC = () => {
 
 type Edge = {fadeIn: number; fadeOut: number};
 // زوم إن على أ. هبات وهي تتكلم في مقابلتها بس (مو في تقديم المحاضرة)
+// لقطات فيها قصّة للشخص (شفافة) عشان الزخرفة تطلع وراها مو فوقها — مولّدة بـ mediapipe selfie segmentation
+const PERSON_CUTOUT = new Set(['1652', '1655']);
+
 const ZOOM_IN: Record<string, {zoom: [number, number]; origin: string}> = {
   '1652': {zoom: [1.42, 1.47], origin: '48% 92%'},
   '1655': {zoom: [1.42, 1.47], origin: '48% 92%'},
@@ -308,7 +314,7 @@ const OrnamentFrame: React.FC = () => {
 };
 
 const Talk: React.FC<{clip: Clip; frames: number; name?: string; role?: string} & Edge> = ({clip, frames, name, role, fadeIn, fadeOut}) => {
-  const inF = fadeIn || 3;
+  const inF = Math.min(fadeIn || 3, 4); // الكلام يبدأ واضح حتى مع الذوبان
   const outF = fadeOut || 3;
   const vol = (f: number) => Math.min(interpolate(f, [0, inF], [0, 1], clamp), interpolate(f, [frames - outF, frames], [1, 0], clamp));
   return (
@@ -316,6 +322,10 @@ const Talk: React.FC<{clip: Clip; frames: number; name?: string; role?: string} 
       <Footage clip={clip} frames={frames} volume={vol} zoom={ZOOM_IN[clip.src]?.zoom ?? [1.0, 1.04]} origin={ZOOM_IN[clip.src]?.origin} />
       <AbsoluteFill style={{background: 'linear-gradient(180deg, rgba(0,0,0,0.35) 0%, transparent 15%, transparent 75%, rgba(0,0,0,0.35) 100%)'}} />
       <OrnamentFrame />
+      {/* أ. هبات فوق الزخرفة: الزخرفة تصير خلف راسها */}
+      {PERSON_CUTOUT.has(clip.src) ? (
+        <Footage clip={clip} frames={frames} muted transparent file={`${DIR}${clip.src}_person.webm`} zoom={ZOOM_IN[clip.src]?.zoom ?? [1.0, 1.04]} origin={ZOOM_IN[clip.src]?.origin} />
+      ) : null}
       <Badge />
       {name ? <NameTag name={name} role={role} frames={frames} /> : null}
     </AbsoluteFill>
