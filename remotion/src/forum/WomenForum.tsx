@@ -102,7 +102,7 @@ const SHOTS: Shot[] = [
 const VOICE_BED: Clip[] = [{src: '1700', from: 0.0, to: 23.35}];
 const VOICE = 0.95;
 const MUSIC = 0.22;
-const UNDER_TALK = 0.05;
+const UNDER_TALK = 0; // تحت كلام المقابلات والمذيعة: بدون موسيقى
 const BED_MUSIC = 0.08;
 
 const shotFrames = (s: Shot) => Math.round((s.kind === 'title' || s.kind === 'final' ? s.dur : s.clip.to - s.clip.from) * FPS);
