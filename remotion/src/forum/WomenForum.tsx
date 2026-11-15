@@ -208,7 +208,8 @@ const Divider: React.FC<{delay: number}> = ({delay}) => {
 };
 
 // غلاف/ختام بنفس تصميم منشورات الجمعية: صورة من الملتقى تذوب في الكحلي فوق وتحت
-const Card: React.FC<{frames: number; src: string; from?: number; fadeOut?: boolean; toBlack?: boolean}> = ({frames, src, from = 1, fadeOut, toBlack}) => {
+// safe: نسخة الغلاف المستقل؛ كل العناصر داخل المساحة الآمنة للريلز (≈300px فاضية فوق وتحت، وهوامش جانبية)
+const Card: React.FC<{frames: number; src: string; from?: number; fadeOut?: boolean; toBlack?: boolean; safe?: boolean}> = ({frames, src, from = 1, fadeOut, toBlack, safe}) => {
   const frame = useCurrentFrame();
   const out = fadeOut ? interpolate(frame, [frames - 16, frames - 2], [1, 0], clamp) : 1;
   const black = toBlack ? interpolate(frame, [frames - 22, frames], [0, 1], clamp) : 0;
@@ -224,16 +225,16 @@ const Card: React.FC<{frames: number; src: string; from?: number; fadeOut?: bool
       </AbsoluteFill>
       <AbsoluteFill style={{direction: 'rtl', alignItems: 'center', textAlign: 'center', opacity: out}}>
         {/* الترويسة: الشعار واسم الجمعية */}
-        <div style={{...useReveal(0), marginTop: 150, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-          <Img src={staticFile('brand/kts-logo-clear.png')} style={{height: 230, filter: 'drop-shadow(0 10px 26px rgba(0,0,0,0.45))'}} />
+        <div style={{...useReveal(0), marginTop: safe ? 290 : 150, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+          <Img src={staticFile('brand/kts-logo-clear.png')} style={{height: safe ? 200 : 230, filter: 'drop-shadow(0 10px 26px rgba(0,0,0,0.45))'}} />
           <div style={{fontFamily: BODY_FONT, fontSize: 54, fontWeight: 800, color: '#fff', marginTop: 26}}>جمعية المعلمين الكويتية</div>
           <div style={{fontFamily: 'Cairo', fontSize: 22, fontWeight: 700, color: STEEL, letterSpacing: 7, marginTop: 8, direction: 'ltr'}}>KUWAIT TEACHERS SOCIETY</div>
         </div>
         <Divider delay={10} />
         <div style={{...useReveal(16), fontFamily: TITLE_FONT, fontSize: 64, fontWeight: 700, ...goldText, lineHeight: 1.4}}>{VERSE}</div>
         {/* العنوان تحت */}
-        <div style={{position: 'absolute', bottom: 190, left: 0, right: 0, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-          <div style={{...useReveal(22), fontFamily: TITLE_FONT, fontSize: 132, fontWeight: 700, ...goldText, lineHeight: 1.3, whiteSpace: 'nowrap', filter: 'drop-shadow(0 6px 20px rgba(0,0,0,0.5))'}}>الملتقى النسائي</div>
+        <div style={{position: 'absolute', bottom: safe ? 440 : 190, left: safe ? 80 : 0, right: safe ? 80 : 0, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+          <div style={{...useReveal(22), fontFamily: TITLE_FONT, fontSize: safe ? 118 : 132, fontWeight: 700, ...goldText, lineHeight: 1.3, whiteSpace: 'nowrap', filter: 'drop-shadow(0 6px 20px rgba(0,0,0,0.5))'}}>الملتقى النسائي</div>
           <div style={{...useReveal(32), fontFamily: TITLE_FONT, fontSize: 70, fontWeight: 700, color: '#fff', lineHeight: 1.35, marginTop: 8, textShadow: '0 4px 18px rgba(0,0,0,0.5)'}}>{LECTURE_TITLE}</div>
           <div style={{...useReveal(40), fontFamily: BODY_FONT, fontSize: 44, fontWeight: 800, color: MIST, marginTop: 6, textShadow: '0 3px 14px rgba(0,0,0,0.5)'}}>{LECTURE_SUB}</div>
         </div>
@@ -449,3 +450,12 @@ export const WomenForum: React.FC = () => {
     </AbsoluteFill>
   );
 };
+
+// غلاف الريلز (صورة ثابتة) بنفس الثيم، داخل المساحة الآمنة
+export const WomenForumCover: React.FC = () => (
+  <AbsoluteFill style={{background: DEEP}}>
+    <Sequence from={-90}>
+      <Card frames={600} src="1702" from={6.0} safe />
+    </Sequence>
+  </AbsoluteFill>
+);

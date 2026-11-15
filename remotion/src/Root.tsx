@@ -1,4 +1,4 @@
-import {Composition} from 'remotion';
+import {Composition, Still} from 'remotion';
 import {HelloJenan, helloJenanSchema} from './HelloJenan';
 import {FPS, HEIGHT, totalFrames, WIDTH} from './reel/config';
 import {Reel} from './reel/Reel';
@@ -10,13 +10,14 @@ import {FPS as C46_FPS, HEIGHT as C46_H, totalFrames as c46Frames, WIDTH as C46_
 import {Recommendations46} from './conference46/Recommendations';
 import {FPS as C46B_FPS, HEIGHT as C46B_H, Recommendations46V2, totalFrames as c46bFrames, WIDTH as C46B_W} from './conference46/v2/Recommendations2';
 
-import {FPS as WF_FPS, HEIGHT as WF_H, totalFrames as wfFrames, WIDTH as WF_W, WomenForum} from './forum/WomenForum';
+import {FPS as WF_FPS, HEIGHT as WF_H, totalFrames as wfFrames, WIDTH as WF_W, WomenForum, WomenForumCover} from './forum/WomenForum';
 import {FPS as PR_FPS, HEIGHT as PR_H, PRTeam, totalFrames as prFrames, WIDTH as PR_W} from './pr/PRTeam';
 
 export const RemotionRoot: React.FC = () => {
   return (
     <>
       {/* الملتقى النسائي — جمعية المعلمين الكويتية، أسئلة وأجوبة */}
+      <Still id="WomenForumCover" component={WomenForumCover} width={WF_W} height={WF_H} />
       <Composition id="WomenForum" component={WomenForum} durationInFrames={wfFrames()} fps={WF_FPS} width={WF_W} height={WF_H} />
       {/* فريق العلاقات العامة — فاطمة الهاشمية، نسخة رسمية */}
       <Composition id="PRTeam" component={PRTeam} durationInFrames={prFrames()} fps={PR_FPS} width={PR_W} height={PR_H} />
