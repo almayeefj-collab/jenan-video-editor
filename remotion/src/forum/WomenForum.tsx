@@ -3,7 +3,7 @@
 // ← سؤال وجواب د. مريم العويش ← مقتطفات من محاضرتها وصوتها خلفية مع موسيقى ناعمة ← باقي المقابلات ← ختام
 // الكلام كامل بدون قص. الأسماء تحت كل وحدة من NAMES (اللي ما لها اسم ما يطلع لها شي).
 // اللقطات في public/footage/forum/<رقم IMG>.mp4 (ما ترفع للمستودع): 1080×1920 / 30fps والصوت مطبّع بـ loudnorm
-// الموسيقى music/forum_user.m4a (من المستخدم، مطبّعة) أطول من الفيديو، فما تحتاج loop؛ خافتة جداً وتحت الكلام شبه ما تنسمع
+// الموسيقى music/forum_song.m4a: أغنية المستخدم (87ث) مكررة ٣ مرات بكروس فيد عشان تغطي الفيديو كامل؛ خافتة وتحت الكلام أخف
 import {fade} from '@remotion/transitions/fade';
 import {linearTiming, TransitionSeries} from '@remotion/transitions';
 import {loadFont} from '@remotion/fonts';
@@ -434,7 +434,7 @@ export const WomenForum: React.FC = () => {
           </Fragment>
         ))}
       </TransitionSeries>
-      <Audio src={staticFile('music/forum_user.m4a')} volume={musicVolume} />
+      <Audio src={staticFile('music/forum_song.m4a')} volume={musicVolume} />
       <VoiceBed />
     </AbsoluteFill>
   );
