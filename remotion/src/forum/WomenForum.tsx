@@ -70,8 +70,6 @@ const SHOTS: Shot[] = [
   b('1634', 1.2, 2.5),
   b('1635', 1.0, 2.3),
   b('1668', 1.0, 2.3),
-  b('1656', 0.3, 1.6),
-  b('1690', 0.3, 1.6),
   b('1683', 1.5, 2.8),
   // المذيعة
   t('1674', 0.0, 26.3),
@@ -79,18 +77,22 @@ const SHOTS: Shot[] = [
   t('1649', 0.0, 3.0),
   t('1654', 0.0, 8.84),
   t('1652', 0.0, 21.75),
-  t('1655', 0.0, 16.63),
+  t('1655', 0.0, 13.38),
   // السؤال ← د. مريم العويش — كاملة
   t('1695', 0.95, 14.85),
-  t('1696', 0.0, 27.21),
+  t('1696', 0.0, 21.61),
   // استفتاحية المحاضرة: ترحيب أ. هبات مختصر (أول جملة لين أول وقفة)
   t('1697', 0.0, 5.27),
   // مقتطفات من محاضرتها بدون صوتها الأصلي؛ صوتها خلفية مع موسيقى خافتة
   e('1709', 1.0, 4.2, true),
   e('1704', 0.3, 2.8),
   e('1702', 2.0, 5.0),
+  e('1705', 1.0, 3.5),
   e('1701', 2.0, 4.6),
+  e('1688', 0.5, 3.0),
   e('1703', 1.2, 4.2),
+  e('1699', 4.0, 6.8),
+  e('1709', 13.0, 16.5),
   // باقي المقابلات — كاملة
   t('1667', 0.45, 10.95),
   t('1664', 0.5, 10.66),
@@ -99,8 +101,8 @@ const SHOTS: Shot[] = [
 ];
 
 // صوت المحاضِرة تحت المقتطفات: كلامها عن السكينة كامل
-// ينتهي داخل الوقفة الطويلة بعد جملتها (12.88–13.91) عشان ما تنقطع كلمة
-const VOICE_BED: Clip[] = [{src: '1700', from: 0.0, to: 13.4}];
+// كلامها كامل لين آخر التسجيل (ينتهي في سكوت 23.27–24.0) عشان ما ينقطع
+const VOICE_BED: Clip[] = [{src: '1700', from: 0.0, to: 23.6}];
 const VOICE = 0.95;
 const MUSIC = 0.28;
 const UNDER_TALK = 0.08; // الموسيقى تمشي تحت كل الكلام بصوت خافت
@@ -279,8 +281,30 @@ const Badge: React.FC = () => {
 type Edge = {fadeIn: number; fadeOut: number};
 // زوم إن على أ. هبات وهي تتكلم في مقابلتها بس (مو في تقديم المحاضرة)
 const ZOOM_IN: Record<string, {zoom: [number, number]; origin: string}> = {
-  '1652': {zoom: [1.28, 1.33], origin: '48% 30%'},
-  '1655': {zoom: [1.28, 1.33], origin: '48% 30%'},
+  '1652': {zoom: [1.42, 1.47], origin: '48% 92%'},
+  '1655': {zoom: [1.42, 1.47], origin: '48% 92%'},
+};
+
+// إطار خفيف على كل اللقطات: تدرج أزرق شفاف فوق وتحت مع الزخرفة الإسلامية، ما يغطي على اللقطة
+const OrnamentFrame: React.FC = () => {
+  const band = (top: boolean) => (
+    <div style={{position: 'absolute', left: 0, right: 0, height: 360, [top ? 'top' : 'bottom']: 0, overflow: 'hidden'}}>
+      <div style={{position: 'absolute', inset: 0, background: `linear-gradient(${top ? 180 : 0}deg, #1F5296a6 0%, #1F529640 45%, transparent 100%)`}} />
+      <Img
+        src={staticFile('brand/ornament.png')}
+        style={{
+          position: 'absolute', left: 0, width: WIDTH, [top ? 'top' : 'bottom']: -80, opacity: 0.35, transform: top ? undefined : 'scaleY(-1)',
+          maskImage: `linear-gradient(${top ? 180 : 0}deg, black 0%, transparent 85%)`, WebkitMaskImage: `linear-gradient(${top ? 180 : 0}deg, black 0%, transparent 85%)`,
+        }}
+      />
+    </div>
+  );
+  return (
+    <AbsoluteFill style={{pointerEvents: 'none'}}>
+      {band(true)}
+      {band(false)}
+    </AbsoluteFill>
+  );
 };
 
 const Talk: React.FC<{clip: Clip; frames: number; name?: string; role?: string} & Edge> = ({clip, frames, name, role, fadeIn, fadeOut}) => {
@@ -291,6 +315,7 @@ const Talk: React.FC<{clip: Clip; frames: number; name?: string; role?: string} 
     <AbsoluteFill>
       <Footage clip={clip} frames={frames} volume={vol} zoom={ZOOM_IN[clip.src]?.zoom ?? [1.0, 1.04]} origin={ZOOM_IN[clip.src]?.origin} />
       <AbsoluteFill style={{background: 'linear-gradient(180deg, rgba(0,0,0,0.35) 0%, transparent 15%, transparent 75%, rgba(0,0,0,0.35) 100%)'}} />
+      <OrnamentFrame />
       <Badge />
       {name ? <NameTag name={name} role={role} frames={frames} /> : null}
     </AbsoluteFill>
@@ -301,6 +326,7 @@ const BRoll: React.FC<{clip: Clip; frames: number}> = ({clip, frames}) => (
   <AbsoluteFill>
     <Footage clip={clip} frames={frames} muted zoom={[1.03, 1.12]} />
     <AbsoluteFill style={{background: 'radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.35) 100%)'}} />
+    <OrnamentFrame />
   </AbsoluteFill>
 );
 
