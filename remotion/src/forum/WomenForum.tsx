@@ -92,9 +92,9 @@ const SHOTS: Shot[] = [
   e('1701', 2.0, 4.6),
   e('1703', 1.2, 4.2),
   // باقي المقابلات — كاملة
-  t('1660', 0.0, 11.5),
   t('1667', 0.45, 10.95),
   t('1664', 0.5, 10.66),
+  t('1660', 0.0, 11.5),
   {kind: 'final', dur: 2.8},
 ];
 
@@ -279,8 +279,8 @@ const Badge: React.FC = () => {
 type Edge = {fadeIn: number; fadeOut: number};
 // زوم إن على أ. هبات وهي تتكلم في مقابلتها بس (مو في تقديم المحاضرة)
 const ZOOM_IN: Record<string, {zoom: [number, number]; origin: string}> = {
-  '1652': {zoom: [1.55, 1.62], origin: '48% 30%'},
-  '1655': {zoom: [1.55, 1.62], origin: '48% 30%'},
+  '1652': {zoom: [1.28, 1.33], origin: '48% 30%'},
+  '1655': {zoom: [1.28, 1.33], origin: '48% 30%'},
 };
 
 const Talk: React.FC<{clip: Clip; frames: number; name?: string; role?: string} & Edge> = ({clip, frames, name, role, fadeIn, fadeOut}) => {
