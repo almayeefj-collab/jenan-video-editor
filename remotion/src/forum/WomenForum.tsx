@@ -65,7 +65,7 @@ const e = (src: string, from: number, to: number, first?: boolean): Shot => ({ki
 const t = (src: string, from: number, to: number): Shot => ({kind: 'talk', clip: {src, from, to}, ...NAMES[src]});
 
 const SHOTS: Shot[] = [
-  {kind: 'title', dur: 3.5},
+  {kind: 'title', dur: 3.0},
   // مقتطفات سريعة: الضيافة، السلام، الحضور
   b('1634', 1.2, 2.5),
   b('1635', 1.0, 2.3),
@@ -74,7 +74,7 @@ const SHOTS: Shot[] = [
   b('1690', 0.3, 1.6),
   b('1683', 1.5, 2.8),
   // المذيعة
-  t('1674', 0.0, 12.42),
+  t('1674', 0.0, 26.3),
   // السؤال (مقطعين) ← أ. هبات (مقطعين) — كاملة
   t('1649', 0.0, 3.0),
   t('1654', 0.0, 8.84),
@@ -92,11 +92,10 @@ const SHOTS: Shot[] = [
   e('1701', 2.0, 4.6),
   e('1703', 1.2, 4.2),
   // باقي المقابلات — كاملة
-  t('1659', 0.0, 4.97),
   t('1660', 0.0, 11.5),
   t('1667', 0.45, 10.95),
-  t('1664', 0.5, 16.27),
-  {kind: 'final', dur: 3.2},
+  t('1664', 0.5, 10.66),
+  {kind: 'final', dur: 2.8},
 ];
 
 // صوت المحاضِرة تحت المقتطفات: كلامها عن السكينة كامل
@@ -280,8 +279,8 @@ const Badge: React.FC = () => {
 type Edge = {fadeIn: number; fadeOut: number};
 // زوم إن على أ. هبات وهي تتكلم في مقابلتها بس (مو في تقديم المحاضرة)
 const ZOOM_IN: Record<string, {zoom: [number, number]; origin: string}> = {
-  '1652': {zoom: [1.12, 1.3], origin: '50% 32%'},
-  '1655': {zoom: [1.18, 1.32], origin: '50% 32%'},
+  '1652': {zoom: [1.55, 1.62], origin: '48% 30%'},
+  '1655': {zoom: [1.55, 1.62], origin: '48% 30%'},
 };
 
 const Talk: React.FC<{clip: Clip; frames: number; name?: string; role?: string} & Edge> = ({clip, frames, name, role, fadeIn, fadeOut}) => {
