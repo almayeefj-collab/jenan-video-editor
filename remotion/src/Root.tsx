@@ -10,11 +10,14 @@ import {FPS as C46_FPS, HEIGHT as C46_H, totalFrames as c46Frames, WIDTH as C46_
 import {Recommendations46} from './conference46/Recommendations';
 import {FPS as C46B_FPS, HEIGHT as C46B_H, Recommendations46V2, totalFrames as c46bFrames, WIDTH as C46B_W} from './conference46/v2/Recommendations2';
 
+import {CourtsMystery, FPS as CM_FPS, HEIGHT as CM_H, totalFrames as cmFrames, WIDTH as CM_W} from './courts/CourtsMystery';
 import {FPS as PR_FPS, HEIGHT as PR_H, PRTeam, totalFrames as prFrames, WIDTH as PR_W} from './pr/PRTeam';
 
 export const RemotionRoot: React.FC = () => {
   return (
     <>
+      {/* لغز الحصة: أنواع المحاكم في الكويت — فيديو تمهيدي تستنتج منه الطالبات عنوان الدرس */}
+      <Composition id="CourtsMystery" component={CourtsMystery} durationInFrames={cmFrames()} fps={CM_FPS} width={CM_W} height={CM_H} />
       {/* فريق العلاقات العامة — فاطمة الهاشمية، نسخة رسمية */}
       <Composition id="PRTeam" component={PRTeam} durationInFrames={prFrames()} fps={PR_FPS} width={PR_W} height={PR_H} />
       {/* ريل مستقبل التعليم بكلمة — جمعية المعلمين الكويتية */}
