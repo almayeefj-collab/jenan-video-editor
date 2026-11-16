@@ -9,7 +9,7 @@ import {fontFamily, numberFamily} from '../reel/font';
 export const FPS = 25;
 export const WIDTH = 1920;
 export const HEIGHT = 1080;
-export const INTRO_FRAMES = Math.round(4.5 * FPS);
+export const INTRO_FRAMES = Math.round(3.5 * FPS);
 export const OUTRO_FRAMES = Math.round(6 * FPS);
 
 const NAVY = '#0D1A3A';
