@@ -1,4 +1,4 @@
-import {Composition} from 'remotion';
+import {Composition, Still} from 'remotion';
 import {HelloJenan, helloJenanSchema} from './HelloJenan';
 import {FPS, HEIGHT, totalFrames, WIDTH} from './reel/config';
 import {Reel} from './reel/Reel';
@@ -9,12 +9,18 @@ import {Teacher4} from './teacher4/Teacher4';
 import {FPS as C46_FPS, HEIGHT as C46_H, totalFrames as c46Frames, WIDTH as C46_W} from './conference46/config';
 import {Recommendations46} from './conference46/Recommendations';
 import {FPS as C46B_FPS, HEIGHT as C46B_H, Recommendations46V2, totalFrames as c46bFrames, WIDTH as C46B_W} from './conference46/v2/Recommendations2';
-
+import {Badge, FPS as PN_FPS, HEIGHT as PN_H, INTRO_FRAMES, LowerThird, OUTRO_FRAMES, PanelIntro, PanelOutro, QuestionCard, WIDTH as PN_W} from './panel/PanelSession';
 import {FPS as PR_FPS, HEIGHT as PR_H, PRTeam, totalFrames as prFrames, WIDTH as PR_W} from './pr/PRTeam';
 
 export const RemotionRoot: React.FC = () => {
   return (
     <>
+      {/* الجلسة الحوارية: الصحة النفسية بين الانهيار والتكيف — بطاقات الأجزاء والصور اللي تركب فوق الفيديو */}
+      <Composition id="PanelIntro" component={PanelIntro} durationInFrames={INTRO_FRAMES} fps={PN_FPS} width={PN_W} height={PN_H} defaultProps={{part: 1, parts: 16, bg: 'footage/panel/bg01.jpg'}} />
+      <Composition id="PanelOutro" component={PanelOutro} durationInFrames={OUTRO_FRAMES} fps={PN_FPS} width={PN_W} height={PN_H} defaultProps={{bg: 'footage/panel/bg01.jpg'}} />
+      <Still id="PanelQuestion" component={QuestionCard} width={PN_W} height={PN_H} defaultProps={{text: 'كيف نفرّق بين الضغط الطبيعي والانهيار النفسي؟', to: 'jaza' as const}} />
+      <Still id="PanelLowerThird" component={LowerThird} width={PN_W} height={PN_H} defaultProps={{who: 'jaza' as const}} />
+      <Still id="PanelBadge" component={Badge} width={PN_W} height={PN_H} defaultProps={{part: 1, parts: 16}} />
       {/* فريق العلاقات العامة — فاطمة الهاشمية، نسخة رسمية */}
       <Composition id="PRTeam" component={PRTeam} durationInFrames={prFrames()} fps={PR_FPS} width={PR_W} height={PR_H} />
       {/* ريل مستقبل التعليم بكلمة — جمعية المعلمين الكويتية */}
