@@ -137,12 +137,12 @@ export const PanelOutro: React.FC<{bg: string}> = ({bg}) => {
 
 // ———— صور شفافة تركّب فوق الفيديو ————
 
-// بطاقة السؤال (من المحاورة أو من الحضور): فوق يمين، ومعها لمن موجّه السؤال
+// بطاقة السؤال (من المحاورة أو من الحضور): تحت بعرض الشاشة (فوق الورد) عشان ما تغطي وجوه الضيوف، ومعها لمن موجّه السؤال
 export const QuestionCard: React.FC<{text: string; to?: Who | 'both'; from?: 'host' | 'audience'}> = ({text, to, from = 'host'}) => {
   const toLine = to === 'both' ? `${PEOPLE.jaza.name} و ${PEOPLE.hakami.name}` : to ? PEOPLE[to].name : '';
   return (
     <AbsoluteFill style={{direction: 'rtl', fontFamily}}>
-      <div style={{position: 'absolute', top: 70, right: 80, width: 1180, display: 'flex', alignItems: 'stretch', filter: 'drop-shadow(0 10px 30px rgba(0,0,0,0.55))'}}>
+      <div style={{position: 'absolute', bottom: 60, left: 160, right: 160, display: 'flex', alignItems: 'stretch', filter: 'drop-shadow(0 10px 30px rgba(0,0,0,0.55))'}}>
         <div style={{width: 10, background: GOLD, borderRadius: 5}} />
         <div style={{flex: 1, padding: '26px 40px 30px', background: `linear-gradient(to left, ${NAVY}f2, ${NAVY}d8)`, borderRadius: '0 0 0 24px'}}>
           <div style={{display: 'flex', alignItems: 'center', gap: 16}}>
@@ -150,7 +150,7 @@ export const QuestionCard: React.FC<{text: string; to?: Who | 'both'; from?: 'ho
             <div style={{fontSize: 30, fontWeight: 700, color: GOLD}}>{from === 'audience' ? 'سؤال من الحضور' : `سؤال ${PEOPLE.host.name}`}</div>
             {toLine ? <div style={{fontSize: 26, fontWeight: 500, color: CREAM, opacity: 0.85}}>← إلى {toLine}</div> : null}
           </div>
-          <div style={{fontSize: 46, fontWeight: 700, color: '#fff', lineHeight: 1.45, marginTop: 12}}>{text}</div>
+          <div style={{fontSize: 44, fontWeight: 700, color: '#fff', lineHeight: 1.45, marginTop: 10}}>{text}</div>
         </div>
       </div>
     </AbsoluteFill>
