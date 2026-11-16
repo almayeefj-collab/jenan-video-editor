@@ -154,6 +154,26 @@ nav #sound{background:#24543f;color:#f6ecd2;box-shadow:0 3px 0 #0b2a1d;padding:9
 .back .corner{right:0}
 .back .corner:hover::before{background:linear-gradient(-45deg,#e9d39a 0 48%,rgba(0,0,0,.18) 50%,transparent 52%)}
 
+
+.vbtn{position:absolute;top:.45em;inset-inline-end:.8em;z-index:2;border:0;border-radius:2em;background:var(--red);color:#fff;font-weight:800;font-size:.78em;padding:.35em .9em;cursor:pointer;box-shadow:0 2px 6px rgba(120,0,0,.35);animation:vpulse 2.4s infinite}
+@keyframes vpulse{50%{box-shadow:0 0 0 .45em rgba(200,16,46,.15)}}
+#vmodal{position:fixed;inset:0;z-index:60;background:rgba(5,15,10,.86);display:flex;align-items:center;justify-content:center;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+#vmodal[hidden]{display:none!important}
+#vmodal .box{width:min(960px,100%);background:#1c3a2c;border-radius:16px;padding:12px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+#vmodal .hd{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+#vmodal h3{margin:0;font-family:var(--display);color:var(--gold);font-size:18px}
+#vmodal .x{border:0;border-radius:2em;background:#fff;color:#222;font-weight:800;padding:6px 14px;cursor:pointer}
+.mm{position:relative;margin-top:.5em}
+.mm-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.mm-root{position:relative;margin:0 auto .9em;width:fit-content;max-width:90%;text-align:center;background:linear-gradient(160deg,#ffe9a6,#e2a72d);color:#4a2f00;font-family:var(--display);font-weight:700;font-size:1.15em;padding:.45em 1.2em;border-radius:2em;box-shadow:0 4px 12px rgba(120,80,0,.35)}
+.mm-grid{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:.7em .6em;align-items:start}
+.mm-br{background:#fff;border-radius:.8em;box-shadow:0 2px 8px rgba(120,80,0,.15);border-top:.3em solid var(--c);overflow:hidden}
+.mm-h{width:100%;border:0;background:none;padding:.45em .5em;font-family:var(--display);font-weight:700;font-size:.95em;color:var(--c);cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:.3em;text-align:start}
+.mm-h::after{content:"+";width:1.3em;height:1.3em;flex:none;border-radius:50%;background:var(--c);color:#fff;display:grid;place-items:center;font-size:.85em;transition:transform .3s}
+.mm-h[aria-expanded="true"]::after{content:"−"}
+.mm-leaves{list-style:none;margin:0;padding:0 .5em .5em;display:none;gap:.25em;flex-direction:column}
+.mm-br.open .mm-leaves{display:flex}
+.mm-leaves li{font-size:.76em;line-height:1.5;font-weight:600;background:#fbf4e2;border-inline-start:.25em solid var(--c);border-radius:.35em;padding:.2em .45em;animation:fadeup .35s backwards}
 /* ===== walk-in hall overlay ===== */
 #hall [hidden],#hall[hidden]{display:none!important}
 #hall{position:fixed;inset:0;z-index:50;background:#0b1712;color:#fff;font-family:var(--body)}
@@ -191,6 +211,7 @@ nav #sound{background:#24543f;color:#f6ecd2;box-shadow:0 3px 0 #0b2a1d;padding:9
 </div>
 
 
+<div id="vmodal" hidden role="dialog" aria-label="فيديو شرح الدرس"><div class="box"><div class="hd"><h3 id="vtitle"></h3><button class="x" id="vclose" type="button">إغلاق ✕</button></div><video id="vplayer" controls playsinline style="width:100%;border-radius:10px;background:#000;display:block"></video></div></div>
 <div id="hall" hidden role="dialog" aria-label="قاعة عبدالله السالم ثلاثية الأبعاد">
   <canvas id="hallCanvas"></canvas>
   <div class="top"><div><h2 id="hallTitle">مبنى مجلس الأمة</h2><small>تصوّر توضيحي ثلاثي الأبعاد</small></div><button id="hallClose" type="button">عودة للكتاب ✕</button></div>
@@ -225,7 +246,7 @@ nav #sound{background:#24543f;color:#f6ecd2;box-shadow:0 3px 0 #0b2a1d;padding:9
   <p id="ans-v" hidden>لأن الدولة تطورت وزاد عدد سكانها وكثرت مسؤولياتها، فلم تعد قدرات الأفراد كافية لرعاية مصالح المجتمع وحاجاته.</p>
 </div><div class="foot"><span class="num">٢</span></div></div></template>
 
-<template data-title="علم الكويت"><div class="pg"><div class="band"><span class="chap">رموز الوطن</span></div><div class="body">
+<template data-title="علم الكويت"><div class="pg"><div class="band"><button class="vbtn" type="button" data-vid="flag" data-vt="علم الكويت">▶ شرح الدرس</button><span class="chap">رموز الوطن</span></div><div class="body">
   <h2 class="t">علم دولة الكويت</h2>
   <div class="three" id="flag3d" style="height:12.5em"><span class="lbl">اسحب لتدوير العلم</span></div>
   <p class="hint">اضغط على لون لتعرف معناه</p>
@@ -238,7 +259,7 @@ nav #sound{background:#24543f;color:#f6ecd2;box-shadow:0 3px 0 #0b2a1d;padding:9
   <div class="panel" id="flagText">رُفع علم الكويت رسمياً عام ١٩٦١م بعد الاستقلال، وألوانه مستوحاة من بيت الشاعر صفي الدين الحلي: «بيضٌ صنائعنا، سودٌ وقائعنا، خضرٌ مرابعنا، حمرٌ مواضينا».</div>
 </div><div class="foot"><span class="num">٣</span></div></div></template>
 
-<template data-title="الشيخ عبدالله السالم"><div class="pg"><div class="band"><span class="chap">أبو الدستور</span></div><div class="body">
+<template data-title="الشيخ عبدالله السالم"><div class="pg"><div class="band"><button class="vbtn" type="button" data-vid="abdullah" data-vt="الشيخ عبدالله السالم">▶ شرح الدرس</button><span class="chap">أبو الدستور</span></div><div class="body">
   <h2 class="t">الشيخ عبدالله السالم الصباح</h2>
   <div style="display:grid;grid-template-columns:38% 1fr;gap:.8em;align-items:start">
     <figure><img class="photo" src="assets/abdullah.jpg" alt="صورة الشيخ عبدالله السالم الصباح" style="width:100%;filter:sepia(.3)"><figcaption>حاكم الكويت ١٩٥٠–١٩٦٥م</figcaption></figure>
@@ -252,7 +273,7 @@ nav #sound{background:#24543f;color:#f6ecd2;box-shadow:0 3px 0 #0b2a1d;padding:9
   <div class="panel" id="tlText"></div>
 </div><div class="foot"><span class="num">٤</span></div></div></template>
 
-<template data-title="السلطات العامة الثلاث"><div class="pg"><div class="band"><span class="chap">السلطات العامة</span></div><div class="body">
+<template data-title="السلطات العامة الثلاث"><div class="pg"><div class="band"><button class="vbtn" type="button" data-vid="powers" data-vt="السلطات العامة الثلاث">▶ شرح الدرس</button><span class="chap">السلطات العامة</span></div><div class="body">
   <h2 class="t">السلطات العامة في النظام الدستوري الكويتي</h2>
   <p>لم يكن النظام الدستوري في الكويت نتاج عصره الحاضر فقط؛ فقد كان الحاكم يتشاور ويستمع لأفراد المجتمع. ومع تطور الدولة أنشأ الدستور <b>ثلاث سلطات عامة</b> وحدد وظائفها وعلاقة كلٍّ منها بالأخرى.</p>
   <p class="hint">اقلب كل بطاقة لتعرف وظيفتها</p>
@@ -264,7 +285,7 @@ nav #sound{background:#24543f;color:#f6ecd2;box-shadow:0 3px 0 #0b2a1d;padding:9
   <figure style="margin-top:.7em"><img class="photo" src="assets/justice.jpg" alt="قصر العدل في الكويت كما يظهر على غلاف الكتاب" style="width:100%;height:7em;object-fit:cover"><figcaption>قصر العدل (من غلاف الكتاب)</figcaption></figure>
 </div><div class="foot"><span class="num">٥</span></div></div></template>
 
-<template data-title="مفهوم السلطة التنفيذية"><div class="pg"><div class="band"><span class="chap">أولاً: السلطة التنفيذية</span></div><div class="body">
+<template data-title="مفهوم السلطة التنفيذية"><div class="pg"><div class="band"><button class="vbtn" type="button" data-vid="concept" data-vt="مفهوم السلطة التنفيذية">▶ شرح الدرس</button><span class="chap">أولاً: السلطة التنفيذية</span></div><div class="body">
   <h2 class="t">مفهوم السلطة التنفيذية وأعمالها</h2>
   <div class="quote">السلطة التنفيذية هي الجهة التي تقوم بتنفيذ ما يصدر عن السلطة التشريعية من قوانين.</div>
   <h3>أعمالها في المادة (١٢٣)</h3>
@@ -280,7 +301,7 @@ nav #sound{background:#24543f;color:#f6ecd2;box-shadow:0 3px 0 #0b2a1d;padding:9
   <button class="chipbtn" id="worksBtn" type="button">التالي</button>
 </div><div class="foot"><span class="num">٦</span></div></div></template>
 
-<template data-title="عناصر تكوين السلطة التنفيذية"><div class="pg"><div class="band"><span class="chap">عناصر التكوين</span></div><div class="body">
+<template data-title="عناصر تكوين السلطة التنفيذية"><div class="pg"><div class="band"><button class="vbtn" type="button" data-vid="elements" data-vt="عناصر تكوين السلطة التنفيذية">▶ شرح الدرس</button><span class="chap">عناصر التكوين</span></div><div class="body">
   <h2 class="t">عناصر تكوين السلطة التنفيذية</h2>
   <div class="quote">«السلطة التنفيذية يتولاها الأمير ومجلس الوزراء والوزراء على النحو المبين بالدستور»<small>المادة ٥٢</small></div>
   <p>تتكون من جهازين: <b>الأمير</b> رئيس الدولة ورئيس السلطة التنفيذية، و<b>الوزارة (الحكومة)</b> وتتكون من رئيس الوزراء والوزراء ومجلس الوزراء.</p>
@@ -295,7 +316,7 @@ nav #sound{background:#24543f;color:#f6ecd2;box-shadow:0 3px 0 #0b2a1d;padding:9
   <div class="panel" id="orgText" style="margin-top:.6em">اختر عنصراً لتعرف دوره.</div>
 </div><div class="foot"><span class="num">٧</span></div></div></template>
 
-<template data-title="الأمير وولاية العهد"><div class="pg"><div class="band"><span class="chap">أولاً: الأمير</span></div><div class="body">
+<template data-title="الأمير وولاية العهد"><div class="pg"><div class="band"><button class="vbtn" type="button" data-vid="emir" data-vt="الأمير وولاية العهد">▶ شرح الدرس</button><span class="chap">أولاً: الأمير</span></div><div class="body">
   <h2 class="t">الأمير وشروط ولاية العهد</h2>
   <div class="quote">«الكويت إمارة وراثية في ذرية المغفور له مبارك الصباح»<small>المادة ٤</small></div>
   <div class="quote">«الأمير رئيس الدولة، وذاته مصونة لا تمس»<small>المادة ٥٤ · لقبه الرسمي: حضرة صاحب السمو أمير الكويت</small></div>
@@ -310,7 +331,7 @@ nav #sound{background:#24543f;color:#f6ecd2;box-shadow:0 3px 0 #0b2a1d;padding:9
   </div>
 </div><div class="foot"><span class="num">٨</span></div></div></template>
 
-<template data-title="إجراءات تولي مسند الإمارة"><div class="pg"><div class="band"><span class="chap">مسند الإمارة</span></div><div class="body">
+<template data-title="إجراءات تولي مسند الإمارة"><div class="pg"><div class="band"><button class="vbtn" type="button" data-vid="procedures" data-vt="إجراءات تولي مسند الإمارة">▶ شرح الدرس</button><span class="chap">مسند الإمارة</span></div><div class="body">
   <h2 class="t">إجراءات تولي مسند الإمارة</h2>
   <p>يخلو منصب الأمير بالوفاة، أو التنحية لعدم القدرة الصحية، أو الاستقالة الاختيارية.</p>
   <div class="tabs" id="emirTabs">
@@ -322,7 +343,7 @@ nav #sound{background:#24543f;color:#f6ecd2;box-shadow:0 3px 0 #0b2a1d;padding:9
   <button class="chipbtn" id="emirPlay" type="button">شغّل الخطوات</button>
 </div><div class="foot"><span class="num">٩</span></div></div></template>
 
-<template data-title="مجلس الأمة والوزراء"><div class="pg"><div class="band"><span class="chap">مجلس الأمة</span></div><div class="body">
+<template data-title="مجلس الأمة والوزراء"><div class="pg"><div class="band"><button class="vbtn" type="button" data-vid="majlis" data-vt="مجلس الأمة والوزراء">▶ شرح الدرس</button><span class="chap">مجلس الأمة</span></div><div class="body">
   <h2 class="t">مبنى مجلس الأمة الكويتي</h2>
   <div class="three" id="majlis3d" style="height:10.5em"><span class="lbl">نموذج ثلاثي الأبعاد · اسحب للتدوير</span></div>
   <button class="primary" type="button" data-hall="1" style="width:100%;margin:.45em 0 .2em;font-size:1em">ادخل قاعة عبدالله السالم بتقنية 3D</button>
@@ -331,7 +352,7 @@ nav #sound{background:#24543f;color:#f6ecd2;box-shadow:0 3px 0 #0b2a1d;padding:9
   <div style="display:flex;gap:.5em;align-items:center;flex-wrap:wrap"><button class="chipbtn" id="seatBtn" type="button">أضف الوزراء</button><span id="seatTxt" style="font-size:.8em;font-weight:700">٥٠ عضواً منتخباً</span></div>
 </div><div class="foot"><span class="num">١٠</span></div></div></template>
 
-<template data-title="رئيس مجلس الوزراء"><div class="pg"><div class="band"><span class="chap">ثانياً: الوزارة</span></div><div class="body">
+<template data-title="رئيس مجلس الوزراء"><div class="pg"><div class="band"><button class="vbtn" type="button" data-vid="pm" data-vt="رئيس مجلس الوزراء">▶ شرح الدرس</button><span class="chap">ثانياً: الوزارة</span></div><div class="body">
   <h2 class="t">رئيس مجلس الوزراء</h2>
   <p>المقصود بالوزارة المعنى الواسع الذي يشمل رئيس الوزراء والوزراء ومجلس الوزراء. ويرأس رئيس الوزراء الجهاز التنفيذي بعد الأمير.</p>
   <h3>أهمية منصبه (اقلب البطاقات)</h3>
@@ -345,7 +366,7 @@ nav #sound{background:#24543f;color:#f6ecd2;box-shadow:0 3px 0 #0b2a1d;padding:9
   <p>يختاره الأمير منفرداً بعد <b>المشاورات التقليدية</b> مع: رئيس مجلس الأمة، ورؤساء الجماعات السياسية، ورؤساء الوزارة السابقين. ونتائجها غير ملزمة للأمير.</p>
 </div><div class="foot"><span class="num">١١</span></div></div></template>
 
-<template data-title="وزارات دولة الكويت"><div class="pg"><div class="band"><span class="chap">الوزراء</span></div><div class="body">
+<template data-title="وزارات دولة الكويت"><div class="pg"><div class="band"><button class="vbtn" type="button" data-vid="ministries" data-vt="وزارات دولة الكويت">▶ شرح الدرس</button><span class="chap">الوزراء</span></div><div class="body">
   <h2 class="t">وزارات دولة الكويت</h2>
   <p>الوزراء هم العنصر الثاني من عناصر السلطة التنفيذية، ويترأسون وزارات الدولة ويصدرون القرارات اللازمة لتنظيم العمل بها، وهم مسؤولون أمام الأمير ومجلس الأمة.</p>
   <div class="ring-wrap" id="ringWrap"><div class="ring" id="ring"></div></div>
@@ -353,7 +374,7 @@ nav #sound{background:#24543f;color:#f6ecd2;box-shadow:0 3px 0 #0b2a1d;padding:9
   <p style="font-size:.85em">ويوجد أيضاً <b>وزراء دولة بلا وزارة</b>، مثل وزير الدولة لشؤون مجلس الوزراء ووزير الدولة لشؤون مجلس الأمة، ولهم ما لبقية الوزراء من حقوق وواجبات.</p>
 </div><div class="foot"><span class="num">١٢</span></div></div></template>
 
-<template data-title="اختيار الوزراء وشروطهم"><div class="pg"><div class="band"><span class="chap">الوزراء</span></div><div class="body">
+<template data-title="اختيار الوزراء وشروطهم"><div class="pg"><div class="band"><button class="vbtn" type="button" data-vid="ministers" data-vt="اختيار الوزراء وشروطهم">▶ شرح الدرس</button><span class="chap">الوزراء</span></div><div class="body">
   <h2 class="t">اختيار الوزراء وشروطهم</h2>
   <ol class="steps"><li class="show"><b class="n">١</b><span>يرشحهم رئيس مجلس الوزراء ممن يرى فيهم الثقة والكفاءة.</span></li><li class="show"><b class="n">٢</b><span>تُرفع أسماؤهم للأمير للموافقة عليهم، ويصدر بذلك مرسوم أميري.</span></li></ol>
   <h3>من يصلح وزيراً؟ اختبر المرشحين</h3>
@@ -362,7 +383,7 @@ nav #sound{background:#24543f;color:#f6ecd2;box-shadow:0 3px 0 #0b2a1d;padding:9
   <p style="font-size:.88em">لا يجوز الجمع بين المنصب الوزاري وأي وظيفة حكومية أخرى أو عضوية مجالس الشركات أو ممارسة عمل حر كالتجارة والطب والمحاماة، ولا يبرم الوزير عقداً مع الجهات الحكومية. ويؤدي الوزراء القسم مرتين: أمام الأمير، ثم أمام مجلس الأمة.</p>
 </div><div class="foot"><span class="num">١٣</span></div></div></template>
 
-<template data-title="مجلس الوزراء"><div class="pg"><div class="band"><span class="chap">مجلس الوزراء</span></div><div class="body">
+<template data-title="مجلس الوزراء"><div class="pg"><div class="band"><button class="vbtn" type="button" data-vid="cabinet" data-vt="مجلس الوزراء">▶ شرح الدرس</button><span class="chap">مجلس الوزراء</span></div><div class="body">
   <h2 class="t">مجلس الوزراء: محاكي الجلسة</h2>
   <p style="font-size:.88em">هو اجتماع رئيس مجلس الوزراء والوزراء جميعاً، ويرأس رئيس الوزراء اجتماعاته، ويمكن للأمير أن يترأسها متى ظهرت الحاجة.</p>
   <p class="hint">اضغط على المقاعد لتحدد من حضر، ثم اطرح القرار للتصويت</p>
@@ -372,7 +393,7 @@ nav #sound{background:#24543f;color:#f6ecd2;box-shadow:0 3px 0 #0b2a1d;padding:9
   <ol class="steps" style="font-size:.9em"><li class="show"><b class="n">١</b><span>الجلسات <b>سرية</b> بخلاف جلسات مجلس الأمة.</span></li><li class="show"><b class="n">٢</b><span>تصح بحضور <b>أكثر من نصف</b> الوزراء.</span></li><li class="show"><b class="n">٣</b><span>تصدر القرارات <b>بأغلبية الحاضرين</b>.</span></li><li class="show"><b class="n">٤</b><span><b>التضامن الوزاري</b>: «وتلتزم الأقلية برأي الأغلبية ما لم تستقل» (المادة ١٢٨).</span></li></ol>
 </div><div class="foot"><span class="num">١٤</span></div></div></template>
 
-<template data-title="الاختصاصات في الظروف العادية"><div class="pg"><div class="band"><span class="chap">الاختصاصات</span></div><div class="body">
+<template data-title="الاختصاصات في الظروف العادية"><div class="pg"><div class="band"><button class="vbtn" type="button" data-vid="normal" data-vt="الاختصاصات في الظروف العادية">▶ شرح الدرس</button><span class="chap">الاختصاصات</span></div><div class="body">
   <h2 class="t">الاختصاصات في الظروف العادية</h2>
   <p style="font-size:.88em">أي حين تسير الأمور بوجود مجلس الأمة ولا توجد ظروف تمنع عمل السلطة التنفيذية. لعبة التصنيف: اختر بطاقة ثم اضغط على الصندوق المناسب.</p>
   <div class="items" id="sortItems"></div>
@@ -385,7 +406,7 @@ nav #sound{background:#24543f;color:#f6ecd2;box-shadow:0 3px 0 #0b2a1d;padding:9
   <p style="font-size:.82em">تُسمى القرارات الإدارية <b>اللوائح</b>، ويجب ألا تخالف القوانين والدستور، وإلا ألغاها القضاء.</p>
 </div><div class="foot"><span class="num">١٥</span></div></div></template>
 
-<template data-title="الاختصاصات في الظروف غير العادية"><div class="pg"><div class="band"><span class="chap">الاختصاصات</span></div><div class="body">
+<template data-title="الاختصاصات في الظروف غير العادية"><div class="pg"><div class="band"><button class="vbtn" type="button" data-vid="exceptional" data-vt="الاختصاصات في الظروف غير العادية">▶ شرح الدرس</button><span class="chap">الاختصاصات</span></div><div class="body">
   <h2 class="t">الاختصاصات في الظروف غير العادية</h2>
   <div class="tabs" id="exTabs">
     <button class="chipbtn" type="button" data-t="0" aria-pressed="true">المراسيم بقوانين</button>
@@ -395,6 +416,26 @@ nav #sound{background:#24543f;color:#f6ecd2;box-shadow:0 3px 0 #0b2a1d;padding:9
   <div class="panel" id="exPanel"></div>
 </div><div class="foot"><span class="num">١٦</span></div></div></template>
 
+<template data-title="خريطة: السلطة التنفيذية"><div class="pg"><div class="band"><span class="chap">خرائط ذهنية</span></div><div class="body">
+  <h2 class="t">خريطة ذهنية: السلطة التنفيذية</h2>
+  <div style="display:flex;gap:.4em;align-items:center;flex-wrap:wrap"><p class="hint" style="margin:0">اضغط على أي فرع لتفتحه</p><button class="chipbtn mm-all" type="button">افتح الكل</button></div>
+  <div class="mm"><svg class="mm-svg" aria-hidden="true"></svg><div class="mm-root">السلطة التنفيذية</div><div class="mm-grid"><div class="mm-br" style="--c:#0b7a43"><button type="button" class="mm-h" aria-expanded="false">المفهوم</button><ul class="mm-leaves"><li>تنفيذ ما يصدر عن السلطة التشريعية من قوانين</li></ul></div><div class="mm-br" style="--c:#c8102e"><button type="button" class="mm-h" aria-expanded="false">أعمالها (م ١٢٣)</button><ul class="mm-leaves"><li>تسيير شؤون الدولة</li><li>دراسة حاجات المجتمع</li><li>رسم السياسات العامة</li><li>اقتراح القوانين</li><li>تنفيذ القوانين والإشراف</li></ul></div><div class="mm-br" style="--c:#1d3b72"><button type="button" class="mm-h" aria-expanded="false">عناصرها (م ٥٢)</button><ul class="mm-leaves"><li>الأمير</li><li>رئيس مجلس الوزراء</li><li>الوزراء</li><li>مجلس الوزراء</li></ul></div><div class="mm-br" style="--c:#b5790f"><button type="button" class="mm-h" aria-expanded="false">اختصاصاتها</button><ul class="mm-leaves"><li>عادية: إدارية · سياسية · قضائية</li><li>غير عادية: مراسيم بقوانين · حرب دفاعية · أحكام عرفية</li></ul></div></div></div>
+</div><div class="foot"><span class="num"></span></div></div></template>
+<template data-title="خريطة: الأمير"><div class="pg"><div class="band"><span class="chap">خرائط ذهنية</span></div><div class="body">
+  <h2 class="t">خريطة ذهنية: الأمير</h2>
+  <div style="display:flex;gap:.4em;align-items:center;flex-wrap:wrap"><p class="hint" style="margin:0">اضغط على أي فرع لتفتحه</p><button class="chipbtn mm-all" type="button">افتح الكل</button></div>
+  <div class="mm"><svg class="mm-svg" aria-hidden="true"></svg><div class="mm-root">الأمير</div><div class="mm-grid"><div class="mm-br" style="--c:#0b7a43"><button type="button" class="mm-h" aria-expanded="false">مكانته</button><ul class="mm-leaves"><li>رئيس الدولة ورئيس السلطة التنفيذية</li><li>ذاته مصونة لا تمس (م ٥٤)</li><li>إمارة وراثية في ذرية مبارك الصباح (م ٤)</li></ul></div><div class="mm-br" style="--c:#c8102e"><button type="button" class="mm-h" aria-expanded="false">شروط ولي العهد</button><ul class="mm-leaves"><li>النسب</li><li>الذكورة</li><li>سن الثلاثين</li><li>الرشد والعقل</li><li>الإسلام</li><li>القدرة الصحية</li></ul></div><div class="mm-br" style="--c:#1d3b72"><button type="button" class="mm-h" aria-expanded="false">الأسلوب العادي</button><ul class="mm-leaves"><li>ولي العهد يصبح أميراً تلقائياً</li><li>تعيين ولي العهد خلال سنة</li><li>مبايعة مجلس الأمة بالأغلبية</li></ul></div><div class="mm-br" style="--c:#b5790f"><button type="button" class="mm-h" aria-expanded="false">الأسلوب غير العادي</button><ul class="mm-leaves"><li>مجلس الوزراء يمارس اختصاصات الأمير</li><li>يرشح أحد أفراد الأسرة الحاكمة</li><li>موافقة أغلبية مجلس الأمة</li><li>خلال ثمانية أيام</li></ul></div></div></div>
+</div><div class="foot"><span class="num"></span></div></div></template>
+<template data-title="خريطة: الوزارة"><div class="pg"><div class="band"><span class="chap">خرائط ذهنية</span></div><div class="body">
+  <h2 class="t">خريطة ذهنية: الوزارة</h2>
+  <div style="display:flex;gap:.4em;align-items:center;flex-wrap:wrap"><p class="hint" style="margin:0">اضغط على أي فرع لتفتحه</p><button class="chipbtn mm-all" type="button">افتح الكل</button></div>
+  <div class="mm"><svg class="mm-svg" aria-hidden="true"></svg><div class="mm-root">الوزارة (الحكومة)</div><div class="mm-grid"><div class="mm-br" style="--c:#0b7a43"><button type="button" class="mm-h" aria-expanded="false">رئيس مجلس الوزراء</button><ul class="mm-leaves"><li>بقاء الوزراء ببقائه</li><li>يرشح الوزراء</li><li>ينسق بين الوزارات</li><li>يرأس الجلسات</li><li>المتحدث باسم الحكومة</li></ul></div><div class="mm-br" style="--c:#c8102e"><button type="button" class="mm-h" aria-expanded="false">الوزراء</button><ul class="mm-leaves"><li>يرشحهم رئيس الوزراء</li><li>يُعيَّنون بمرسوم أميري</li><li>لا يتجاوزون ثلث المنتخبين (١٦)</li><li>يؤدون القسم مرتين</li></ul></div><div class="mm-br" style="--c:#1d3b72"><button type="button" class="mm-h" aria-expanded="false">شروط الوزير</button><ul class="mm-leaves"><li>كويتي بصفة أصلية</li><li>٣٠ سنة فأكثر</li><li>يجيد القراءة والكتابة بالعربية</li></ul></div><div class="mm-br" style="--c:#b5790f"><button type="button" class="mm-h" aria-expanded="false">مجلس الوزراء</button><ul class="mm-leaves"><li>جلسات سرية</li><li>حضور أكثر من النصف</li><li>القرار بأغلبية الحاضرين</li><li>التضامن الوزاري (م ١٢٨)</li></ul></div></div></div>
+</div><div class="foot"><span class="num"></span></div></div></template>
+<template data-title="خريطة: الاختصاصات"><div class="pg"><div class="band"><span class="chap">خرائط ذهنية</span></div><div class="body">
+  <h2 class="t">خريطة ذهنية: الاختصاصات</h2>
+  <div style="display:flex;gap:.4em;align-items:center;flex-wrap:wrap"><p class="hint" style="margin:0">اضغط على أي فرع لتفتحه</p><button class="chipbtn mm-all" type="button">افتح الكل</button></div>
+  <div class="mm"><svg class="mm-svg" aria-hidden="true"></svg><div class="mm-root">اختصاصات السلطة التنفيذية</div><div class="mm-grid"><div class="mm-br" style="--c:#0b7a43"><button type="button" class="mm-h" aria-expanded="false">إدارية</button><ul class="mm-leaves"><li>اللوائح</li><li>تفصيلات تنفيذ القوانين</li><li>إنشاء القطاعات الحكومية</li><li>لوائح الأمن والصحة والبيئة</li></ul></div><div class="mm-br" style="--c:#c8102e"><button type="button" class="mm-h" aria-expanded="false">سياسية</button><ul class="mm-leaves"><li>محلي: حل مجلس الأمة وتأجيل جلساته</li><li>دولي: المعاهدات والاتفاقيات</li><li>دولي: السفارات والعلاقات</li></ul></div><div class="mm-br" style="--c:#1d3b72"><button type="button" class="mm-h" aria-expanded="false">قضائية</button><ul class="mm-leaves"><li>العفو عن العقوبة</li><li>تخفيض العقوبة بمرسوم أميري</li></ul></div><div class="mm-br" style="--c:#b5790f"><button type="button" class="mm-h" aria-expanded="false">غير عادية</button><ul class="mm-leaves"><li>مراسيم بقوانين</li><li>الحرب الدفاعية (م ٦٨)</li><li>الأحكام العرفية (١٩٦٧ · ١٩٩١)</li></ul></div></div></div>
+</div><div class="foot"><span class="num"></span></div></div></template>
 <template data-title="اختبر نفسك"><div class="pg"><div class="band"><span class="chap">الأنشطة والتقويم</span></div><div class="body">
   <h2 class="t">اختبر نفسك</h2>
   <div class="qcard" id="quiz"></div>
@@ -434,7 +475,7 @@ function flipSound(){ if(!soundOn) return; try{ actx=actx||new (window.AudioCont
   s.connect(f); f.connect(actx.destination); s.start(); }catch(e){} }
 
 /* ---------- build ---------- */
-function makePage(i){ const w=document.createElement('div'); w.style.position='absolute'; w.style.inset='0'; w.appendChild(tpls[i].content.cloneNode(true)); w.dataset.page=i; return w; }
+function makePage(i){ const w=document.createElement('div'); w.style.position='absolute'; w.style.inset='0'; w.appendChild(tpls[i].content.cloneNode(true)); w.dataset.page=i; const nm=w.querySelector('.num'); if(nm) nm.textContent=AR(i); return w; }
 function corner(dir){ const c=document.createElement('button'); c.className='corner'; c.type='button'; c.setAttribute('aria-label',dir==='next'?'الصفحة التالية':'الصفحة السابقة'); c.dataset.go=dir; return c; }
 function build(){
   Object.values(ctrls).forEach(c=>c.stop&&c.stop());
@@ -496,7 +537,7 @@ function updateUI(){
   document.getElementById('next').disabled = k>=leaves.length-(mode==='single'?1:0);
   // run 3D only on visible pages
   Object.entries(ctrls).forEach(([p,c])=>{ if(ps.includes(+p)) c.start&&c.start(); else c.stop&&c.stop(); });
-  document.querySelectorAll('video').forEach(v=>{ const p=+v.closest('[data-page]').dataset.page; if(!ps.includes(p)) v.pause(); });
+  book.querySelectorAll('video').forEach(v=>{ const p=+v.closest('[data-page]').dataset.page; if(!ps.includes(p)) v.pause(); });
 }
 function go(d){ if(busy) return; setK(k+d); }
 function goPage(p){ if(busy) return; setK(mode==='spread' ? (p%2? (p+1)/2 : p/2) : p); }
@@ -506,7 +547,7 @@ document.getElementById('prev').onclick=()=>go(-1);
 document.getElementById('next').onclick=()=>go(1);
 document.getElementById('sound').onclick=e=>{ soundOn=!soundOn; e.target.setAttribute('aria-pressed',soundOn); e.target.textContent='صوت: '+(soundOn?'تشغيل':'إيقاف'); };
 addEventListener('keydown',e=>{ if(window.__hallOpen||e.target.closest('input,textarea')) return; if(e.key==='ArrowLeft') go(1); if(e.key==='ArrowRight') go(-1); });
-book.addEventListener('click',e=>{ if(e.target.closest('[data-hall]')){ window.openHall&&window.openHall(); return; } const g=e.target.closest('[data-go]'); if(!g) return;
+book.addEventListener('click',e=>{ const vb=e.target.closest('[data-vid]'); if(vb){ openVid(vb.dataset.vid,vb.dataset.vt); return; } if(e.target.closest('[data-hall]')){ window.openHall&&window.openHall(); return; } const g=e.target.closest('[data-go]'); if(!g) return;
   const v=g.dataset.go; if(v==='next') go(1); else if(v==='prev') go(-1); else if(v==='toc') goPage(1); });
 let sx=null, sy=0;
 scene.addEventListener('pointerdown',e=>{ if(e.target.closest('button,video,.three,.ring-wrap,a,input')) {sx=null;return;} sx=e.clientX; sy=e.clientY; });
@@ -525,8 +566,24 @@ function initPages(){
   book.querySelectorAll('[data-reveal]').forEach(b=>b.onclick=()=>{ Q(b.dataset.reveal).hidden=false; b.hidden=true; });
   // flipcards
   book.querySelectorAll('.flipcard').forEach(c=>c.onclick=()=>c.classList.toggle('on'));
-  flagPage(); timeline(); works(); org(); emirSteps(); majlis(); seats(); ringPage(); candidates(); cabinet(); sorter(); exceptional(); quiz();
+  mindmaps(); flagPage(); timeline(); works(); org(); emirSteps(); majlis(); seats(); ringPage(); candidates(); cabinet(); sorter(); exceptional(); quiz();
 }
+
+/* lesson video modal */
+const vm=document.getElementById('vmodal'), vp=document.getElementById('vplayer');
+function openVid(k,t){ document.querySelectorAll('#book video').forEach(v=>v.pause()); document.getElementById('vtitle').textContent='شرح الدرس: '+t; vp.src='assets/lessons/'+k+'.mp4'; vm.hidden=false; window.__hallOpen=true; vp.play().catch(()=>{}); }
+function closeVid(){ vp.pause(); vm.hidden=true; window.__hallOpen=false; }
+document.getElementById('vclose').onclick=closeVid; vm.addEventListener('click',e=>{ if(e.target===vm) closeVid(); }); addEventListener('keydown',e=>{ if(e.key==='Escape'&&!vm.hidden) closeVid(); });
+/* mind maps */
+function mindmaps(){ book.querySelectorAll('.mm').forEach(mm=>{ const svg=mm.querySelector('.mm-svg'), root=mm.querySelector('.mm-root'), brs=[...mm.querySelectorAll('.mm-br')];
+  const draw=()=>{ const W=mm.offsetWidth, H=mm.offsetHeight; svg.setAttribute('viewBox',`0 0 ${W} ${H}`); const grid=mm.querySelector('.mm-grid');
+    const rx=root.offsetLeft+root.offsetWidth/2, ry=root.offsetTop+root.offsetHeight;
+    svg.innerHTML=brs.map(b=>{ const bx=grid.offsetLeft+b.offsetLeft+b.offsetWidth/2, by=grid.offsetTop+b.offsetTop; const c=getComputedStyle(b).getPropertyValue('--c');
+      return `<path d="M${rx} ${ry} C ${rx} ${(ry+by)/2}, ${bx} ${(ry+by)/2-10}, ${bx} ${by}" fill="none" stroke="${c}" stroke-width="3" stroke-linecap="round" opacity=".7"/>`; }).join(''); };
+  brs.forEach(b=>{ const h=b.querySelector('.mm-h'); h.onclick=()=>{ b.classList.toggle('open'); h.setAttribute('aria-expanded',b.classList.contains('open')); requestAnimationFrame(draw); }; });
+  const all=mm.parentNode.querySelector('.mm-all'); all.onclick=()=>{ const open=!brs.every(b=>b.classList.contains('open')); brs.forEach(b=>{ b.classList.toggle('open',open); b.querySelector('.mm-h').setAttribute('aria-expanded',open); }); all.textContent=open?'أغلق الكل':'افتح الكل'; requestAnimationFrame(draw); };
+  ctrls[pageOf(mm)]={start(){ requestAnimationFrame(draw); },stop(){}};
+  setTimeout(draw,50); }); }
 /* flag */
 const FLAG={g:'<b>الأخضر</b>: «خضرٌ مرابعنا» — يرمز إلى الأرض الخضراء والخير والنماء.',w:'<b>الأبيض</b>: «بيضٌ صنائعنا» — يرمز إلى نقاء الأعمال وصفاء النفوس.',r:'<b>الأحمر</b>: «حمرٌ مواضينا» — يرمز إلى السيوف ودماء التضحية من أجل الوطن.',b:'<b>الأسود</b>: «سودٌ وقائعنا» — يرمز إلى المعارك والقوة في الدفاع عن الوطن.'};
 function flagTexture(){ const c=document.createElement('canvas'); c.width=512;c.height=256; const g=c.getContext('2d');
