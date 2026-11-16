@@ -153,6 +153,27 @@ nav #sound{background:#24543f;color:#f6ecd2;box-shadow:0 3px 0 #0b2a1d;padding:9
 .front .corner:hover::before{background:linear-gradient(45deg,#e9d39a 0 48%,rgba(0,0,0,.18) 50%,transparent 52%)}
 .back .corner{right:0}
 .back .corner:hover::before{background:linear-gradient(-45deg,#e9d39a 0 48%,rgba(0,0,0,.18) 50%,transparent 52%)}
+
+/* ===== walk-in hall overlay ===== */
+#hall [hidden],#hall[hidden]{display:none!important}
+#hall{position:fixed;inset:0;z-index:50;background:#0b1712;color:#fff;font-family:var(--body)}
+#hall canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab}
+#hall .top{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:calc(10px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px));background:linear-gradient(rgba(0,0,0,.6),transparent);pointer-events:none}
+#hall .top>*{pointer-events:auto}
+#hall h2{margin:0;font-family:var(--display);color:var(--gold);font-size:clamp(17px,2.4vw,24px)}
+#hall .top small{display:block;color:#d7cdb2;font-size:12px}
+#hallClose{border:0;border-radius:2em;background:#fff;color:#222;font-weight:800;padding:8px 16px;cursor:pointer}
+#hall .tour{position:absolute;left:0;right:0;bottom:calc(12px + env(safe-area-inset-bottom,0px));display:flex;gap:6px;justify-content:center;flex-wrap:wrap;padding-inline:max(16px,env(safe-area-inset-left,0px)) max(118px,env(safe-area-inset-right,0px))}
+#hall .tour button{border:0;border-radius:2em;padding:8px 13px;font-weight:700;font-size:13px;cursor:pointer;background:rgba(255,255,255,.92);color:#2a1e0c}
+#hall .tour button[aria-pressed="true"]{background:var(--gold);color:#3b2600}
+#hall .pad{position:absolute;right:max(14px,env(safe-area-inset-right,0px));bottom:calc(64px + env(safe-area-inset-bottom,0px));display:grid;grid-template-columns:repeat(3,40px);grid-template-rows:repeat(3,40px);gap:4px}
+#hall .pad button{border:0;border-radius:10px;background:rgba(255,255,255,.85);font-size:18px;font-weight:900;cursor:pointer;color:#2a1e0c;touch-action:none}
+#hall .info{position:absolute;top:calc(64px + env(safe-area-inset-top,0px));left:max(16px,env(safe-area-inset-left,0px));max-width:min(340px,calc(100% - 32px));background:rgba(255,250,236,.96);color:#2a1e0c;border-radius:14px;padding:12px 14px;font-size:14px;line-height:1.7;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+#hall .info b{font-family:var(--display);color:var(--red);font-size:16px;display:block}
+#hall .enter{position:absolute;left:50%;top:58%;transform:translateX(-50%);border:0;border-radius:2em;background:var(--green);color:#fff;font-weight:800;font-size:18px;padding:12px 26px;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+@media (max-width:600px){#hall .help{display:none}}
+#hall .fade{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;transition:opacity .6s}
+#hall .help{position:absolute;bottom:calc(60px + env(safe-area-inset-bottom,0px));left:max(16px,env(safe-area-inset-left,0px));font-size:12px;color:#e7dcc0;background:rgba(0,0,0,.45);border-radius:8px;padding:6px 10px;max-width:calc(100% - 180px)}
 @media (prefers-reduced-motion:reduce){.leaf,#book{transition-duration:.01s!important}.cover .gloss,.hint::before{animation:none}}
 </style>
 
@@ -167,6 +188,21 @@ nav #sound{background:#24543f;color:#f6ecd2;box-shadow:0 3px 0 #0b2a1d;padding:9
     <button id="sound" type="button" aria-pressed="true" title="صوت تقليب الصفحات">صوت: تشغيل</button>
     <button id="next" type="button">التالية ←</button>
   </nav>
+</div>
+
+
+<div id="hall" hidden role="dialog" aria-label="قاعة عبدالله السالم ثلاثية الأبعاد">
+  <canvas id="hallCanvas"></canvas>
+  <div class="top"><div><h2 id="hallTitle">مبنى مجلس الأمة</h2><small>تصوّر توضيحي ثلاثي الأبعاد</small></div><button id="hallClose" type="button">عودة للكتاب ✕</button></div>
+  <button class="enter" id="hallEnter" type="button">ادخل من البوابة الرئيسية</button>
+  <div class="info" id="hallInfo" hidden></div>
+  <div class="help" id="hallHelp">اسحب للنظر حولك · استخدم الأسهم أو W A S D للمشي · اضغط على اللافتات الذهبية</div>
+  <div class="pad" id="hallPad" hidden>
+    <span></span><button type="button" data-m="f" aria-label="للأمام">▲</button><span></span>
+    <button type="button" data-m="r" aria-label="يمين">▶</button><button type="button" data-m="b" aria-label="للخلف">▼</button><button type="button" data-m="l" aria-label="يسار">◀</button>
+  </div>
+  <div class="tour" id="hallTour" hidden></div>
+  <div class="fade" id="hallFade"></div>
 </div>
 
 <!-- ============ PAGES (in reading order) ============ -->
@@ -208,6 +244,7 @@ nav #sound{background:#24543f;color:#f6ecd2;box-shadow:0 3px 0 #0b2a1d;padding:9
     <figure><img class="photo" src="assets/abdullah.jpg" alt="صورة الشيخ عبدالله السالم الصباح" style="width:100%;filter:sepia(.3)"><figcaption>حاكم الكويت ١٩٥٠–١٩٦٥م</figcaption></figure>
     <div><p>في عهده نالت الكويت استقلالها، وصدر <b>الدستور الكويتي</b> الذي أنشأ السلطات العامة الثلاث، لذلك يُلقَّب بـ«أبو الدستور».</p></div>
   </div>
+  <button class="chipbtn" type="button" data-hall="1" style="margin:.3em 0">زر قاعة عبدالله السالم في مجلس الأمة</button>
   <p class="hint">تنقّل بين محطات الخط الزمني</p>
   <div class="tl" id="tl">
     <button type="button" data-y="0">١٩٥٠</button><button type="button" data-y="1">١٩٦١</button><button type="button" data-y="2">١٩٦١</button><button type="button" data-y="3">١٩٦٢</button><button type="button" data-y="4">١٩٦٣</button>
@@ -288,6 +325,7 @@ nav #sound{background:#24543f;color:#f6ecd2;box-shadow:0 3px 0 #0b2a1d;padding:9
 <template data-title="مجلس الأمة والوزراء"><div class="pg"><div class="band"><span class="chap">مجلس الأمة</span></div><div class="body">
   <h2 class="t">مبنى مجلس الأمة الكويتي</h2>
   <div class="three" id="majlis3d" style="height:10.5em"><span class="lbl">نموذج ثلاثي الأبعاد · اسحب للتدوير</span></div>
+  <button class="primary" type="button" data-hall="1" style="width:100%;margin:.45em 0 .2em;font-size:1em">ادخل قاعة عبدالله السالم بتقنية 3D</button>
   <p style="font-size:.85em">صمّم المبنى المعماري الدنماركي يورن أوتزون، وتشبه مظلته الكبيرة الخيمة العربية. وفيه يجلس الوزراء أعضاءً في مجلس الأمة.</p>
   <div class="seats" id="seats"></div>
   <div style="display:flex;gap:.5em;align-items:center;flex-wrap:wrap"><button class="chipbtn" id="seatBtn" type="button">أضف الوزراء</button><span id="seatTxt" style="font-size:.8em;font-weight:700">٥٠ عضواً منتخباً</span></div>
@@ -467,8 +505,8 @@ function goPage(p){ if(busy) return; setK(mode==='spread' ? (p%2? (p+1)/2 : p/2)
 document.getElementById('prev').onclick=()=>go(-1);
 document.getElementById('next').onclick=()=>go(1);
 document.getElementById('sound').onclick=e=>{ soundOn=!soundOn; e.target.setAttribute('aria-pressed',soundOn); e.target.textContent='صوت: '+(soundOn?'تشغيل':'إيقاف'); };
-addEventListener('keydown',e=>{ if(e.target.closest('input,textarea')) return; if(e.key==='ArrowLeft') go(1); if(e.key==='ArrowRight') go(-1); });
-book.addEventListener('click',e=>{ const g=e.target.closest('[data-go]'); if(!g) return;
+addEventListener('keydown',e=>{ if(window.__hallOpen||e.target.closest('input,textarea')) return; if(e.key==='ArrowLeft') go(1); if(e.key==='ArrowRight') go(-1); });
+book.addEventListener('click',e=>{ if(e.target.closest('[data-hall]')){ window.openHall&&window.openHall(); return; } const g=e.target.closest('[data-go]'); if(!g) return;
   const v=g.dataset.go; if(v==='next') go(1); else if(v==='prev') go(-1); else if(v==='toc') goPage(1); });
 let sx=null, sy=0;
 scene.addEventListener('pointerdown',e=>{ if(e.target.closest('button,video,.three,.ring-wrap,a,input')) {sx=null;return;} sx=e.clientX; sy=e.clientY; });
@@ -662,5 +700,177 @@ function quiz(){ const box=Q('quiz'); if(!box) return; let i=0, score=0;
   show(); }
 
 build();
+})();
+</script>
+<script>
+/* ===== Walk-in National Assembly & Abdullah Al-Salem Hall ===== */
+(()=>{
+const $=id=>document.getElementById(id);
+const hall=$('hall'), cv=$('hallCanvas');
+let R=null, cam=null, ext=null, inn=null, cur=null, raf=null, mode='ext', labels=[], flyTo=null, keys={}, yaw=0, pitch=0, t0=0, extFlag=null;
+const INFO={
+  door:['البوابة الرئيسية','مدخل مبنى مجلس الأمة الذي صممه المعماري الدنماركي يورن أوتزون، وتشبه مظلته الكبيرة الخيمة العربية.'],
+  speaker:['منصة الرئاسة','يجلس عليها رئيس مجلس الأمة ويدير الجلسات، ويجلس معه أعضاء مكتب المجلس.'],
+  gov:['مقاعد الحكومة','الصف الأمامي يجلس فيه رئيس مجلس الوزراء والوزراء؛ فالوزراء أعضاء في مجلس الأمة بحكم وظائفهم، ولا يتجاوز عددهم ١٦ وزيراً (ثلث الأعضاء المنتخبين).'],
+  mp:['مقاعد النواب','يجلس فيها ٥٠ عضواً منتخباً من الشعب، يشرّعون القوانين ويراقبون أعمال الحكومة.'],
+  gallery:['شرفة الجمهور','جلسات مجلس الأمة علنية يحضرها الجمهور والإعلام، بخلاف جلسات مجلس الوزراء التي تكون سرية.'],
+  emblem:['شعار دولة الكويت','يعلو منصة الرئاسة، وعلى جانبيه علم الكويت.'],
+  hallname:['قاعة عبدالله السالم','القاعة الرئيسية لجلسات مجلس الأمة، سُمّيت باسم الشيخ عبدالله السالم الصباح «أبو الدستور» الذي صدر الدستور في عهده عام ١٩٦٢م.']};
+const TOUR=[['المدخل',[0,3.4,7.4],0,-.2,'hallname'],['منصة الرئاسة',[0,2.6,-5],Math.PI,-.12,'speaker'],['مقاعد الحكومة',[-5.5,1.7,-2.2],-0.9,-.2,'gov'],['مقاعد النواب',[10,3.2,5],0.95,-.24,'mp'],['شرفة الجمهور',[0,5.4,8.2],0,-.3,'gallery'],['الشعار',[0,3.4,-4],0,.08,'emblem']];
+
+function mat(c,o={}){ return new THREE.MeshLambertMaterial(Object.assign({color:c},o)); }
+function box(w,h,d,m,x,y,z,p){ const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m); b.position.set(x,y,z); (p||null)&&p.add(b); return b; }
+function flagTex(){ const c=document.createElement('canvas'); c.width=256;c.height=128; const g=c.getContext('2d');
+  g.fillStyle='#0b7a43';g.fillRect(0,0,256,43);g.fillStyle='#fff';g.fillRect(0,42,256,44);g.fillStyle='#c8102e';g.fillRect(0,85,256,43);
+  g.fillStyle='#111';g.beginPath();g.moveTo(0,0);g.lineTo(64,42.7);g.lineTo(64,85.3);g.lineTo(0,128);g.fill(); return new THREE.CanvasTexture(c); }
+function label(text,key,x,y,z,s=1){ const c=document.createElement('canvas'); c.width=640;c.height=150; const g=c.getContext('2d');
+  g.fillStyle='rgba(20,12,0,.78)'; const r=40; g.beginPath(); g.moveTo(r,8); g.arcTo(632,8,632,142,r); g.arcTo(632,142,8,142,r); g.arcTo(8,142,8,8,r); g.arcTo(8,8,632,8,r); g.fill();
+  g.strokeStyle='#f2c14e'; g.lineWidth=6; g.stroke(); g.fillStyle='#f6d77e'; g.font='800 64px Tajawal, sans-serif'; g.textAlign='center'; g.textBaseline='middle'; g.direction='rtl'; g.fillText(text,320,80);
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false,transparent:true})); sp.scale.set(2.6*s,.61*s,1); sp.position.set(x,y,z); sp.renderOrder=10; sp.userData.key=key; labels.push(sp); return sp; }
+function emblemTex(){ const c=document.createElement('canvas'); c.width=c.height=512; const g=c.getContext('2d');
+  const grd=g.createRadialGradient(256,230,40,256,256,250); grd.addColorStop(0,'#fff1b0'); grd.addColorStop(1,'#c88a1c'); g.fillStyle=grd; g.beginPath(); g.arc(256,256,240,0,7); g.fill();
+  g.fillStyle='#f7f1e0'; g.beginPath(); g.arc(256,256,175,0,7); g.fill();
+  g.fillStyle='#3f8fc0'; g.fillRect(100,300,312,60); // sea
+  g.fillStyle='#8a5a1a'; g.beginPath(); g.moveTo(150,300); g.lineTo(362,300); g.lineTo(330,340); g.lineTo(180,340); g.fill(); // dhow hull
+  g.fillStyle='#fff'; g.strokeStyle='#8a5a1a'; g.lineWidth=5; g.beginPath(); g.moveTo(256,140); g.lineTo(256,295); g.lineTo(170,295); g.closePath(); g.fill(); g.stroke();
+  g.beginPath(); g.moveTo(262,170); g.lineTo(262,295); g.lineTo(330,295); g.closePath(); g.fill(); g.stroke();
+  g.fillStyle='#0b7a43'; g.fillRect(205,380,102,22); g.fillStyle='#fff'; g.fillRect(205,402,102,22); g.fillStyle='#c8102e'; g.fillRect(205,424,102,22);
+  g.fillStyle='#111'; g.beginPath(); g.moveTo(205,380); g.lineTo(230,402); g.lineTo(230,424); g.lineTo(205,446); g.fill();
+  g.strokeStyle='#b07818'; g.lineWidth=10; g.beginPath(); g.arc(256,256,232,0,7); g.stroke(); return new THREE.CanvasTexture(c); }
+
+/* ---------- exterior ---------- */
+function buildExterior(){
+  const S=new THREE.Scene(); S.background=new THREE.Color(0x9fd3ef); S.fog=new THREE.Fog(0x9fd3ef,60,140);
+  S.add(new THREE.HemisphereLight(0xffffff,0xd8b878,.85)); const sun=new THREE.DirectionalLight(0xfff2d6,.75); sun.position.set(20,30,25); S.add(sun);
+  box(200,.2,200,mat(0xe6cf98),0,-.1,0,S);
+  const sea=box(200,.1,80,new THREE.MeshPhongMaterial({color:0x2f86bd,shininess:120}),0,-.02,-75,S);
+  box(60,.05,14,mat(0xcfc6b6),0,0,16,S); // plaza
+  const cream=mat(0xefe4cc), white=mat(0xfbf8f1);
+  box(46,9,20,cream,0,4.5,-12,S);                      // main body
+  for(let i=0;i<10;i++) box(3.4,2.2,.3,mat(0x4d6f86),-18+i*4,4.6,-1.85,S); // window band
+  box(8,6,.4,mat(0x1d2a33),0,3,-1.8,S);                 // door
+  // canopy
+  const cg=new THREE.PlaneGeometry(52,18,60,16), p=cg.attributes.position.array;
+  for(let i=0;i<p.length;i+=3){ const x=p[i], y=p[i+1], u=(y+9)/18, edge=Math.pow(Math.abs(x)/26,4); p[i+1]=14.5-6*Math.pow(u,1.7)-3*edge*u; p[i+2]=-6+u*18; }
+  cg.computeVertexNormals(); S.add(new THREE.Mesh(cg,new THREE.MeshLambertMaterial({color:0xffffff,side:THREE.DoubleSide})));
+  for(let i=0;i<16;i++){ const x=-24+i*3.2; if(Math.abs(x)<4.5) continue; const c=box(.8,10,1.6,white,x,5,9.6,S); c.rotation.x=-.2; }
+  // palms
+  const trunk=mat(0x8a6a3a), leaf=mat(0x2f7d3a);
+  for(const [x,z] of [[-28,14],[28,14],[-12,20],[12,20],[-20,24],[20,24],[-34,4],[34,4]]){ box(.5,7,.5,trunk,x,3.5,z,S); for(let a=0;a<7;a++){ const l=new THREE.Mesh(new THREE.ConeGeometry(.5,4,5),leaf); l.position.set(x,7,z); l.rotation.set(Math.PI/2.3,a*Math.PI*2/7,0,'YXZ'); l.translateY(1.8); S.add(l);} }
+  // flags on poles
+  const ft=flagTex(); extFlag=[];
+  for(const x of [-9,9]){ const pole=new THREE.Mesh(new THREE.CylinderGeometry(.12,.12,12,8),mat(0xcccccc)); pole.position.set(x,6,15); S.add(pole);
+    const fl=new THREE.Mesh(new THREE.PlaneGeometry(4,2,16,6),new THREE.MeshLambertMaterial({map:ft,side:THREE.DoubleSide})); fl.position.set(x+2.05,10.8,15); S.add(fl); extFlag.push({g:fl.geometry,b:fl.geometry.attributes.position.array.slice()}); }
+  S.add(label('مجلس الأمة','hallname',0,17.5,4,2.2)); S.add(label('البوابة الرئيسية','door',0,7.6,0,1.1));
+  return S;
+}
+/* ---------- interior: Abdullah Al-Salem Hall ---------- */
+function buildInterior(){
+  const S=new THREE.Scene(); S.background=new THREE.Color(0x2a1d10);
+  S.add(new THREE.HemisphereLight(0xfff4dc,0x5a4020,.75)); S.add(new THREE.AmbientLight(0xffffff,.25));
+  const L1=new THREE.PointLight(0xfff0cc,.7,40); L1.position.set(0,8,-2); S.add(L1);
+  const L2=new THREE.PointLight(0xfff0cc,.45,35); L2.position.set(0,7,8); S.add(L2);
+  const W=34, D=26, H=10;
+  box(W,.2,D,mat(0x1f5e45),0,-.1,0,S);                         // green carpet
+  box(W,.2,D,mat(0xe9dfc8),0,H,0,S);                           // ceiling
+  const wood=mat(0x8b5a2b), woodL=mat(0xb07a42), cream=mat(0xefe4cc);
+  box(W,H,.3,cream,0,H/2,-D/2,S); box(W,H,.3,cream,0,H/2,D/2,S); box(.3,H,D,cream,-W/2,H/2,0,S); box(.3,H,D,cream,W/2,H/2,0,S);
+  // wood slats on walls
+  const slat=new THREE.BoxGeometry(.25,6.5,.18); const nS=40; const im=new THREE.InstancedMesh(slat,woodL,nS*3); const m4=new THREE.Matrix4(); let k=0;
+  for(let i=0;i<nS;i++){ const z=-D/2+.6+i*(D-1.2)/(nS-1); m4.makeTranslation(-W/2+.25,3.6,z); im.setMatrixAt(k++,m4); m4.makeTranslation(W/2-.25,3.6,z); im.setMatrixAt(k++,m4); }
+  for(let i=0;i<nS;i++){ const x=-W/2+.6+i*(W-1.2)/(nS-1); m4.makeRotationY(Math.PI/2); m4.setPosition(x,3.6,-D/2+.25); im.setMatrixAt(k++,m4); }
+  S.add(im);
+  // ceiling beams + light panels
+  for(let i=0;i<9;i++) box(W,.6,.4,wood,0,H-.4,-D/2+1.5+i*3,S);
+  const lp=new THREE.InstancedMesh(new THREE.BoxGeometry(2,.08,1.2),new THREE.MeshBasicMaterial({color:0xfff6dc}),8*6); k=0;
+  for(let i=0;i<8;i++) for(let j=0;j<6;j++){ m4.makeTranslation(-14+i*4,H-.2,-10.5+j*3+.75); lp.setMatrixAt(k++,m4); } S.add(lp);
+  // speaker platform at front (z=-D/2)
+  const pz=-D/2+3;
+  box(16,.6,5,wood,0,.3,pz,S); box(10,.6,3,wood,0,.9,pz-.8,S);
+  box(9,1.3,.9,woodL,0,1.85,pz+.3,S);                         // speaker desk
+  for(let i=-3;i<=3;i++){ const ch=box(.9,1.6,.9,mat(0x5a1f1f),i*1.25,2.0,pz-1,S); }
+  box(14,.9,1,woodL,0,.75,pz+2.6,S);                          // clerks desk
+  // emblem & flags on front wall
+  const em=new THREE.Mesh(new THREE.CircleGeometry(1.9,48),new THREE.MeshBasicMaterial({map:emblemTex()})); em.position.set(0,6.4,-D/2+.32); S.add(em);
+  box(12,7.2,.1,mat(0x6e4420),0,4.8,-D/2+.22,S);
+  const ft=flagTex();
+  for(const x of [-4.2,4.2]){ const pole=new THREE.Mesh(new THREE.CylinderGeometry(.06,.06,5.5,8),mat(0xd8b04a)); pole.position.set(x,4.5,-D/2+.9); S.add(pole);
+    const fl=new THREE.Mesh(new THREE.PlaneGeometry(1.8,.9,8,4),new THREE.MeshLambertMaterial({map:ft,side:THREE.DoubleSide})); fl.position.set(x+(x<0?-.92:.92),6.6,-D/2+.9); if(x<0) fl.rotation.y=Math.PI; S.add(fl); }
+  // seats: arcs centered on the platform, facing it
+  const cx=0, cz=pz+1;
+  const seatG=new THREE.BoxGeometry(.75,.5,.7), backG=new THREE.BoxGeometry(.75,.9,.15), deskG=new THREE.BoxGeometry(1.05,.85,.5);
+  const rows=[{r:6.4,n:16,gov:true},{r:9,n:14},{r:11.4,n:17},{r:13.8,n:19}];
+  const total=rows.reduce((a,b)=>a+b.n,0);
+  const seatsGov=new THREE.InstancedMesh(seatG,mat(0x9c2a2a),16), backsGov=new THREE.InstancedMesh(backG,mat(0x7d1f1f),16);
+  const seatsMp=new THREE.InstancedMesh(seatG,mat(0x2e6b8a),total-16), backsMp=new THREE.InstancedMesh(backG,mat(0x24566f),total-16);
+  const desks=new THREE.InstancedMesh(deskG,woodL,total);
+  let gi=0, mi=0, di=0; const q=new THREE.Object3D();
+  rows.forEach((row,ri)=>{ const step=ri*.35; for(let i=0;i<row.n;i++){ const a=-1.05+2.1*(i/(row.n-1)); const x=cx+Math.sin(a)*row.r, z=cz+Math.cos(a)*row.r, y=step;
+      const face=a+Math.PI; // face platform
+      const put=(mesh,idx,ox,oy,oz)=>{ q.position.set(x+Math.sin(a)*oz,y+oy,z+Math.cos(a)*oz); q.rotation.set(0,face,0); q.updateMatrix(); mesh.setMatrixAt(idx,q.matrix); };
+      if(row.gov){ put(seatsGov,gi,0,.45,0); put(backsGov,gi,0,.95,.36); gi++; } else { put(seatsMp,mi,0,.45,0); put(backsMp,mi,0,.95,.36); mi++; }
+      put(desks,di++,0,.45,-.75);
+    }
+    if(ri>0){ const tier=new THREE.Mesh(new THREE.RingGeometry(row.r-1.3,row.r+1.05,48,1,-Math.PI/2-1.2,2.4),mat(0x245f47)); tier.rotation.x=-Math.PI/2; tier.position.set(cx,step+.01,cz); S.add(tier); }
+  });
+  [seatsGov,backsGov,seatsMp,backsMp,desks].forEach(m=>S.add(m));
+  // public gallery at the back
+  const gz=D/2-2.6; box(W-2,.4,5,wood,0,3.6,gz,S); box(W-2,1,.15,woodL,0,4.3,gz-2.45,S);
+  const gS=new THREE.InstancedMesh(seatG,mat(0x6b5a3a),2*22); k=0;
+  for(let r=0;r<2;r++) for(let i=0;i<22;i++){ q.position.set(-14.7+i*1.4,4.1+r*.4,gz-1.2+r*1.6); q.rotation.set(0,Math.PI,0); q.updateMatrix(); gS.setMatrixAt(k++,q.matrix); }
+  S.add(gS); for(const x of [-12,-4,4,12]) box(.6,3.6,.6,wood,x,1.8,gz-2.3,S);
+  // labels
+  S.add(label('قاعة عبدالله السالم','hallname',0,8.9,-D/2+.6,1.8));
+  S.add(label('منصة الرئاسة','speaker',0,3.6,pz,1));
+  S.add(label('مقاعد الحكومة','gov',-4.6,2.3,cz+4.4,.9));
+  S.add(label('مقاعد النواب','mp',5.5,3.2,cz+11.5,.95));
+  S.add(label('شرفة الجمهور','gallery',-9,6.2,gz,.95));
+  S.add(label('شعار الدولة','emblem',0,4.3,-D/2+.6,.8));
+  return S;
+}
+/* ---------- loop & controls ---------- */
+function resize(){ const w=hall.clientWidth,h=hall.clientHeight; R.setSize(w,h,false); cam.aspect=w/h; cam.updateProjectionMatrix(); }
+function setView(pos,y,p){ cam.position.set(...pos); yaw=y; pitch=p; }
+function loop(){ raf=requestAnimationFrame(loop); const t=(performance.now()-t0)/1000;
+  if(flyTo){ const f=flyTo; f.k=Math.min(1,f.k+f.speed); const e=f.k<.5?2*f.k*f.k:1-Math.pow(-2*f.k+2,2)/2;
+    cam.position.lerpVectors(f.from,f.to,e); yaw=f.y0+(f.y1-f.y0)*e; pitch=f.p0+(f.p1-f.p0)*e; if(f.k>=1){ flyTo=null; f.done&&f.done(); } }
+  else if(mode==='int'){ const sp=.09, fw=(keys.f?1:0)-(keys.b?1:0), st=(keys.l?1:0)-(keys.r?1:0);
+    if(fw||st){ cam.position.x+= -Math.sin(yaw)*fw*sp - Math.cos(yaw)*st*sp; cam.position.z+= -Math.cos(yaw)*fw*sp + Math.sin(yaw)*st*sp;
+      cam.position.x=Math.max(-16,Math.min(16,cam.position.x)); cam.position.z=Math.max(-12,Math.min(12,cam.position.z)); } }
+  else if(mode==='ext' && !flyTo){ yaw=Math.sin(t*.15)*.25; }
+  cam.rotation.set(pitch,yaw,0,'YXZ');
+  if(mode==='ext'&&extFlag) extFlag.forEach(f=>{ const p=f.g.attributes.position.array; for(let i=0;i<p.length;i+=3) p[i+2]=Math.sin(f.b[i]*2-t*4)*.25*(f.b[i]+2)/4; f.g.attributes.position.needsUpdate=true; });
+  R.render(cur,cam); }
+function fly(pos,y,p,done,speed=.012){ let y0=yaw; while(y-y0>Math.PI) y0+=2*Math.PI; while(y0-y>Math.PI) y0-=2*Math.PI;
+  flyTo={from:cam.position.clone(),to:new THREE.Vector3(...pos),y0,y1:y,p0:pitch,p1:p,k:0,speed,done}; }
+function showInfo(key){ const [t,d]=INFO[key]; const el=$('hallInfo'); el.innerHTML=`<b>${t}</b>${d}`; el.hidden=false; }
+function enterHall(){ $('hallEnter').hidden=true; $('hallInfo').hidden=true;
+  fly([0,3,2],0,0,()=>{ $('hallFade').style.opacity=1; setTimeout(()=>{ cur=inn; mode='int'; setView([0,3.4,9],0,-.2); $('hallTitle').textContent='قاعة عبدالله السالم';
+    fly([0,3.4,7.4],0,-.2,null,.02); $('hallFade').style.opacity=0; $('hallPad').hidden=false; $('hallTour').hidden=false; showInfo('hallname'); },650); },.008); }
+function init(){
+  R=new THREE.WebGLRenderer({canvas:cv,antialias:true}); R.setPixelRatio(Math.min(2,devicePixelRatio));
+  cam=new THREE.PerspectiveCamera(62,1,.1,400);
+  ext=buildExterior(); inn=buildInterior();
+  const tour=$('hallTour'); tour.innerHTML=TOUR.map((s,i)=>`<button type="button" data-i="${i}">${s[0]}</button>`).join('');
+  tour.querySelectorAll('button').forEach(b=>b.onclick=()=>{ const s=TOUR[+b.dataset.i]; tour.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b)); fly(s[1],s[2],s[3],null,.015); showInfo(s[4]); });
+  // look by dragging, click labels
+  let drag=null, moved=0; const ray=new THREE.Raycaster(), v2=new THREE.Vector2();
+  cv.addEventListener('pointerdown',e=>{ drag={x:e.clientX,y:e.clientY}; moved=0; cv.setPointerCapture(e.pointerId); });
+  cv.addEventListener('pointermove',e=>{ if(!drag) return; const dx=e.clientX-drag.x, dy=e.clientY-drag.y; moved+=Math.abs(dx)+Math.abs(dy); drag={x:e.clientX,y:e.clientY};
+    if(mode==='int'&&!flyTo){ yaw+=dx*.005; pitch=Math.max(-1.2,Math.min(1.1,pitch+dy*.004)); } });
+  cv.addEventListener('pointerup',e=>{ drag=null; if(moved>6) return; const r=cv.getBoundingClientRect(); v2.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);
+    ray.setFromCamera(v2,cam); const hit=ray.intersectObjects(labels.filter(l=>l.parent===cur)); if(hit.length){ const k=hit[0].object.userData.key; if(k==='door'&&mode==='ext') enterHall(); else showInfo(k); } });
+  const map={ArrowUp:'f',KeyW:'f',ArrowDown:'b',KeyS:'b',ArrowLeft:'l',KeyA:'l',ArrowRight:'r',KeyD:'r'};
+  addEventListener('keydown',e=>{ if(!window.__hallOpen) return; if(e.key==='Escape') close(); const m=map[e.code]; if(m){ keys[m]=true; e.preventDefault(); } });
+  addEventListener('keyup',e=>{ const m=map[e.code]; if(m) keys[m]=false; });
+  $('hallPad').querySelectorAll('button').forEach(b=>{ const m=b.dataset.m; b.addEventListener('pointerdown',e=>{ keys[m]=true; e.preventDefault(); }); ['pointerup','pointerleave','pointercancel'].forEach(ev=>b.addEventListener(ev,()=>keys[m]=false)); });
+  $('hallEnter').onclick=enterHall; $('hallClose').onclick=close;
+  addEventListener('resize',()=>{ if(window.__hallOpen) resize(); });
+}
+function open(){ if(!window.THREE) return; hall.hidden=false; window.__hallOpen=true; if(!R) init();
+  cur=ext; mode='ext'; flyTo=null; labels.length&&0; $('hallTitle').textContent='مبنى مجلس الأمة'; $('hallEnter').hidden=false; $('hallPad').hidden=true; $('hallTour').hidden=true; $('hallInfo').hidden=true;
+  setView([0,8,70],0,-.06); resize(); t0=performance.now(); fly([0,6,38],0,-.04,null,.01); if(!raf) loop(); }
+function close(){ hall.hidden=true; window.__hallOpen=false; if(raf){ cancelAnimationFrame(raf); raf=null; } keys={}; }
+window.openHall=()=>{ (document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(open); };
 })();
 </script>
