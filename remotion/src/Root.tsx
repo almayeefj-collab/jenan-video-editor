@@ -22,8 +22,8 @@ export const RemotionRoot: React.FC = () => {
       <Still id="PanelQuestion" component={QuestionCard} width={PN_W} height={PN_H} defaultProps={{text: 'كيف نفرّق بين الضغط الطبيعي والانهيار النفسي؟', to: 'jaza' as const}} />
       <Still id="PanelLowerThird" component={LowerThird} width={PN_W} height={PN_H} defaultProps={{who: 'jaza' as const}} />
       {/* بوستين انستغرام يمين ويسار الريلز */}
-      <Still id="PostTitle" component={PostTitle} width={POST_W} height={POST_H} defaultProps={{}} />
-      <Still id="PostPeople" component={PostPeople} width={POST_W} height={POST_H} defaultProps={{}} />
+      <Still id="PostTitle" component={PostTitle} width={POST_W} height={POST_H} defaultProps={{logo: 'brand/kicd-2026-logo.png'}} />
+      <Still id="PostPeople" component={PostPeople} width={POST_W} height={POST_H} defaultProps={{logo: 'brand/kicd-2026-logo.png'}} />
       <Still id="PanelBadge" component={Badge} width={PN_W} height={PN_H} defaultProps={{part: 1, parts: 16}} />
       {/* فريق العلاقات العامة — فاطمة الهاشمية، نسخة رسمية */}
       <Composition id="PRTeam" component={PRTeam} durationInFrames={prFrames()} fps={PR_FPS} width={PR_W} height={PR_H} />

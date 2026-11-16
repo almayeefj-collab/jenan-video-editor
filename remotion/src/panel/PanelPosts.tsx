@@ -45,9 +45,15 @@ const Rule: React.FC<{width: number}> = ({width}) => (
 );
 
 const Logo: React.FC<{logo?: string; size: number}> = ({logo, size}) =>
-  logo ? <Img src={staticFile(logo)} style={{height: size, width: 'auto', maxWidth: 520, objectFit: 'contain', filter: 'drop-shadow(0 6px 18px rgba(0,0,0,0.5))'}} /> : null;
+  logo ? <Img src={staticFile(logo)} style={{height: size, width: size, objectFit: 'contain', filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.6))'}} /> : null;
 
-const Footer: React.FC = () => (
+// تحت: الشعار إذا موجود (فيه اسم المؤتمر والسنة)، وإلا اسم المؤتمر نص
+const Footer: React.FC<{logo?: string}> = ({logo}) =>
+  logo ? (
+    <div style={{position: 'absolute', bottom: 64, left: 0, right: 0, display: 'flex', justifyContent: 'center'}}>
+      <Logo logo={logo} size={150} />
+    </div>
+  ) : (
   <div style={{position: 'absolute', bottom: 74, left: 0, right: 0, textAlign: 'center'}}>
     <div style={{fontSize: 28, fontWeight: 600, color: CREAM, textShadow: shadow}}>{EVENT}</div>
     <div style={{fontFamily: numberFamily, fontSize: 26, color: GOLD, letterSpacing: 8, marginTop: 6}}>2026</div>
@@ -59,13 +65,13 @@ export const PostTitle: React.FC<PostProps> = ({logo}) => (
   <AbsoluteFill style={{background: INK, direction: 'rtl', fontFamily}}>
     <Background seed="title" />
     <AbsoluteFill style={{alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '0 110px'}}>
-      <Logo logo={logo} size={190} />
+      <Logo logo={logo} size={300} />
       <div style={{marginTop: logo ? 56 : 0, padding: '10px 40px', borderRadius: 40, border: `1.5px solid ${GOLD}`, fontSize: 38, fontWeight: 700, color: GOLD}}>{SESSION.kicker}</div>
       <div style={{marginTop: 40, fontSize: 112, fontWeight: 800, color: '#fff', lineHeight: 1.18, textShadow: shadow}}>الصحة النفسية</div>
       <div style={{fontSize: 92, fontWeight: 800, color: GOLD, lineHeight: 1.25, textShadow: shadow}}>بين الانهيار والتكيف</div>
       <Rule width={520} />
     </AbsoluteFill>
-    <Footer />
+    {logo ? null : <Footer />}
   </AbsoluteFill>
 );
 
@@ -95,8 +101,8 @@ const Label: React.FC<{text: string}> = ({text}) => (
 export const PostPeople: React.FC<PostProps> = ({logo}) => (
   <AbsoluteFill style={{background: INK, direction: 'rtl', fontFamily}}>
     <Background seed="people" />
-    <AbsoluteFill style={{alignItems: 'center', paddingTop: logo ? 86 : 100}}>
-      {logo ? <Logo logo={logo} size={110} /> : <div style={{fontSize: 36, fontWeight: 700, color: CREAM}}>{SESSION.kicker}</div>}
+    <AbsoluteFill style={{alignItems: 'center', paddingTop: logo ? 78 : 100}}>
+      <div style={{fontSize: 36, fontWeight: 700, color: CREAM}}>{SESSION.kicker}</div>
       <div style={{marginTop: 28}}><Label text="رئيسة الجلسة" /></div>
       <div style={{marginTop: 22}}>
         <Person who="host" size={250} pos="35% 30%" role="مهتمة في صحة الدماغ" nameSize={46} />
@@ -107,6 +113,6 @@ export const PostPeople: React.FC<PostProps> = ({logo}) => (
         <Person who="jaza" size={196} pos="50% 25%" role={'رئيس جمعية علم النفس\nالكويتية'} nameSize={38} />
       </div>
     </AbsoluteFill>
-    <Footer />
+    <Footer logo={logo} />
   </AbsoluteFill>
 );
