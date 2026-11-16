@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<style>
+@font-face{font-family:Cairo;src:url(Cairo.ttf)}
+:root{--gold:#f3c45a;--gold2:#e7a42b;--cream:#fff6dc;--green:#0b7a43;--dgreen:#06512c;--red:#ce1126;--ink:#2b1d07}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1280px;height:720px;overflow:hidden;background:#1a1206;font-family:Cairo,sans-serif;color:var(--ink)}
+#stage{position:absolute;inset:0;overflow:hidden;background:radial-gradient(ellipse at 70% 30%,#fff3c9 0%,#f6d27a 45%,#d99a2b 100%)}
+#pattern{position:absolute;inset:-40px;opacity:.13;background-image:
+ repeating-linear-gradient(45deg,#7a4b00 0 2px,transparent 2px 46px),repeating-linear-gradient(-45deg,#7a4b00 0 2px,transparent 2px 46px)}
+.scene{position:absolute;inset:0;opacity:0}
+.t{position:absolute;opacity:0}
+h1{font-weight:900;font-size:82px;line-height:1.15;color:var(--dgreen);text-shadow:0 4px 0 rgba(255,255,255,.6),0 10px 30px rgba(90,50,0,.35)}
+h2{font-weight:800;font-size:54px;color:var(--dgreen)}
+p,li{font-size:34px;font-weight:600;line-height:1.6}
+.tag{display:inline-block;background:var(--dgreen);color:#fff;padding:6px 26px;border-radius:40px;font-size:28px;font-weight:700}
+.card{background:rgba(255,250,235,.92);border-radius:26px;box-shadow:0 20px 50px rgba(80,45,0,.35);padding:28px 36px}
+.photo{border-radius:20px;box-shadow:0 22px 50px rgba(60,30,0,.45);border:8px solid #fff;object-fit:cover}
+.node{position:absolute;background:#fff;border-radius:22px;padding:18px 28px;font-size:32px;font-weight:800;text-align:center;box-shadow:0 14px 34px rgba(80,45,0,.3);border-bottom:8px solid var(--green)}
+.arrow{position:absolute;height:8px;background:var(--dgreen);border-radius:4px;transform-origin:right center}
+.pill{position:absolute;background:var(--dgreen);color:#fff;border-radius:18px;padding:14px 26px;font-size:30px;font-weight:700}
+.pill.r{background:var(--red)}
+#bar{position:absolute;bottom:0;right:0;height:8px;background:linear-gradient(90deg,var(--red),#fff,var(--green));}
+#brand{position:absolute;top:22px;left:30px;font-size:22px;font-weight:700;color:rgba(60,35,0,.75)}
+</style></head><body>
+<div id="stage"><div id="pattern"></div>
+<div id="brand">الدستور وحقوق الإنسان · الصف الثاني عشر</div>
+
+<!-- 1 -->
+<div class="scene" id="s1" data-a="0" data-b="7">
+  <canvas id="flag" width="1280" height="720" style="position:absolute;inset:0"></canvas>
+  <div class="t" data-in="0.8" style="right:90px;top:200px;width:620px">
+    <span class="tag">فيديو تعريفي</span>
+    <h1 style="margin-top:18px">السلطة<br>التنفيذية</h1>
+    <p style="font-size:36px;color:#4a3000">في النظام الدستوري الكويتي</p>
+  </div>
+</div>
+
+<!-- 2 -->
+<div class="scene" id="s2" data-a="7" data-b="15">
+  <div class="t" data-in="0.2" style="right:90px;top:70px"><h2>كيف بدأت الحكاية؟</h2></div>
+  <div class="t card" data-in="0.8" style="right:90px;top:190px;width:500px;height:300px">
+    <div class="tag" style="background:#8a5a00">قديماً</div>
+    <p style="margin-top:14px">الخدمات في التعليم والصحة والعمل كانت تقوم على <b>جهود بعض الأفراد</b>.</p>
+  </div>
+  <div class="t" data-in="2.2" style="right:610px;top:300px;font-size:90px;color:var(--dgreen);font-weight:900">←</div>
+  <div class="t card" data-in="2.8" style="left:90px;top:190px;width:500px;height:300px">
+    <div class="tag">مع تطوّر الدولة</div>
+    <p style="margin-top:14px">لم تعد جهود الأفراد كافية، فوجبت <b>سلطة عامة</b> ترعى مصالح المجتمع.</p>
+  </div>
+  <div class="t" data-in="4.6" style="right:90px;left:90px;top:540px;text-align:center"><p style="font-size:38px;font-weight:800;color:var(--dgreen)">وهذا هو الدور الأساسي للسلطة التنفيذية</p></div>
+</div>
+
+<!-- 3 -->
+<div class="scene" id="s3" data-a="15" data-b="24">
+  <div class="t" data-in="0.2" style="right:90px;top:60px"><span class="tag">المفهوم</span></div>
+  <div class="t" data-in="0.6" style="right:90px;top:120px;width:1100px"><h2 style="font-size:46px;line-height:1.5">السلطة التنفيذية هي الجهة التي تقوم <span style="color:var(--red)">بتنفيذ</span> ما يصدر عن السلطة التشريعية من <span style="color:var(--red)">قوانين</span></h2></div>
+  <div class="t" data-in="2.2" style="right:90px;top:330px;width:330px;text-align:center"><img class="photo" src="assembly_crop.jpg" style="width:330px;height:200px"><p style="font-size:28px;margin-top:10px">السلطة التشريعية<br><b>تُصدر القانون</b></p></div>
+  <div class="t" data-in="3.2" style="right:450px;top:390px;font-size:80px;color:var(--dgreen);font-weight:900">←</div>
+  <div class="t" data-in="3.6" style="right:540px;top:340px;width:260px;height:190px;text-align:center" ><div class="node" style="position:static;font-size:34px;padding:50px 10px;border-bottom-color:var(--red)">السلطة<br>التنفيذية</div><p style="font-size:28px;margin-top:10px"><b>تنفّذ القانون</b></p></div>
+  <div class="t" data-in="4.6" style="right:820px;top:390px;font-size:80px;color:var(--dgreen);font-weight:900">←</div>
+  <div class="t" data-in="5" style="left:90px;top:340px;width:270px;text-align:center"><div class="node" style="position:static;font-size:34px;padding:50px 10px">المجتمع</div><p style="font-size:28px;margin-top:10px"><b>يحصل على الخدمات</b></p></div>
+</div>
+
+<!-- 4 -->
+<div class="scene" id="s4" data-a="24" data-b="33">
+  <div class="t" data-in="0.3" style="left:110px;top:90px"><img class="photo" src="abdullah.jpg" style="width:360px;height:460px;filter:sepia(.35)"><p style="font-size:24px;text-align:center;margin-top:8px">الشيخ عبدالله السالم الصباح</p></div>
+  <div class="t" data-in="0.8" style="right:90px;top:90px;width:660px"><span class="tag">١١ نوفمبر ١٩٦٢</span><h2 style="margin-top:16px;line-height:1.35">صدر الدستور الكويتي في عهد الشيخ عبدالله السالم</h2></div>
+  <div class="t" data-in="2.4" style="right:90px;top:360px;width:660px"><p>وأنشأ الدستور <b>ثلاث سلطات عامة</b>، وحدّد وظيفة كلٍّ منها وعلاقتها بالأخرى:</p></div>
+  <div class="pill t" data-in="3.6" style="right:90px;top:500px">التنفيذية</div>
+  <div class="pill t" data-in="4.1" style="right:300px;top:500px;background:#8a5a00">التشريعية</div>
+  <div class="pill t" data-in="4.6" style="right:510px;top:500px;background:#3d3d3d">القضائية</div>
+</div>
+
+<!-- 5 -->
+<div class="scene" id="s5" data-a="33" data-b="42">
+  <div class="t" data-in="0.2" style="right:90px;top:60px"><span class="tag">المادة (٥٢) من الدستور</span></div>
+  <div class="t" data-in="0.6" style="right:90px;top:120px;width:1100px"><h2 style="font-size:44px">«السلطة التنفيذية يتولاها الأمير ومجلس الوزراء والوزراء»</h2></div>
+  <div class="node t" data-in="1.8" style="right:440px;top:225px;width:400px;border-bottom-color:var(--gold2)">الأمير<br><span style="font-size:22px;font-weight:600">رئيس الدولة · ذاته مصونة لا تُمس</span></div>
+  <div class="node t" data-in="3" style="right:470px;top:405px;width:340px">رئيس مجلس الوزراء</div>
+  <div class="node t" data-in="4" style="right:160px;top:560px;width:300px">الوزراء</div>
+  <div class="node t" data-in="4.4" style="left:160px;top:560px;width:300px">مجلس الوزراء</div>
+</div>
+
+<!-- 6 -->
+<div class="scene" id="s6" data-a="42" data-b="51">
+  <div class="t" data-in="0.2" style="right:90px;top:60px"><span class="tag">المادة (١٢٣)</span></div>
+  <div class="t" data-in="0.5" style="right:90px;top:115px;width:1100px"><p style="font-size:32px;font-weight:700">«يهيمن مجلس الوزراء على مصالح الدولة، ويرسم السياسة العامة للحكومة، ويتابع تنفيذها، ويشرف على سير العمل في الإدارات الحكومية»</p></div>
+  <div class="t card" data-in="1.6" style="right:90px;top:300px;width:1100px">
+    <ul style="list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:6px 40px">
+      <li class="t" data-in="2.2" style="position:relative">✔ تسيير أمور الحياة وشؤون الدولة</li>
+      <li class="t" data-in="2.9" style="position:relative">✔ دراسة حاجات المجتمع والخطط المستقبلية</li>
+      <li class="t" data-in="3.6" style="position:relative">✔ رسم السياسات العامة ومتابعة تنفيذها</li>
+      <li class="t" data-in="4.3" style="position:relative">✔ تقديم مقترحات القوانين للسلطة التشريعية</li>
+      <li class="t" data-in="5" style="position:relative">✔ تنفيذ القوانين والإشراف على قطاعات الدولة</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 7 -->
+<div class="scene" id="s7" data-a="51" data-b="60">
+  <div class="t" data-in="0.2" style="right:90px;top:60px"><h2>اختصاصات السلطة التنفيذية</h2></div>
+  <div class="t card" data-in="0.9" style="right:90px;top:170px;width:530px;height:330px">
+    <div class="tag">في الظروف العادية</div>
+    <p style="margin-top:20px">• إدارية: إصدار اللوائح</p><p>• سياسية: محلية ودولية</p><p>• قضائية: العفو عن العقوبة</p>
+  </div>
+  <div class="t card" data-in="2.4" style="left:90px;top:170px;width:530px;height:330px">
+    <div class="tag" style="background:var(--red)">في الظروف غير العادية</div>
+    <p style="margin-top:20px">• المراسيم بقوانين</p><p>• إعلان الحرب الدفاعية</p><p>• إعلان الأحكام العرفية</p>
+  </div>
+</div>
+
+<!-- 8 -->
+<div class="scene" id="s8" data-a="60" data-b="67">
+  <canvas id="flag2" width="1280" height="720" style="position:absolute;inset:0"></canvas>
+  <div class="t" data-in="0.6" style="right:90px;top:230px;width:640px">
+    <h1 style="font-size:70px">هيا نبدأ الرحلة<br>داخل الكتاب</h1>
+    <p style="color:#4a3000;font-size:28px">قلّب الصفحات · استكشف · ثم اختبر نفسك</p>
+  </div>
+</div>
+<div id="bar"></div>
+</div>
+<script>
+const DUR=67;
+const ease=x=>x<0?0:x>1?1:1-Math.pow(1-x,3);
+const scenes=[...document.querySelectorAll('.scene')];
+const abdu=new Image();
+function drawFlag(cv,t,ox,oy,W){
+  const c=cv.getContext('2d');c.clearRect(0,0,1280,720);
+  const H=W/2,cols=120,cw=W/cols;
+  // pole
+  c.fillStyle='#6b4a1a';c.fillRect(ox-14,oy-30,12,H+330);
+  c.fillStyle='#caa04a';c.beginPath();c.arc(ox-8,oy-34,12,0,7);c.fill();
+  for(let i=0;i<cols;i++){
+    const x=i*cw,u=i/cols;
+    const amp=u*22, ph=u*7-t*4.2;
+    const dy=Math.sin(ph)*amp, sh=Math.cos(ph)*u*0.35;
+    const colX=ox+x+Math.sin(ph)*u*4;
+    const y0=oy+dy;
+    // stripes
+    const stripe=(col,a,b)=>{c.fillStyle=col;c.fillRect(colX,y0+a*H,cw+1,(b-a)*H)};
+    stripe('#0b7a43',0,1/3);stripe('#ffffff',1/3,2/3);stripe('#ce1126',2/3,1);
+    // trapezoid: x<W/4: top goes from 0 to H/3 linearly, bottom from H to 2H/3
+    if(x<W/4){const f=x/(W/4);c.fillStyle='#111';c.fillRect(colX,y0+f*H/3,cw+1,H-2*f*H/3);}
+    c.fillStyle=sh>0?`rgba(255,255,255,${sh*.5})`:`rgba(0,0,0,${-sh*.6})`;c.fillRect(colX,y0,cw+1,H);
+  }
+}
+window.render=function(t){
+  for(const s of scenes){
+    const a=+s.dataset.a,b=+s.dataset.b,lt=t-a;
+    const vis=t>=a-0.01&&t<b+0.6;
+    const op=vis?Math.min(ease(lt/0.6),1-ease((t-b)/0.6)):0;
+    s.style.opacity=op;
+    s.style.transform=`scale(${1+0.03*Math.max(0,Math.min(1,(t-a)/(b-a)))})`;
+    if(!vis) continue;
+    s.querySelectorAll('.t').forEach(e=>{const k=ease((lt-(+e.dataset.in))/0.7);e.style.opacity=k;e.style.transform=`translateY(${(1-k)*40}px)`;});
+  }
+  if(t<8) drawFlag(document.getElementById('flag'),t,110,170,520);
+  if(t>59) drawFlag(document.getElementById('flag2'),t,110,190,520);
+  document.getElementById('bar').style.width=(t/DUR*100)+'%';
+  document.getElementById('pattern').style.transform=`translate(${(t*6)%46}px,0)`;
+};
+window.DUR=DUR;
+render(0);
+</script></body></html>

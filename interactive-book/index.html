@@ -1,0 +1,666 @@
+<title>كتاب السلطة التنفيذية</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@500;700&family=Tajawal:wght@400;500;700;800&display=swap">
+<style>
+/* Layout: a physical golden schoolbook lying on a dark green desk; RTL spread with 3D page-turns. Single look on purpose (the book is an object). */
+:root{
+  --desk:#0f2a1f; --desk2:#1c4634;
+  --paper:#fffaf0; --paper2:#f8eccd; --ink:#2a1e0c; --muted:#6b5531;
+  --gold:#f2c14e; --gold-d:#d79a22; --green:#0b7a43; --green-d:#075a31; --red:#c8102e; --navy:#1d3b72;
+  --display:"Reem Kufi","Tajawal",system-ui,sans-serif; --body:"Tajawal","Segoe UI",Tahoma,system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:radial-gradient(ellipse at 50% 35%,var(--desk2) 0%,var(--desk) 70%);color:#f6ecd2;font-family:var(--body);overflow:hidden;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+#app{height:100%;display:flex;flex-direction:column;align-items:center}
+header{width:100%;max-width:1200px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:10px 4px}
+header h1{font-family:var(--display);font-weight:700;font-size:clamp(16px,2.2vw,22px);margin:0;color:var(--gold)}
+header .sub{font-size:13px;color:#cdbf9c}
+#pageInfo{font-variant-numeric:tabular-nums;font-size:14px;color:#e8dcbc;white-space:nowrap}
+#scene{flex:1;width:100%;display:flex;align-items:center;justify-content:center;perspective:2400px;touch-action:pan-y;min-height:0}
+#book{position:relative;transform-style:preserve-3d;transition:transform .9s cubic-bezier(.3,.1,.2,1)}
+#book::before{content:"";position:absolute;inset:auto 4% -26px 4%;height:30px;background:radial-gradient(ellipse at center,rgba(0,0,0,.55),transparent 70%);transform:translateZ(-2px)}
+.leaf{position:absolute;top:0;left:0;transform-style:preserve-3d;transform-origin:right center;transition:transform 1s cubic-bezier(.35,.05,.2,1),opacity .25s}
+.leaf.flipped{transform:rotateY(180deg)}
+.leaf.single.flipped{opacity:0;pointer-events:none;transition:transform 1s cubic-bezier(.35,.05,.2,1),opacity .3s .7s}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;background:var(--paper);color:var(--ink)}
+.face.back{transform:rotateY(180deg)}
+.face.front{border-radius:3px 10px 10px 3px}
+.face.back{border-radius:10px 3px 3px 10px}
+/* spine shading */
+.face.front::after{content:"";position:absolute;inset:0 0 0 auto;width:9%;background:linear-gradient(90deg,transparent,rgba(90,60,10,.18));pointer-events:none;z-index:5}
+.face.back::after{content:"";position:absolute;inset:0 auto 0 0;width:9%;background:linear-gradient(270deg,transparent,rgba(90,60,10,.18));pointer-events:none;z-index:5}
+.leaf .shade{position:absolute;inset:0;pointer-events:none;opacity:0;z-index:6;background:linear-gradient(90deg,rgba(0,0,0,.0),rgba(0,0,0,.28));transition:opacity .5s}
+.leaf.turning .shade{opacity:1}
+.paperback{background:repeating-linear-gradient(0deg,#f6e9c8 0 2px,#f3e3bd 2px 4px)}
+/* page chrome modelled on the original book */
+.pg{position:absolute;inset:0;display:flex;flex-direction:column;font-size:1em}
+.band{height:3.2em;flex:none;background:linear-gradient(180deg,#f7d57c,#f3c75a 55%,#fbe7b1);position:relative;overflow:hidden}
+.band::after{content:"";position:absolute;inset:auto 0 0 0;height:3px;background:linear-gradient(90deg,var(--gold-d),#fff3c8,var(--gold-d))}
+.band i{position:absolute;bottom:0;width:22%;height:70%;background:rgba(255,255,255,.35);clip-path:polygon(0 100%,0 30%,20% 30%,20% 0,80% 0,80% 30%,100% 30%,100% 100%)}
+.band .chap{position:absolute;top:.55em;inset-inline-start:1.1em;font-family:var(--display);font-size:.9em;color:#7a4c06}
+.body{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:.9em 1.5em .4em;scrollbar-width:thin;scrollbar-color:#d9b25a transparent}
+.foot{flex:none;height:2.6em;display:flex;align-items:center;justify-content:center}
+.num{width:2.1em;height:2.1em;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 30%,#ffe9a6,#e2a72d);color:#5a3a00;font-weight:800;font-size:.85em;box-shadow:0 2px 4px rgba(120,80,0,.35)}
+h2.t{font-family:var(--display);font-weight:700;color:var(--red);font-size:1.55em;margin:.1em 0 .45em;text-wrap:balance;line-height:1.3}
+h3{font-family:var(--display);font-weight:700;color:var(--navy);font-size:1.08em;margin:.6em 0 .3em}
+p{margin:.3em 0;line-height:1.75;font-size:.95em}
+.quote{background:#fff3d2;border-inline-start:.3em solid var(--gold-d);padding:.5em .8em;border-radius:.4em;font-weight:700;font-size:.92em;line-height:1.7;margin:.4em 0}
+.quote small{display:block;color:var(--muted);font-weight:500;margin-top:.2em}
+.hint{font-size:.78em;color:var(--muted);display:flex;gap:.4em;align-items:center}
+.hint::before{content:"";width:.55em;height:.55em;border-radius:50%;background:var(--green);box-shadow:0 0 0 .25em rgba(11,122,67,.2);animation:pulse 1.6s infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 .5em rgba(11,122,67,0)}}
+button{font-family:inherit}
+.chipbtn{border:0;border-radius:2em;padding:.38em .9em;font-weight:700;font-size:.85em;cursor:pointer;background:#fff;color:var(--ink);box-shadow:0 1px 0 rgba(0,0,0,.12),0 2px 6px rgba(120,80,0,.15);transition:transform .15s}
+.chipbtn:hover{transform:translateY(-2px)}
+.chipbtn[aria-pressed="true"]{background:var(--green);color:#fff}
+:focus-visible{outline:3px solid #3aa0ff;outline-offset:2px}
+/* cover */
+.cover{background:#f3c55c}
+.cover img{width:100%;height:100%;object-fit:cover;display:block}
+.cover .gloss{position:absolute;inset:0;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.35) 45%,transparent 60%);background-size:250% 100%;animation:gloss 5s ease-in-out infinite;pointer-events:none}
+@keyframes gloss{0%,60%{background-position:120% 0}100%{background-position:-60% 0}}
+.cover .open{position:absolute;bottom:4%;left:50%;transform:translateX(-50%);background:var(--green-d);color:#fff;border:0;border-radius:2em;padding:.55em 1.4em;font-weight:800;font-size:1em;cursor:pointer;box-shadow:0 6px 16px rgba(0,0,0,.35)}
+/* generic interactive bits */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:.55em}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:.5em}
+.flipcard{perspective:800px;cursor:pointer;min-height:6.2em;border:0;padding:0;background:none;text-align:inherit}
+.flipcard .in{position:relative;width:100%;height:100%;min-height:inherit;transform-style:preserve-3d;transition:transform .6s}
+.flipcard.on .in{transform:rotateY(180deg)}
+.flipcard .a,.flipcard .b{position:absolute;inset:0;backface-visibility:hidden;border-radius:.7em;padding:.5em;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.flipcard .a{background:linear-gradient(160deg,#fff,#fbefcf);border:2px solid #efd18a;font-family:var(--display);font-weight:700;font-size:1em;color:var(--green-d)}
+.flipcard .a small{font-family:var(--body);font-size:.7em;color:var(--muted);font-weight:500;margin-top:.2em}
+.flipcard .b{transform:rotateY(180deg);background:var(--green);color:#fff;font-size:.8em;line-height:1.5}
+.steps{list-style:none;margin:.3em 0;padding:0;display:grid;gap:.4em}
+.steps li{display:grid;grid-template-columns:2em 1fr;gap:.5em;align-items:start;font-size:.88em;line-height:1.6;background:#fff;border-radius:.6em;padding:.45em .6em;box-shadow:0 1px 4px rgba(120,80,0,.12);opacity:.35;transform:translateX(-.6em);transition:.4s}
+.steps li.show{opacity:1;transform:none}
+.steps li b.n{width:1.8em;height:1.8em;border-radius:50%;background:var(--gold);display:grid;place-items:center;color:#5a3a00}
+.tabs{display:flex;gap:.35em;flex-wrap:wrap;margin:.3em 0 .5em}
+.panel{background:#fff;border-radius:.7em;padding:.6em .8em;box-shadow:0 1px 6px rgba(120,80,0,.15);font-size:.92em;animation:fadeup .4s}
+@keyframes fadeup{from{opacity:0;transform:translateY(6px)}}
+.three{width:100%;border-radius:.7em;overflow:hidden;background:linear-gradient(#bfe3f7,#f8e7c0);position:relative;cursor:grab;touch-action:none}
+.three canvas{display:block;width:100%!important;height:100%!important}
+.three .lbl{position:absolute;bottom:.4em;inset-inline-end:.5em;font-size:.72em;background:rgba(255,255,255,.8);border-radius:1em;padding:.15em .6em;color:var(--ink);pointer-events:none}
+.photo{border:.3em solid #fff;border-radius:.4em;box-shadow:0 4px 12px rgba(80,50,0,.3);display:block}
+figure{margin:0}
+figcaption{font-size:.72em;color:var(--muted);text-align:center;margin-top:.25em}
+/* timeline */
+.tl{display:flex;justify-content:space-between;position:relative;margin:.5em 0 .4em}
+.tl::before{content:"";position:absolute;top:50%;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--red),var(--gold-d),var(--green));transform:translateY(-50%)}
+.tl button{position:relative;z-index:1;border:0;background:#fff;border-radius:2em;padding:.3em .55em;font-weight:800;font-size:.8em;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.2);font-variant-numeric:tabular-nums}
+.tl button[aria-pressed="true"]{background:var(--red);color:#fff;transform:scale(1.12)}
+/* org chart */
+.org{display:grid;gap:.6em;justify-items:center;margin-top:.4em}
+.org .row{display:flex;gap:.6em;justify-content:center;flex-wrap:wrap}
+.org button{border:0;border-radius:.7em;padding:.55em .9em;font-family:var(--display);font-weight:700;font-size:.95em;cursor:pointer;background:#fff;color:var(--green-d);box-shadow:0 3px 0 var(--green),0 4px 10px rgba(0,0,0,.12)}
+.org button.emir{box-shadow:0 3px 0 var(--gold-d),0 4px 10px rgba(0,0,0,.12);color:#7a4c06}
+.org button[aria-pressed="true"]{background:var(--green);color:#fff}
+.org .ln{width:3px;height:.9em;background:var(--gold-d)}
+/* carousel */
+.ring-wrap{height:11em;perspective:700px;position:relative;touch-action:none;cursor:grab;margin:.2em 0}
+.ring{position:absolute;left:50%;top:50%;width:0;height:0;transform-style:preserve-3d}
+.mcard{position:absolute;width:6.2em;height:8.2em;margin:-4.1em 0 0 -3.1em;border-radius:.8em;background:linear-gradient(170deg,#fff,#fdf0cf);border:2px solid #f0cf7f;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.3em;padding:.4em;text-align:center;backface-visibility:hidden;box-shadow:0 6px 14px rgba(80,50,0,.25)}
+.mcard svg{width:2.4em;height:2.4em}
+.mcard b{font-family:var(--display);font-size:.82em;color:var(--green-d);line-height:1.3}
+.mcard span{font-size:.62em;color:var(--muted);line-height:1.4}
+/* seats */
+.seats svg{width:100%;height:auto;display:block}
+/* sorting game */
+.items{display:flex;flex-wrap:wrap;gap:.35em;margin:.3em 0}
+.items button{border:2px dashed #d9b25a;background:#fff;border-radius:.6em;padding:.3em .55em;font-size:.8em;cursor:pointer;font-weight:600}
+.items button.sel{border-style:solid;border-color:var(--navy);background:#e6eefc}
+.items button.ok{display:none}
+.bins{display:grid;grid-template-columns:repeat(3,1fr);gap:.4em}
+.bin{border:0;border-radius:.7em;min-height:6.5em;padding:.4em;background:#fff;box-shadow:inset 0 0 0 2px #efd18a;cursor:pointer;display:flex;flex-direction:column;gap:.25em;align-items:stretch;text-align:center}
+.bin h4{margin:0;font-family:var(--display);font-size:.9em;color:var(--navy)}
+.bin .got{font-size:.68em;background:#e5f4ea;color:var(--green-d);border-radius:.4em;padding:.15em .3em;animation:fadeup .3s}
+.bin.bad{animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.toast{font-size:.82em;font-weight:700;min-height:1.5em;color:var(--green-d)}
+/* quiz */
+.qcard{background:#fff;border-radius:.8em;padding:.7em .9em;box-shadow:0 2px 10px rgba(120,80,0,.15)}
+.qmeta{display:flex;justify-content:space-between;font-size:.78em;color:var(--muted);font-variant-numeric:tabular-nums}
+.qbar{height:.35em;background:#f1e3bf;border-radius:1em;overflow:hidden;margin:.3em 0 .5em}
+.qbar i{display:block;height:100%;background:linear-gradient(90deg,var(--green),var(--gold));transition:width .4s}
+.qq{font-weight:800;font-size:1em;line-height:1.6;margin:.2em 0 .5em}
+.opts{display:grid;gap:.35em}
+.opts button{text-align:start;border:2px solid #efd18a;background:#fffaf0;border-radius:.6em;padding:.45em .7em;font-size:.88em;cursor:pointer;font-weight:600}
+.opts button.right{background:#dff3e6;border-color:var(--green)}
+.opts button.wrong{background:#fde2e4;border-color:var(--red)}
+.opts button:disabled{cursor:default}
+.why{font-size:.8em;margin-top:.45em;color:var(--ink);background:#fff6dc;border-radius:.5em;padding:.4em .6em}
+.big{font-family:var(--display);font-size:2.6em;color:var(--green-d);text-align:center;margin:.2em 0}
+.medal{width:6em;height:6em;margin:.3em auto;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 30%,#fff2b8,#e0a22a 70%);box-shadow:0 6px 16px rgba(120,80,0,.4),inset 0 0 0 .35em rgba(255,255,255,.45);font-family:var(--display);font-size:1.4em;color:#6b4200}
+.primary{border:0;border-radius:2em;padding:.5em 1.2em;font-weight:800;cursor:pointer;background:var(--green);color:#fff;font-size:.9em}
+/* toc */
+.toc{list-style:none;padding:0;margin:.3em 0;display:grid;gap:.15em}
+.toc button{width:100%;display:flex;justify-content:space-between;border:0;background:none;border-bottom:1px dotted #d9b25a;padding:.35em .2em;font-size:.9em;cursor:pointer;color:var(--ink);font-weight:600}
+.toc button:hover{color:var(--red)}
+.toc span{font-variant-numeric:tabular-nums;color:var(--muted)}
+video{width:100%;border-radius:.6em;display:block;background:#000;box-shadow:0 6px 16px rgba(0,0,0,.3)}
+/* nav */
+nav{display:flex;align-items:center;gap:10px;padding-block:6px max(10px,env(safe-area-inset-bottom,0px))}
+nav button{border:0;border-radius:2em;padding:9px 18px;font-weight:800;font-size:14px;cursor:pointer;background:var(--gold);color:#4a2f00;box-shadow:0 3px 0 #a87313}
+nav button:disabled{opacity:.35;cursor:default}
+nav #sound{background:#24543f;color:#f6ecd2;box-shadow:0 3px 0 #0b2a1d;padding:9px 12px}
+.corner{position:absolute;bottom:0;width:3.2em;height:3.2em;z-index:7;border:0;padding:0;cursor:pointer;background:none}
+.corner::before{content:"";position:absolute;inset:0;transition:.25s}
+.front .corner{left:0}
+.front .corner::before{background:linear-gradient(45deg,transparent 50%,rgba(0,0,0,.0) 50%)}
+.front .corner:hover::before{background:linear-gradient(45deg,#e9d39a 0 48%,rgba(0,0,0,.18) 50%,transparent 52%)}
+.back .corner{right:0}
+.back .corner:hover::before{background:linear-gradient(-45deg,#e9d39a 0 48%,rgba(0,0,0,.18) 50%,transparent 52%)}
+@media (prefers-reduced-motion:reduce){.leaf,#book{transition-duration:.01s!important}.cover .gloss,.hint::before{animation:none}}
+</style>
+
+<div id="app">
+  <header>
+    <div><h1>الدستور وحقوق الإنسان · السلطة التنفيذية</h1><div class="sub">كتاب تفاعلي · الصف الثاني عشر</div></div>
+    <div id="pageInfo" aria-live="polite"></div>
+  </header>
+  <div id="scene"><div id="book" aria-label="الكتاب"></div></div>
+  <nav>
+    <button id="prev" type="button">→ السابقة</button>
+    <button id="sound" type="button" aria-pressed="true" title="صوت تقليب الصفحات">صوت: تشغيل</button>
+    <button id="next" type="button">التالية ←</button>
+  </nav>
+</div>
+
+<!-- ============ PAGES (in reading order) ============ -->
+<div id="pages" hidden>
+
+<template data-title="الغلاف"><div class="pg cover"><img src="assets/cover.jpg" alt="غلاف كتاب الدستور وحقوق الإنسان للصف الثاني عشر"><div class="gloss"></div><button class="open" data-go="next" type="button">افتح الكتاب</button></div></template>
+
+<template data-title="المحتوى"><div class="pg"><div class="band"><i style="left:8%"></i><i style="left:60%"></i></div><div class="body">
+  <h2 class="t">المحتوى</h2>
+  <p class="hint">اضغط على أي موضوع لتنتقل إليه، أو قلّب الصفحات بالأزرار أو بالسحب.</p>
+  <ul class="toc" id="toc"></ul>
+</div><div class="foot"><span class="num">١</span></div></div></template>
+
+<template data-title="فيديو تعريفي"><div class="pg"><div class="band"><span class="chap">مدخل</span></div><div class="body">
+  <h2 class="t">فيديو تعريفي: مفهوم السلطة التنفيذية</h2>
+  <video controls playsinline preload="metadata" poster="assets/poster.jpg" src="assets/intro.mp4"></video>
+  <p>شاهد الفيديو، ثم أجب في ذهنك:</p>
+  <div class="quote">لماذا لم تعد جهود الأفراد كافية لتقديم الخدمات، وأصبحت الدولة تحتاج إلى سلطة تنفيذية؟</div>
+  <button class="chipbtn" data-reveal="ans-v" type="button">اكشف الإجابة</button>
+  <p id="ans-v" hidden>لأن الدولة تطورت وزاد عدد سكانها وكثرت مسؤولياتها، فلم تعد قدرات الأفراد كافية لرعاية مصالح المجتمع وحاجاته.</p>
+</div><div class="foot"><span class="num">٢</span></div></div></template>
+
+<template data-title="علم الكويت"><div class="pg"><div class="band"><span class="chap">رموز الوطن</span></div><div class="body">
+  <h2 class="t">علم دولة الكويت</h2>
+  <div class="three" id="flag3d" style="height:12.5em"><span class="lbl">اسحب لتدوير العلم</span></div>
+  <p class="hint">اضغط على لون لتعرف معناه</p>
+  <div class="tabs" id="flagTabs">
+    <button class="chipbtn" data-c="g" type="button" style="border-inline-start:.6em solid #0b7a43">الأخضر</button>
+    <button class="chipbtn" data-c="w" type="button" style="border-inline-start:.6em solid #ddd">الأبيض</button>
+    <button class="chipbtn" data-c="r" type="button" style="border-inline-start:.6em solid #c8102e">الأحمر</button>
+    <button class="chipbtn" data-c="b" type="button" style="border-inline-start:.6em solid #111">الأسود</button>
+  </div>
+  <div class="panel" id="flagText">رُفع علم الكويت رسمياً عام ١٩٦١م بعد الاستقلال، وألوانه مستوحاة من بيت الشاعر صفي الدين الحلي: «بيضٌ صنائعنا، سودٌ وقائعنا، خضرٌ مرابعنا، حمرٌ مواضينا».</div>
+</div><div class="foot"><span class="num">٣</span></div></div></template>
+
+<template data-title="الشيخ عبدالله السالم"><div class="pg"><div class="band"><span class="chap">أبو الدستور</span></div><div class="body">
+  <h2 class="t">الشيخ عبدالله السالم الصباح</h2>
+  <div style="display:grid;grid-template-columns:38% 1fr;gap:.8em;align-items:start">
+    <figure><img class="photo" src="assets/abdullah.jpg" alt="صورة الشيخ عبدالله السالم الصباح" style="width:100%;filter:sepia(.3)"><figcaption>حاكم الكويت ١٩٥٠–١٩٦٥م</figcaption></figure>
+    <div><p>في عهده نالت الكويت استقلالها، وصدر <b>الدستور الكويتي</b> الذي أنشأ السلطات العامة الثلاث، لذلك يُلقَّب بـ«أبو الدستور».</p></div>
+  </div>
+  <p class="hint">تنقّل بين محطات الخط الزمني</p>
+  <div class="tl" id="tl">
+    <button type="button" data-y="0">١٩٥٠</button><button type="button" data-y="1">١٩٦١</button><button type="button" data-y="2">١٩٦١</button><button type="button" data-y="3">١٩٦٢</button><button type="button" data-y="4">١٩٦٣</button>
+  </div>
+  <div class="panel" id="tlText"></div>
+</div><div class="foot"><span class="num">٤</span></div></div></template>
+
+<template data-title="السلطات العامة الثلاث"><div class="pg"><div class="band"><span class="chap">السلطات العامة</span></div><div class="body">
+  <h2 class="t">السلطات العامة في النظام الدستوري الكويتي</h2>
+  <p>لم يكن النظام الدستوري في الكويت نتاج عصره الحاضر فقط؛ فقد كان الحاكم يتشاور ويستمع لأفراد المجتمع. ومع تطور الدولة أنشأ الدستور <b>ثلاث سلطات عامة</b> وحدد وظائفها وعلاقة كلٍّ منها بالأخرى.</p>
+  <p class="hint">اقلب كل بطاقة لتعرف وظيفتها</p>
+  <div class="grid3" style="margin-top:.4em">
+    <button class="flipcard" type="button" style="min-height:8em"><div class="in"><div class="a">التنفيذية<small>الأمير ومجلس الوزراء والوزراء</small></div><div class="b">تنفّذ القوانين وتقدّم الخدمات وتدير مصالح الدولة</div></div></button>
+    <button class="flipcard" type="button" style="min-height:8em"><div class="in"><div class="a">التشريعية<small>الأمير ومجلس الأمة</small></div><div class="b" style="background:#8a5a00">تسنّ القوانين وتراقب أعمال الحكومة</div></div></button>
+    <button class="flipcard" type="button" style="min-height:8em"><div class="in"><div class="a">القضائية<small>المحاكم</small></div><div class="b" style="background:#3a3a3a">تفصل في المنازعات وتطبّق القانون</div></div></button>
+  </div>
+  <figure style="margin-top:.7em"><img class="photo" src="assets/justice.jpg" alt="قصر العدل في الكويت كما يظهر على غلاف الكتاب" style="width:100%;height:7em;object-fit:cover"><figcaption>قصر العدل (من غلاف الكتاب)</figcaption></figure>
+</div><div class="foot"><span class="num">٥</span></div></div></template>
+
+<template data-title="مفهوم السلطة التنفيذية"><div class="pg"><div class="band"><span class="chap">أولاً: السلطة التنفيذية</span></div><div class="body">
+  <h2 class="t">مفهوم السلطة التنفيذية وأعمالها</h2>
+  <div class="quote">السلطة التنفيذية هي الجهة التي تقوم بتنفيذ ما يصدر عن السلطة التشريعية من قوانين.</div>
+  <h3>أعمالها في المادة (١٢٣)</h3>
+  <div class="quote">«يهيمن مجلس الوزراء على مصالح الدولة، ويرسم السياسة العامة للحكومة، ويتابع تنفيذها، ويشرف على سير العمل في الإدارات الحكومية»<small>المادة ١٢٣ من الدستور الكويتي</small></div>
+  <p class="hint">اضغط «التالي» لكشف الأعمال واحداً تلو الآخر</p>
+  <ol class="steps" id="works">
+    <li><b class="n">١</b><span>تسيير أمور الحياة وشؤون الدولة.</span></li>
+    <li><b class="n">٢</b><span>دراسة حاجات المجتمع والخطط المستقبلية.</span></li>
+    <li><b class="n">٣</b><span>رسم السياسات العامة للدولة ومتابعة تنفيذها.</span></li>
+    <li><b class="n">٤</b><span>تقديم المقترحات التي تكون على شكل قوانين للسلطة التشريعية.</span></li>
+    <li><b class="n">٥</b><span>تنفيذ القوانين والإشراف على سير العمل في قطاعات الدولة.</span></li>
+  </ol>
+  <button class="chipbtn" id="worksBtn" type="button">التالي</button>
+</div><div class="foot"><span class="num">٦</span></div></div></template>
+
+<template data-title="عناصر تكوين السلطة التنفيذية"><div class="pg"><div class="band"><span class="chap">عناصر التكوين</span></div><div class="body">
+  <h2 class="t">عناصر تكوين السلطة التنفيذية</h2>
+  <div class="quote">«السلطة التنفيذية يتولاها الأمير ومجلس الوزراء والوزراء على النحو المبين بالدستور»<small>المادة ٥٢</small></div>
+  <p>تتكون من جهازين: <b>الأمير</b> رئيس الدولة ورئيس السلطة التنفيذية، و<b>الوزارة (الحكومة)</b> وتتكون من رئيس الوزراء والوزراء ومجلس الوزراء.</p>
+  <p class="hint">اضغط على أي عنصر في الشجرة</p>
+  <div class="org" id="org">
+    <div class="row"><button class="emir" type="button" data-k="emir">الأمير</button></div>
+    <div class="ln"></div>
+    <div class="row"><button type="button" data-k="pm">رئيس مجلس الوزراء</button></div>
+    <div class="ln"></div>
+    <div class="row"><button type="button" data-k="min">الوزراء</button><button type="button" data-k="cab">مجلس الوزراء</button></div>
+  </div>
+  <div class="panel" id="orgText" style="margin-top:.6em">اختر عنصراً لتعرف دوره.</div>
+</div><div class="foot"><span class="num">٧</span></div></div></template>
+
+<template data-title="الأمير وولاية العهد"><div class="pg"><div class="band"><span class="chap">أولاً: الأمير</span></div><div class="body">
+  <h2 class="t">الأمير وشروط ولاية العهد</h2>
+  <div class="quote">«الكويت إمارة وراثية في ذرية المغفور له مبارك الصباح»<small>المادة ٤</small></div>
+  <div class="quote">«الأمير رئيس الدولة، وذاته مصونة لا تمس»<small>المادة ٥٤ · لقبه الرسمي: حضرة صاحب السمو أمير الكويت</small></div>
+  <h3>شروط تولي ولاية العهد (اقلب البطاقات)</h3>
+  <div class="grid3">
+    <button class="flipcard" type="button"><div class="in"><div class="a">النسب</div><div class="b">ابن شرعي من ذرية الشيخ مبارك الصباح، ولا يمكن تعديل هذا الشرط</div></div></button>
+    <button class="flipcard" type="button"><div class="in"><div class="a">الذكورة</div><div class="b">نص عليه الدستور بكلمة «ابن»، ويؤكده العرف</div></div></button>
+    <button class="flipcard" type="button"><div class="in"><div class="a">سن الثلاثين</div><div class="b">يوم مبايعته من مجلس الأمة</div></div></button>
+    <button class="flipcard" type="button"><div class="in"><div class="a">الرشد والعقل</div><div class="b">لأن منصب الأمير هو الأهم والأعلى في الدولة</div></div></button>
+    <button class="flipcard" type="button"><div class="in"><div class="a">الإسلام</div><div class="b">مسلم وابن شرعي لأبوين مسلمين</div></div></button>
+    <button class="flipcard" type="button"><div class="in"><div class="a">القدرة الصحية</div><div class="b">شرط مستمر لولي العهد والأمير ما داما في منصبيهما</div></div></button>
+  </div>
+</div><div class="foot"><span class="num">٨</span></div></div></template>
+
+<template data-title="إجراءات تولي مسند الإمارة"><div class="pg"><div class="band"><span class="chap">مسند الإمارة</span></div><div class="body">
+  <h2 class="t">إجراءات تولي مسند الإمارة</h2>
+  <p>يخلو منصب الأمير بالوفاة، أو التنحية لعدم القدرة الصحية، أو الاستقالة الاختيارية.</p>
+  <div class="tabs" id="emirTabs">
+    <button class="chipbtn" type="button" data-t="0" aria-pressed="true">الأسلوب العادي</button>
+    <button class="chipbtn" type="button" data-t="1" aria-pressed="false">الأسلوب غير العادي</button>
+    <button class="chipbtn" type="button" data-t="2" aria-pressed="false">اختيار ولي العهد</button>
+  </div>
+  <ol class="steps" id="emirSteps"></ol>
+  <button class="chipbtn" id="emirPlay" type="button">شغّل الخطوات</button>
+</div><div class="foot"><span class="num">٩</span></div></div></template>
+
+<template data-title="مجلس الأمة والوزراء"><div class="pg"><div class="band"><span class="chap">مجلس الأمة</span></div><div class="body">
+  <h2 class="t">مبنى مجلس الأمة الكويتي</h2>
+  <div class="three" id="majlis3d" style="height:10.5em"><span class="lbl">نموذج ثلاثي الأبعاد · اسحب للتدوير</span></div>
+  <p style="font-size:.85em">صمّم المبنى المعماري الدنماركي يورن أوتزون، وتشبه مظلته الكبيرة الخيمة العربية. وفيه يجلس الوزراء أعضاءً في مجلس الأمة.</p>
+  <div class="seats" id="seats"></div>
+  <div style="display:flex;gap:.5em;align-items:center;flex-wrap:wrap"><button class="chipbtn" id="seatBtn" type="button">أضف الوزراء</button><span id="seatTxt" style="font-size:.8em;font-weight:700">٥٠ عضواً منتخباً</span></div>
+</div><div class="foot"><span class="num">١٠</span></div></div></template>
+
+<template data-title="رئيس مجلس الوزراء"><div class="pg"><div class="band"><span class="chap">ثانياً: الوزارة</span></div><div class="body">
+  <h2 class="t">رئيس مجلس الوزراء</h2>
+  <p>المقصود بالوزارة المعنى الواسع الذي يشمل رئيس الوزراء والوزراء ومجلس الوزراء. ويرأس رئيس الوزراء الجهاز التنفيذي بعد الأمير.</p>
+  <h3>أهمية منصبه (اقلب البطاقات)</h3>
+  <div class="grid2">
+    <button class="flipcard" type="button"><div class="in"><div class="a">بقاء الوزراء</div><div class="b">بقاء الوزراء مرهون ببقائه، وإعفاؤه إعفاء لهم جميعاً</div></div></button>
+    <button class="flipcard" type="button"><div class="in"><div class="a">ترشيح الوزراء</div><div class="b">يرشح الوزراء ويرفع أسماءهم للأمير</div></div></button>
+    <button class="flipcard" type="button"><div class="in"><div class="a">التنسيق</div><div class="b">يحقق الانسجام بين الوزارات في عملها</div></div></button>
+    <button class="flipcard" type="button"><div class="in"><div class="a">رئاسة الجلسات</div><div class="b">يرأس جلسات مجلس الوزراء ويدير مناقشاتها، وهو المتحدث باسم الحكومة</div></div></button>
+  </div>
+  <h3>اختياره</h3>
+  <p>يختاره الأمير منفرداً بعد <b>المشاورات التقليدية</b> مع: رئيس مجلس الأمة، ورؤساء الجماعات السياسية، ورؤساء الوزارة السابقين. ونتائجها غير ملزمة للأمير.</p>
+</div><div class="foot"><span class="num">١١</span></div></div></template>
+
+<template data-title="وزارات دولة الكويت"><div class="pg"><div class="band"><span class="chap">الوزراء</span></div><div class="body">
+  <h2 class="t">وزارات دولة الكويت</h2>
+  <p>الوزراء هم العنصر الثاني من عناصر السلطة التنفيذية، ويترأسون وزارات الدولة ويصدرون القرارات اللازمة لتنظيم العمل بها، وهم مسؤولون أمام الأمير ومجلس الأمة.</p>
+  <div class="ring-wrap" id="ringWrap"><div class="ring" id="ring"></div></div>
+  <p class="hint">اسحب الحلقة لتدويرها واستكشف الوزارات</p>
+  <p style="font-size:.85em">ويوجد أيضاً <b>وزراء دولة بلا وزارة</b>، مثل وزير الدولة لشؤون مجلس الوزراء ووزير الدولة لشؤون مجلس الأمة، ولهم ما لبقية الوزراء من حقوق وواجبات.</p>
+</div><div class="foot"><span class="num">١٢</span></div></div></template>
+
+<template data-title="اختيار الوزراء وشروطهم"><div class="pg"><div class="band"><span class="chap">الوزراء</span></div><div class="body">
+  <h2 class="t">اختيار الوزراء وشروطهم</h2>
+  <ol class="steps"><li class="show"><b class="n">١</b><span>يرشحهم رئيس مجلس الوزراء ممن يرى فيهم الثقة والكفاءة.</span></li><li class="show"><b class="n">٢</b><span>تُرفع أسماؤهم للأمير للموافقة عليهم، ويصدر بذلك مرسوم أميري.</span></li></ol>
+  <h3>من يصلح وزيراً؟ اختبر المرشحين</h3>
+  <div id="cands" style="display:grid;gap:.4em"></div>
+  <h3>ضوابط خاصة</h3>
+  <p style="font-size:.88em">لا يجوز الجمع بين المنصب الوزاري وأي وظيفة حكومية أخرى أو عضوية مجالس الشركات أو ممارسة عمل حر كالتجارة والطب والمحاماة، ولا يبرم الوزير عقداً مع الجهات الحكومية. ويؤدي الوزراء القسم مرتين: أمام الأمير، ثم أمام مجلس الأمة.</p>
+</div><div class="foot"><span class="num">١٣</span></div></div></template>
+
+<template data-title="مجلس الوزراء"><div class="pg"><div class="band"><span class="chap">مجلس الوزراء</span></div><div class="body">
+  <h2 class="t">مجلس الوزراء: محاكي الجلسة</h2>
+  <p style="font-size:.88em">هو اجتماع رئيس مجلس الوزراء والوزراء جميعاً، ويرأس رئيس الوزراء اجتماعاته، ويمكن للأمير أن يترأسها متى ظهرت الحاجة.</p>
+  <p class="hint">اضغط على المقاعد لتحدد من حضر، ثم اطرح القرار للتصويت</p>
+  <div id="cabinet" style="display:grid;grid-template-columns:repeat(8,1fr);gap:.3em;margin:.4em 0"></div>
+  <div class="panel" id="cabTxt" style="font-size:.85em"></div>
+  <div style="display:flex;gap:.4em;margin:.4em 0;flex-wrap:wrap"><button class="chipbtn" id="voteBtn" type="button">صوّت على القرار</button><button class="chipbtn" id="allBtn" type="button">حضور الجميع</button></div>
+  <ol class="steps" style="font-size:.9em"><li class="show"><b class="n">١</b><span>الجلسات <b>سرية</b> بخلاف جلسات مجلس الأمة.</span></li><li class="show"><b class="n">٢</b><span>تصح بحضور <b>أكثر من نصف</b> الوزراء.</span></li><li class="show"><b class="n">٣</b><span>تصدر القرارات <b>بأغلبية الحاضرين</b>.</span></li><li class="show"><b class="n">٤</b><span><b>التضامن الوزاري</b>: «وتلتزم الأقلية برأي الأغلبية ما لم تستقل» (المادة ١٢٨).</span></li></ol>
+</div><div class="foot"><span class="num">١٤</span></div></div></template>
+
+<template data-title="الاختصاصات في الظروف العادية"><div class="pg"><div class="band"><span class="chap">الاختصاصات</span></div><div class="body">
+  <h2 class="t">الاختصاصات في الظروف العادية</h2>
+  <p style="font-size:.88em">أي حين تسير الأمور بوجود مجلس الأمة ولا توجد ظروف تمنع عمل السلطة التنفيذية. لعبة التصنيف: اختر بطاقة ثم اضغط على الصندوق المناسب.</p>
+  <div class="items" id="sortItems"></div>
+  <div class="bins" id="bins">
+    <button class="bin" type="button" data-b="adm"><h4>إدارية</h4></button>
+    <button class="bin" type="button" data-b="pol"><h4>سياسية</h4></button>
+    <button class="bin" type="button" data-b="jud"><h4>قضائية</h4></button>
+  </div>
+  <div class="toast" id="sortToast" aria-live="polite"></div>
+  <p style="font-size:.82em">تُسمى القرارات الإدارية <b>اللوائح</b>، ويجب ألا تخالف القوانين والدستور، وإلا ألغاها القضاء.</p>
+</div><div class="foot"><span class="num">١٥</span></div></div></template>
+
+<template data-title="الاختصاصات في الظروف غير العادية"><div class="pg"><div class="band"><span class="chap">الاختصاصات</span></div><div class="body">
+  <h2 class="t">الاختصاصات في الظروف غير العادية</h2>
+  <div class="tabs" id="exTabs">
+    <button class="chipbtn" type="button" data-t="0" aria-pressed="true">المراسيم بقوانين</button>
+    <button class="chipbtn" type="button" data-t="1" aria-pressed="false">الحرب الدفاعية</button>
+    <button class="chipbtn" type="button" data-t="2" aria-pressed="false">الأحكام العرفية</button>
+  </div>
+  <div class="panel" id="exPanel"></div>
+</div><div class="foot"><span class="num">١٦</span></div></div></template>
+
+<template data-title="اختبر نفسك"><div class="pg"><div class="band"><span class="chap">الأنشطة والتقويم</span></div><div class="body">
+  <h2 class="t">اختبر نفسك</h2>
+  <div class="qcard" id="quiz"></div>
+</div><div class="foot"><span class="num">١٧</span></div></div></template>
+
+<template data-title="الخلاصة"><div class="pg"><div class="band"><span class="chap">الخلاصة</span></div><div class="body">
+  <h2 class="t">خلاصة الوحدة</h2>
+  <div id="result"></div>
+  <ol class="steps" style="font-size:.92em">
+    <li class="show"><b class="n">١</b><span>السلطة التنفيذية تنفّذ القوانين وتقدّم الخدمات.</span></li>
+    <li class="show"><b class="n">٢</b><span>يتولاها الأمير ومجلس الوزراء والوزراء (م ٥٢).</span></li>
+    <li class="show"><b class="n">٣</b><span>عدد الوزراء لا يتجاوز ثلث أعضاء مجلس الأمة المنتخبين.</span></li>
+    <li class="show"><b class="n">٤</b><span>لها اختصاصات إدارية وسياسية وقضائية في الظروف العادية.</span></li>
+    <li class="show"><b class="n">٥</b><span>وفي الظروف غير العادية: مراسيم بقوانين، والحرب الدفاعية، والأحكام العرفية.</span></li>
+  </ol>
+  <button class="primary" data-go="toc" type="button">ارجع إلى المحتوى</button>
+</div><div class="foot"><span class="num">١٨</span></div></div></template>
+
+<template data-title="الغلاف الخلفي"><div class="pg cover"><img src="assets/back.jpg" alt="الغلاف الخلفي للكتاب"></div></template>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(()=>{
+const AR=(n)=>String(n).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[d]);
+const tpls=[...document.querySelectorAll('#pages template')];
+const N=tpls.length;
+const book=document.getElementById('book'), scene=document.getElementById('scene');
+let mode=null, leaves=[], k=0, pw=0, ph=0, busy=false, soundOn=true, actx=null;
+const ctrls={}; // page index -> {start,stop}
+
+/* ---------- sound ---------- */
+function flipSound(){ if(!soundOn) return; try{ actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+  const len=actx.sampleRate*.35, b=actx.createBuffer(1,len,actx.sampleRate), d=b.getChannelData(0);
+  for(let i=0;i<len;i++){const t=i/len; d[i]=(Math.random()*2-1)*Math.pow(1-t,2)*(t<.08?t/.08:1)*.5;}
+  const s=actx.createBufferSource(); s.buffer=b; const f=actx.createBiquadFilter(); f.type='bandpass'; f.frequency.value=2200; f.Q.value=.6;
+  s.connect(f); f.connect(actx.destination); s.start(); }catch(e){} }
+
+/* ---------- build ---------- */
+function makePage(i){ const w=document.createElement('div'); w.style.position='absolute'; w.style.inset='0'; w.appendChild(tpls[i].content.cloneNode(true)); w.dataset.page=i; return w; }
+function corner(dir){ const c=document.createElement('button'); c.className='corner'; c.type='button'; c.setAttribute('aria-label',dir==='next'?'الصفحة التالية':'الصفحة السابقة'); c.dataset.go=dir; return c; }
+function build(){
+  Object.values(ctrls).forEach(c=>c.stop&&c.stop());
+  const newMode = innerWidth>=860 ? 'spread' : 'single';
+  const pageIdx = currentPages()[0] ?? 0;
+  mode=newMode; book.innerHTML=''; leaves=[];
+  const count = mode==='spread' ? Math.ceil(N/2) : N;
+  for(let i=0;i<count;i++){
+    const leaf=document.createElement('div'); leaf.className='leaf'+(mode==='single'?' single':'');
+    const f=document.createElement('div'); f.className='face front';
+    const b=document.createElement('div'); b.className='face back';
+    if(mode==='spread'){ f.appendChild(makePage(2*i)); if(2*i+1<N) b.appendChild(makePage(2*i+1)); else b.classList.add('paperback'); }
+    else { f.appendChild(makePage(i)); b.classList.add('paperback'); }
+    if(!(mode==='spread'&&i===0) && !(mode==='single'&&i===0)) f.appendChild(corner('next'));
+    if(mode==='spread' && 2*i+1<N-1) b.appendChild(corner('prev'));
+    const sh=document.createElement('div'); sh.className='shade';
+    leaf.append(f,b,sh); book.appendChild(leaf); leaves.push(leaf);
+  }
+  initPages();
+  layout(); setK(mode==='spread'? (pageIdx%2? (pageIdx+1)/2 : pageIdx/2) : pageIdx, true);
+}
+function layout(){
+  const hdr=document.querySelector('header').offsetHeight, nav=document.querySelector('nav').offsetHeight;
+  const availH=innerHeight-hdr-nav-30, availW=Math.min(innerWidth-32,1300);
+  const r=595/765;
+  if(mode==='spread'){ pw=Math.min(availW/2, availH*r); ph=pw/r; } else { pw=Math.min(availW, availH*r); ph=Math.min(availH, pw/r*1.3); }
+  book.style.width=(mode==='spread'?2*pw:pw)+'px'; book.style.height=ph+'px';
+  book.style.fontSize=(pw/480*15)+'px';
+  leaves.forEach(l=>{l.style.width=pw+'px'; l.style.height=ph+'px';});
+}
+function zorder(){ leaves.forEach((l,i)=>{ l.style.zIndex = i<k ? (i+1) : (leaves.length*2 - i); }); }
+function bookShift(){
+  let x=0; if(mode==='spread'){ if(k===0) x=pw/2; else if(k===leaves.length) x=-pw/2; }
+  book.style.transform=`translateX(${x}px) rotateX(${mode==='spread'?6:3}deg)`;
+}
+function currentPages(){ if(!leaves.length) return [0];
+  if(mode==='spread'){ const r=[]; if(k>0) r.push(2*k-1); if(k<leaves.length) r.push(2*k); return r.filter(p=>p<N); }
+  return [Math.min(k,N-1)]; }
+function setK(nk, instant){
+  nk=Math.max(0,Math.min(leaves.length - (mode==='single'?1:0), nk));
+  const old=k; k=nk;
+  leaves.forEach((l,i)=>{ if(instant) l.style.transition='none'; l.classList.toggle('flipped', i<k); });
+  if(instant){ zorder(); void book.offsetWidth; leaves.forEach(l=>l.style.transition=''); }
+  else {
+    const dir=k>old?1:-1, turning=[]; for(let i=Math.min(old,k);i<Math.max(old,k);i++) turning.push(i);
+    turning.forEach((i,j)=>{ const l=leaves[i]; l.style.zIndex=1000+(dir>0?j:turning.length-j); l.classList.add('turning');
+      l.classList.toggle('flipped', !(dir>0)); l.style.transitionDelay='0s'; void l.offsetWidth;
+      setTimeout(()=>{ l.classList.toggle('flipped', dir>0); },j*140); });
+    busy=true; flipSound();
+    setTimeout(()=>{ turning.forEach(i=>leaves[i].classList.remove('turning')); zorder(); busy=false; },1000+turning.length*140);
+  }
+  bookShift(); updateUI();
+}
+function updateUI(){
+  const ps=currentPages();
+  const lbl=ps.map(p=>tpls[p].dataset.title).join(' · ');
+  document.getElementById('pageInfo').textContent = `${lbl}  (${AR(ps.map(p=>p+1).join('–'))} / ${AR(N)})`;
+  document.getElementById('prev').disabled = k===0;
+  document.getElementById('next').disabled = k>=leaves.length-(mode==='single'?1:0);
+  // run 3D only on visible pages
+  Object.entries(ctrls).forEach(([p,c])=>{ if(ps.includes(+p)) c.start&&c.start(); else c.stop&&c.stop(); });
+  document.querySelectorAll('video').forEach(v=>{ const p=+v.closest('[data-page]').dataset.page; if(!ps.includes(p)) v.pause(); });
+}
+function go(d){ if(busy) return; setK(k+d); }
+function goPage(p){ if(busy) return; setK(mode==='spread' ? (p%2? (p+1)/2 : p/2) : p); }
+
+/* ---------- controls ---------- */
+document.getElementById('prev').onclick=()=>go(-1);
+document.getElementById('next').onclick=()=>go(1);
+document.getElementById('sound').onclick=e=>{ soundOn=!soundOn; e.target.setAttribute('aria-pressed',soundOn); e.target.textContent='صوت: '+(soundOn?'تشغيل':'إيقاف'); };
+addEventListener('keydown',e=>{ if(e.target.closest('input,textarea')) return; if(e.key==='ArrowLeft') go(1); if(e.key==='ArrowRight') go(-1); });
+book.addEventListener('click',e=>{ const g=e.target.closest('[data-go]'); if(!g) return;
+  const v=g.dataset.go; if(v==='next') go(1); else if(v==='prev') go(-1); else if(v==='toc') goPage(1); });
+let sx=null, sy=0;
+scene.addEventListener('pointerdown',e=>{ if(e.target.closest('button,video,.three,.ring-wrap,a,input')) {sx=null;return;} sx=e.clientX; sy=e.clientY; });
+scene.addEventListener('pointerup',e=>{ if(sx===null) return; const dx=e.clientX-sx, dy=e.clientY-sy; sx=null;
+  if(Math.abs(dx)>50 && Math.abs(dx)>Math.abs(dy)) go(dx>0?1:-1); });
+let rt; addEventListener('resize',()=>{ clearTimeout(rt); rt=setTimeout(()=>{ const m=innerWidth>=860?'spread':'single'; if(m!==mode) build(); else { layout(); bookShift(); } },150); });
+
+/* ---------- page logic ---------- */
+function Q(id){ return book.querySelector('#'+id); }
+function pageOf(el){ return +el.closest('[data-page]').dataset.page; }
+function initPages(){
+  for(const key in ctrls) delete ctrls[key];
+  // TOC
+  const toc=Q('toc'); if(toc){ tpls.forEach((t,i)=>{ if(i<2||i===N-1) return; const li=document.createElement('li'); li.innerHTML=`<button type="button"><b>${t.dataset.title}</b><span>${AR(i)}</span></button>`; li.firstChild.onclick=()=>goPage(i); toc.appendChild(li); }); }
+  // reveal
+  book.querySelectorAll('[data-reveal]').forEach(b=>b.onclick=()=>{ Q(b.dataset.reveal).hidden=false; b.hidden=true; });
+  // flipcards
+  book.querySelectorAll('.flipcard').forEach(c=>c.onclick=()=>c.classList.toggle('on'));
+  flagPage(); timeline(); works(); org(); emirSteps(); majlis(); seats(); ringPage(); candidates(); cabinet(); sorter(); exceptional(); quiz();
+}
+/* flag */
+const FLAG={g:'<b>الأخضر</b>: «خضرٌ مرابعنا» — يرمز إلى الأرض الخضراء والخير والنماء.',w:'<b>الأبيض</b>: «بيضٌ صنائعنا» — يرمز إلى نقاء الأعمال وصفاء النفوس.',r:'<b>الأحمر</b>: «حمرٌ مواضينا» — يرمز إلى السيوف ودماء التضحية من أجل الوطن.',b:'<b>الأسود</b>: «سودٌ وقائعنا» — يرمز إلى المعارك والقوة في الدفاع عن الوطن.'};
+function flagTexture(){ const c=document.createElement('canvas'); c.width=512;c.height=256; const g=c.getContext('2d');
+  g.fillStyle='#0b7a43';g.fillRect(0,0,512,86); g.fillStyle='#ffffff';g.fillRect(0,85,512,86); g.fillStyle='#c8102e';g.fillRect(0,170,512,86);
+  g.fillStyle='#111';g.beginPath();g.moveTo(0,0);g.lineTo(128,85.3);g.lineTo(128,170.7);g.lineTo(0,256);g.closePath();g.fill(); return new THREE.CanvasTexture(c); }
+function makeThree(host, setup){
+  if(!window.THREE||!host) return null;
+  const R=new THREE.WebGLRenderer({antialias:true,alpha:true}); R.setPixelRatio(Math.min(2,devicePixelRatio));
+  host.prepend(R.domElement);
+  const S=new THREE.Scene(), C=new THREE.PerspectiveCamera(40,1,.1,100);
+  S.add(new THREE.HemisphereLight(0xffffff,0xc9a36a,.9)); const dl=new THREE.DirectionalLight(0xffffff,.8); dl.position.set(3,5,4); S.add(dl);
+  const root=new THREE.Group(); S.add(root);
+  const tick=setup(S,C,root);
+  let raf=null, rotY=0, auto=true, drag=null;
+  host.addEventListener('pointerdown',e=>{drag=e.clientX; auto=false; host.setPointerCapture(e.pointerId); e.stopPropagation();});
+  host.addEventListener('pointermove',e=>{ if(drag===null) return; rotY+=(e.clientX-drag)*.01; drag=e.clientX; });
+  host.addEventListener('pointerup',()=>{drag=null; setTimeout(()=>auto=true,2500);});
+  const t0=performance.now();
+  function frame(){ raf=requestAnimationFrame(frame); const w=host.clientWidth,h=host.clientHeight; if(!w||!h) return;
+    if(R.domElement.width!==Math.round(w*R.getPixelRatio())){ R.setSize(w,h,false); C.aspect=w/h; C.updateProjectionMatrix(); }
+    const t=(performance.now()-t0)/1000; if(auto) rotY+=.004; root.rotation.y=rotY; tick(t); R.render(S,C); }
+  return { start(){ if(!raf) frame(); }, stop(){ if(raf){cancelAnimationFrame(raf); raf=null;} } };
+}
+function flagPage(){ const host=Q('flag3d'); if(!host) return;
+  const c=makeThree(host,(S,C,root)=>{
+    C.position.set(0,0.1,4.6);
+    const geo=new THREE.PlaneGeometry(3,1.5,48,24); const base=geo.attributes.position.array.slice();
+    const mat=new THREE.MeshPhongMaterial({map:flagTexture(),side:THREE.DoubleSide,shininess:30});
+    const m=new THREE.Mesh(geo,mat); m.position.x=.1; root.add(m);
+    const pole=new THREE.Mesh(new THREE.CylinderGeometry(.04,.04,3.2,16),new THREE.MeshPhongMaterial({color:0x8a6a2a})); pole.position.set(-1.42,-.7,0); root.add(pole);
+    const knob=new THREE.Mesh(new THREE.SphereGeometry(.08,16,12),new THREE.MeshPhongMaterial({color:0xd8b04a,shininess:80})); knob.position.set(-1.42,.92,0); root.add(knob);
+    return t=>{ const p=geo.attributes.position.array; for(let i=0;i<p.length;i+=3){ const x=base[i], u=(x+1.5)/3; p[i+2]=Math.sin(x*2.6-t*3.2)*.18*u + Math.sin(base[i+1]*3+t*2)*.03*u; }
+      geo.attributes.position.needsUpdate=true; geo.computeVertexNormals(); };
+  });
+  if(c) ctrls[pageOf(host)]=c;
+  book.querySelectorAll('#flagTabs button').forEach(b=>b.onclick=()=>{ book.querySelectorAll('#flagTabs button').forEach(x=>x.setAttribute('aria-pressed',x===b)); Q('flagText').innerHTML=FLAG[b.dataset.c]; });
+}
+/* timeline */
+const TL=[['١٩٥٠م','تولّى الشيخ عبدالله السالم الصباح حكم الكويت.'],['١٩ يونيو ١٩٦١م','استقلال دولة الكويت.'],['ديسمبر ١٩٦١م','انتخاب المجلس التأسيسي ليضع دستور البلاد.'],['١١ نوفمبر ١٩٦٢م','صدّق الأمير على الدستور الكويتي وأصدره.'],['يناير ١٩٦٣م','انتخاب أول مجلس أمة وفق الدستور الجديد.']];
+function timeline(){ const tl=Q('tl'); if(!tl) return; const bs=[...tl.children];
+  const sel=i=>{ bs.forEach((b,j)=>b.setAttribute('aria-pressed',i===j)); Q('tlText').innerHTML=`<b>${TL[i][0]}</b>: ${TL[i][1]}`; };
+  bs.forEach((b,i)=>b.onclick=()=>sel(i)); sel(3); }
+/* works */
+function works(){ const ol=Q('works'); if(!ol) return; let i=0; const lis=[...ol.children]; const b=Q('worksBtn');
+  b.onclick=()=>{ if(i<lis.length){ lis[i++].classList.add('show'); if(i===lis.length) b.textContent='أعد من البداية'; } else { lis.forEach(l=>l.classList.remove('show')); i=0; b.textContent='التالي'; } }; }
+/* org */
+const ORG={emir:'<b>الأمير</b>: رئيس الدولة ورئيس السلطة التنفيذية، يختار رئيس الوزراء ويصدر مرسوم تعيين الوزراء.',pm:'<b>رئيس مجلس الوزراء</b>: يرأس الجهاز التنفيذي بعد الأمير، ويرشح الوزراء وينسق بين الوزارات.',min:'<b>الوزراء</b>: يترأسون وزارات الدولة كالتربية والصحة، ويُسألون عن أعمال وزاراتهم أمام الأمير ومجلس الأمة.',cab:'<b>مجلس الوزراء</b>: اجتماع رئيس الوزراء والوزراء جميعاً، يهيمن على مصالح الدولة ويرسم السياسة العامة للحكومة.'};
+function org(){ const o=Q('org'); if(!o) return; o.querySelectorAll('button').forEach(b=>b.onclick=()=>{ o.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b)); Q('orgText').innerHTML=ORG[b.dataset.k]; }); }
+/* emir steps */
+const EM=[
+ ['عند خلو منصب الأمير يُنادى بولي العهد أميراً للبلاد تلقائياً دون الحاجة لأي إجراء آخر.','وهذا يتطلب وجود ولي للعهد قبل خلو مسند الإمارة.'],
+ ['يمارس مجلس الوزراء اختصاصات رئيس الدولة حتى لا تعيش الدولة في فراغ دستوري.','يرشح مجلس الوزراء أحد أفراد الأسرة الحاكمة ممن تتوافر فيه الشروط.','يُعرض المرشح على مجلس الأمة؛ فإن نال موافقة أغلبية الأعضاء نودي به أميراً للبلاد.','إن لم يحصل على الأغلبية رشح مجلس الوزراء ثلاثة أسماء ليختار مجلس الأمة أحدهم.','يجب أن يتم الاختيار خلال ثمانية أيام من خلو منصب الأمير.'],
+ ['يعين الأمير الجديد ولي العهد خلال سنة على الأكثر من توليه.','يزكي الأمير أحد أفراد الأسرة الحاكمة، ويعرض التزكية على مجلس الأمة في جلسة خاصة لمبايعته.','إذا وافقت الأغلبية صدر أمر أميري بتعيينه ولياً للعهد.','وإلا رشح الأمير ثلاثة يبايع مجلس الأمة أحدهم.']];
+function emirSteps(){ const ol=Q('emirSteps'); if(!ol) return; let cur=0, timers=[];
+  const render=()=>{ ol.innerHTML=EM[cur].map((s,i)=>`<li><b class="n">${AR(i+1)}</b><span>${s}</span></li>`).join(''); };
+  const play=()=>{ timers.forEach(clearTimeout); [...ol.children].forEach((li,i)=>{ li.classList.remove('show'); timers.push(setTimeout(()=>li.classList.add('show'),250+i*550)); }); };
+  book.querySelectorAll('#emirTabs button').forEach(b=>b.onclick=()=>{ cur=+b.dataset.t; book.querySelectorAll('#emirTabs button').forEach(x=>x.setAttribute('aria-pressed',x===b)); render(); play(); });
+  Q('emirPlay').onclick=play; render(); [...ol.children].forEach(li=>li.classList.add('show')); }
+/* majlis 3D */
+function majlis(){ const host=Q('majlis3d'); if(!host) return;
+  const c=makeThree(host,(S,C,root)=>{
+    C.position.set(0,2.6,7.2); C.lookAt(0,.6,0);
+    const white=new THREE.MeshPhongMaterial({color:0xf7f3ea}), cream=new THREE.MeshPhongMaterial({color:0xeee3cc}), glass=new THREE.MeshPhongMaterial({color:0x6a8fa8,shininess:90});
+    const ground=new THREE.Mesh(new THREE.BoxGeometry(9,.1,5),new THREE.MeshPhongMaterial({color:0xe8d3a0})); ground.position.y=-.05; root.add(ground);
+    const sea=new THREE.Mesh(new THREE.BoxGeometry(9,.08,2),new THREE.MeshPhongMaterial({color:0x3f8fc0,shininess:100})); sea.position.set(0,-.06,-3.4); root.add(sea);
+    const body=new THREE.Mesh(new THREE.BoxGeometry(6,1.1,2.2),cream); body.position.set(0,.55,-.6); root.add(body);
+    const band=new THREE.Mesh(new THREE.BoxGeometry(5.6,.35,.05),glass); band.position.set(0,.55,.52); root.add(band);
+    // sweeping canopy (the "tent")
+    const cg=new THREE.PlaneGeometry(6.6,2.2,40,12); const p=cg.attributes.position.array;
+    for(let i=0;i<p.length;i+=3){ const x=p[i], y=p[i+1]; const u=(y+1.1)/2.2; const edge=Math.pow(Math.abs(x)/3.3,4);
+      p[i+1]=2.0 - .9*Math.pow(u,1.8) - .35*edge*u; p[i+2]=-1+u*2.6; }
+    cg.computeVertexNormals(); const can=new THREE.Mesh(cg,new THREE.MeshPhongMaterial({color:0xffffff,side:THREE.DoubleSide,shininess:20})); root.add(can);
+    // leaning columns
+    for(let i=0;i<14;i++){ const x=-3+i*(6/13); const col=new THREE.Mesh(new THREE.BoxGeometry(.12,1.35,.22),white);
+      col.position.set(x,.68,1.45); col.rotation.x=-.18; root.add(col); }
+    // palms
+    for(const x of [-3.7,3.7,-1.2,1.6]){ const tr=new THREE.Mesh(new THREE.CylinderGeometry(.04,.06,1,8),new THREE.MeshPhongMaterial({color:0x8a6a3a})); tr.position.set(x,.5,2); root.add(tr);
+      for(let a=0;a<6;a++){ const lf=new THREE.Mesh(new THREE.ConeGeometry(.08,.6,6),new THREE.MeshPhongMaterial({color:0x2f7d3a})); lf.position.set(x,1.02,2); lf.rotation.z=Math.PI/2.4; lf.rotation.y=a*Math.PI/3; lf.translateY(.25); root.add(lf);} }
+    // flag
+    const fp=new THREE.Mesh(new THREE.CylinderGeometry(.02,.02,1.6,8),new THREE.MeshPhongMaterial({color:0xbbbbbb})); fp.position.set(3.6,.8,.6); root.add(fp);
+    const fl=new THREE.Mesh(new THREE.PlaneGeometry(.6,.3,10,4),new THREE.MeshPhongMaterial({map:flagTexture(),side:THREE.DoubleSide})); fl.position.set(3.91,1.45,.6); root.add(fl);
+    const fb=fl.geometry.attributes.position.array.slice();
+    return t=>{ const q=fl.geometry.attributes.position.array; for(let i=0;i<q.length;i+=3){ q[i+2]=Math.sin(fb[i]*8-t*5)*.04*(fb[i]+.3); } fl.geometry.attributes.position.needsUpdate=true; };
+  });
+  if(c) ctrls[pageOf(host)]=c;
+}
+/* seats hemicycle */
+function seats(){ const box=Q('seats'); if(!box) return; const rows=[{r:44,n:11},{r:58,n:15},{r:72,n:18},{r:86,n:22}];
+  const pts=[]; rows.forEach(({r,n})=>{ for(let i=0;i<n;i++){ const a=Math.PI*(i/(n-1)); pts.push({x:100+Math.cos(a)*r,y:96-Math.sin(a)*r,a}); } });
+  pts.sort((p,q)=>q.a-p.a); // 66 seats
+  box.innerHTML=`<svg viewBox="0 0 200 104" role="img" aria-label="مقاعد قاعة مجلس الأمة">${pts.map((p,i)=>`<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3.6" fill="${i<50?'#0b7a43':'#e9dcc0'}" data-i="${i}"/>`).join('')}<text x="100" y="98" text-anchor="middle" font-size="7" fill="#6b5531" font-family="Tajawal">المنصة</text></svg>`;
+  let on=false; Q('seatBtn').onclick=()=>{ on=!on; box.querySelectorAll('circle').forEach((c,i)=>{ if(i>=50) setTimeout(()=>c.setAttribute('fill',on?'#c8102e':'#e9dcc0'),(i-50)*60); });
+    Q('seatTxt').innerHTML=on?'٥٠ منتخباً + <span style="color:#c8102e">١٦ وزيراً كحد أقصى</span> (لا يتجاوزون ثلث المنتخبين)':'٥٠ عضواً منتخباً'; Q('seatBtn').textContent=on?'أخفِ الوزراء':'أضف الوزراء'; }; }
+/* ministries ring */
+const ICON={book:'<path d="M4 6c4-2 8-2 12 0v16c-4-2-8-2-12 0zM16 6c4-2 8-2 12 0v16c-4-2-8-2-12 0z" fill="none" stroke="#0b7a43" stroke-width="2"/>',cross:'<path d="M13 5h6v8h8v6h-8v8h-6v-8H5v-6h8z" fill="#c8102e"/>',shield:'<path d="M16 4l11 4v7c0 7-5 11-11 13C10 26 5 22 5 15V8z" fill="#1d3b72"/>',globe:'<circle cx="16" cy="16" r="11" fill="none" stroke="#1d3b72" stroke-width="2"/><path d="M5 16h22M16 5c-5 6-5 16 0 22M16 5c5 6 5 16 0 22" fill="none" stroke="#1d3b72" stroke-width="2"/>',star:'<path d="M16 4l3.5 8 8.5.8-6.5 5.7 2 8.5L16 22.5 8.5 27l2-8.5L4 12.8l8.5-.8z" fill="#7a4c06"/>',coin:'<circle cx="16" cy="16" r="11" fill="#f2c14e" stroke="#a87313" stroke-width="2"/><path d="M16 9v14M12 12h6a3 3 0 010 6h-4a3 3 0 000 6h6" fill="none" stroke="#7a4c06" stroke-width="2"/>',scale:'<path d="M16 5v22M8 27h16M6 10h20M6 10l-4 8h8zM26 10l-4 8h8z" fill="none" stroke="#3a3a3a" stroke-width="2"/>',moon:'<path d="M20 5a11 11 0 100 22A9 9 0 0120 5z" fill="#0b7a43"/>',mic:'<rect x="12" y="4" width="8" height="14" rx="4" fill="#c8102e"/><path d="M8 15a8 8 0 0016 0M16 23v5" fill="none" stroke="#c8102e" stroke-width="2"/>',bolt:'<path d="M18 3L7 18h8l-2 11 12-16h-8z" fill="#e2a72d"/>',drop:'<path d="M16 4c5 8 8 12 8 16a8 8 0 01-16 0c0-4 3-8 8-16z" fill="#3f8fc0"/>',road:'<path d="M12 4L6 28M20 4l6 24M16 6v4M16 14v4M16 22v4" fill="none" stroke="#3a3a3a" stroke-width="2"/>',hand:'<circle cx="11" cy="10" r="4" fill="#0b7a43"/><circle cx="21" cy="10" r="4" fill="#0b7a43"/><path d="M4 26c0-6 4-9 7-9s7 3 7 9M14 26c0-6 4-9 7-9s7 3 7 9" fill="#0b7a43"/>'};
+const MIN=[['وزارة التربية','book','التعليم العام والمدارس'],['وزارة الصحة','cross','المستشفيات والرعاية الصحية'],['وزارة الداخلية','shield','الأمن والنظام العام'],['وزارة الخارجية','globe','العلاقات مع الدول والسفارات'],['وزارة الدفاع','star','حماية حدود الوطن'],['وزارة المالية','coin','ميزانية الدولة وأموالها'],['وزارة العدل','scale','شؤون العدالة والتوثيق'],['وزارة الأوقاف والشؤون الإسلامية','moon','المساجد والشؤون الدينية'],['وزارة الإعلام','mic','الإذاعة والتلفزيون والإعلام'],['وزارة الكهرباء والماء','bolt','توفير الكهرباء والماء'],['وزارة النفط','drop','الثروة النفطية'],['وزارة الأشغال العامة','road','الطرق والمباني العامة'],['وزارة الشؤون الاجتماعية','hand','رعاية الأسرة والمجتمع']];
+function ringPage(){ const ring=Q('ring'), wrap=Q('ringWrap'); if(!ring) return; const n=MIN.length;
+  ring.innerHTML=MIN.map(([t,ic,d],i)=>`<div class="mcard" style="transform:rotateY(${i*360/n}deg) translateZ(var(--rz))"><svg viewBox="0 0 32 32" aria-hidden="true">${ICON[ic]}</svg><b>${t}</b><span>${d}</span></div>`).join('');
+  let a=0, drag=null, auto=true, raf=null;
+  function frame(){ raf=requestAnimationFrame(frame); const em=parseFloat(getComputedStyle(wrap).fontSize); ring.style.setProperty('--rz',(em*6.2*n/(2*Math.PI)*1.04)+'px'); if(auto) a-=.15; ring.style.transform=`translateZ(${-(em*6.2*n/(2*Math.PI))}px) rotateX(-6deg) rotateY(${a}deg)`; }
+  wrap.addEventListener('pointerdown',e=>{drag=e.clientX;auto=false;wrap.setPointerCapture(e.pointerId);e.stopPropagation();});
+  wrap.addEventListener('pointermove',e=>{ if(drag===null) return; a+=(e.clientX-drag)*.4; drag=e.clientX; });
+  wrap.addEventListener('pointerup',()=>{drag=null;setTimeout(()=>auto=true,2500);});
+  ctrls[pageOf(ring)]={start(){ if(!raf) frame(); },stop(){ if(raf){cancelAnimationFrame(raf);raf=null;} }}; }
+/* candidates */
+const CANDS=[{n:'خالد، ٣٤ سنة، كويتي بصفة أصلية، يجيد القراءة والكتابة بالعربية',ok:true,why:'تتوافر فيه كل الشروط.'},{n:'سارة، ٢٧ سنة، كويتية بصفة أصلية، تجيد العربية',ok:false,why:'عمرها أقل من ثلاثين سنة ميلادية.'},{n:'فهد، ٤٥ سنة، حصل على الجنسية حديثاً (ليست أصلية)',ok:false,why:'يشترط أن يكون كويتياً بصفة أصلية.'}];
+function candidates(){ const box=Q('cands'); if(!box) return;
+  box.innerHTML=CANDS.map((c,i)=>`<div class="panel" style="padding:.45em .6em"><div style="font-size:.85em;font-weight:700">${c.n}</div><div style="display:flex;gap:.3em;margin-top:.3em"><button class="chipbtn" type="button" data-i="${i}" data-v="1">يصلح</button><button class="chipbtn" type="button" data-i="${i}" data-v="0">لا يصلح</button><span class="toast" style="font-size:.75em"></span></div></div>`).join('');
+  box.querySelectorAll('button').forEach(b=>b.onclick=()=>{ const c=CANDS[b.dataset.i], right=(b.dataset.v==='1')===c.ok; const t=b.parentNode.querySelector('.toast'); t.style.color=right?'#075a31':'#c8102e'; t.textContent=(right?'صحيح! ':'راجع الشروط: ')+c.why; }); }
+/* cabinet */
+function cabinet(){ const box=Q('cabinet'); if(!box) return; const n=16; const att=new Array(n).fill(false); [0,1,2,3,4,5,6].forEach(i=>att[i]=true);
+  box.innerHTML=Array.from({length:n},(_,i)=>`<button type="button" aria-label="مقعد ${i===0?'رئيس الوزراء':'وزير '+(i)}" data-i="${i}" style="aspect-ratio:1;border:0;border-radius:.5em;cursor:pointer;font-size:.6em;font-weight:800"></button>`).join('');
+  const bs=[...box.children];
+  const paint=()=>{ bs.forEach((b,i)=>{ b.style.background=att[i]?(i===0?'#7a4c06':'#0b7a43'):'#eadfc6'; b.style.color=att[i]?'#fff':'#9a8763'; b.textContent=i===0?'رئيس':AR(i); });
+    const c=att.filter(Boolean).length, ok=c>n/2; Q('cabTxt').innerHTML=`الحضور: <b>${AR(c)}</b> من ${AR(n)} — ${ok?'<span style="color:#075a31">الجلسة صحيحة (أكثر من النصف)</span>':'<span style="color:#c8102e">الجلسة غير صحيحة، لم يحضر أكثر من النصف</span>'}`; };
+  bs.forEach((b,i)=>b.onclick=()=>{ att[i]=!att[i]; paint(); });
+  Q('allBtn').onclick=()=>{ att.fill(true); paint(); };
+  Q('voteBtn').onclick=()=>{ const c=att.filter(Boolean).length; if(c<=n/2){ Q('cabTxt').innerHTML='<span style="color:#c8102e">لا يمكن التصويت: الجلسة غير صحيحة.</span>'; return; }
+    const yes=Math.floor(c/2)+1+Math.floor(Math.random()*(c-Math.floor(c/2)-1)); const no=c-yes;
+    Q('cabTxt').innerHTML=`نتيجة التصويت: موافق <b>${AR(yes)}</b> · معارض <b>${AR(no)}</b> ← صدر القرار بأغلبية الحاضرين. ${no?`وعلى الوزراء المعارضين (${AR(no)}) الالتزام به تطبيقاً لمبدأ التضامن الوزاري، أو الاستقالة.`:''}`; };
+  paint(); }
+/* sorter */
+const SORT=[['رسم التفصيلات اللازمة لتنفيذ القوانين','adm'],['إنشاء القطاعات الحكومية وتنظيمها','adm'],['لوائح لحماية أمن المواطن وصحته وبيئته','adm'],['حل مجلس الأمة وتأجيل جلساته','pol'],['إبرام المعاهدات والاتفاقيات الدولية','pol'],['افتتاح سفارات الكويت في الخارج','pol'],['العفو عن العقوبة أو تخفيضها','jud']];
+function sorter(){ const box=Q('sortItems'); if(!box) return; let sel=null, done=0;
+  const order=SORT.map((s,i)=>i).sort(()=>Math.random()-.5);
+  box.innerHTML=order.map(i=>`<button type="button" data-i="${i}">${SORT[i][0]}</button>`).join('');
+  box.querySelectorAll('button').forEach(b=>b.onclick=()=>{ box.querySelectorAll('button').forEach(x=>x.classList.remove('sel')); b.classList.add('sel'); sel=b; });
+  book.querySelectorAll('#bins .bin').forEach(bin=>bin.onclick=()=>{ if(!sel){ Q('sortToast').textContent='اختر بطاقة أولاً.'; return; }
+    const it=SORT[sel.dataset.i]; if(it[1]===bin.dataset.b){ const g=document.createElement('div'); g.className='got'; g.textContent=it[0]; bin.appendChild(g); sel.classList.add('ok'); sel=null; done++;
+      Q('sortToast').style.color='#075a31'; Q('sortToast').textContent= done===SORT.length?'ممتاز! صنّفت جميع الاختصاصات بشكل صحيح.':'إجابة صحيحة!'; }
+    else { bin.classList.remove('bad'); void bin.offsetWidth; bin.classList.add('bad'); Q('sortToast').style.color='#c8102e'; Q('sortToast').textContent='حاول مرة أخرى.'; } }); }
+/* exceptional */
+const EX=[
+ `<p>عهد الدستور إلى السلطة التشريعية بإصدار القوانين، لكنه أجاز للسلطة التنفيذية إصدار <b>مراسيم لها قوة القانون</b> في حالتين:</p>
+  <p><b>١) غياب مجلس الأمة</b>: بسبب حلّه قبل انتخاب مجلس جديد، أو في إجازته (عطلة المجلس)، إذا استجد أمر طارئ لا يحتمل التأخير.</p>
+  <p><b>٢) تفويض مجلس الأمة</b>: تفويض مؤقت ومحدد في موضوع معين.</p>
+  <p><b>ضوابطها</b>: تصدر بشكل استثنائي ومؤقت · لحالة ضرورة لا تحتمل التأخير · وتُعرض لاحقاً على مجلس الأمة فتبقى تحت رقابته.</p>`,
+ `<div class="quote">«يعلن الأمير الحرب الدفاعية بمرسوم، أما الحرب الهجومية فمحرمة»<small>المادة ٦٨</small></div>
+  <div class="quote">«السلام هدف الدولة، وسلامة الوطن أمانة في عنق كل مواطن، وهي جزء من سلامة الوطن العربي الكبير»<small>المادة ١٥٧</small></div>
+  <p>الكويت دولة محبة للسلام. وطبّقت الدفاع عن الأشقاء العرب فعلياً في حربي <b>١٩٦٧م</b> و<b>١٩٧٣م</b>.</p>`,
+ `<p>الأحكام العرفية نظم توضع لمواجهة خطر يتعرض له الدولة، طبيعي كالزلازل، أو سياسي واجتماعي كالاضطرابات والحروب. صدر قانونها عام <b>١٩٦٧م</b>، وتُعلن بمرسوم في الحالات الآتية:</p>
+  <p>تعرّض الأمن والنظام العام للخطر · وقوع عدوان مسلح · إذا أوشك عدوان على الوقوع · حدوث اضطرابات داخلية · حاجة القوات المسلحة لتأمين سلامتها وطرق مواصلاتها.</p>
+  <p><b>أُعلنت مرتين</b>: عام ١٩٦٧م، وعام ١٩٩١م بعد تحرير الكويت من الغزو العراقي لمدة ثلاثة أشهر.</p>`];
+function exceptional(){ const p=Q('exPanel'); if(!p) return; const set=i=>{ p.innerHTML=EX[i]; p.style.animation='none'; void p.offsetWidth; p.style.animation=''; };
+  book.querySelectorAll('#exTabs button').forEach(b=>b.onclick=()=>{ book.querySelectorAll('#exTabs button').forEach(x=>x.setAttribute('aria-pressed',x===b)); set(+b.dataset.t); }); set(0); }
+/* quiz */
+const QZ=[
+ ['السلطة التنفيذية هي الجهة التي:',['تصدر القوانين','تنفّذ ما يصدر عن السلطة التشريعية من قوانين','تفصل في المنازعات بين الأفراد','تنتخب أعضاء مجلس الأمة'],1,'هذا هو تعريف السلطة التنفيذية في الكتاب.'],
+ ['وفق المادة (٥٢) يتولى السلطة التنفيذية:',['الأمير ومجلس الأمة','مجلس الأمة والمحاكم','الأمير ومجلس الوزراء والوزراء','رئيس الوزراء وحده'],2,'«السلطة التنفيذية يتولاها الأمير ومجلس الوزراء والوزراء».'],
+ ['المادة التي تنص على أن «الأمير رئيس الدولة، وذاته مصونة لا تمس» هي:',['المادة ٤','المادة ٥٤','المادة ١٢٣','المادة ٦٨'],1,'المادة ٥٤، ويعني ذلك عدم جواز مساءلته عن أعماله.'],
+ ['يجب على الأمير الجديد تعيين ولي العهد خلال:',['ثمانية أيام','ثلاثة أشهر','سنة على الأكثر','خمس سنوات'],2,'يستلزم الدستور تعيين ولي العهد خلال سنة على الأكثر من تاريخ تولي الأمير منصبه.'],
+ ['في الأسلوب غير العادي يجب أن يتم اختيار الأمير خلال:',['ثمانية أيام','شهر','سنة','ثلاثين يوماً'],0,'حتى لا تطول فترة بقاء مسند الإمارة خالياً.'],
+ ['إذا كان عدد أعضاء مجلس الأمة المنتخبين ٥٠ عضواً فإن الحد الأقصى لعدد الوزراء:',['١٠ وزراء','١٦ وزيراً','٢٥ وزيراً','٥٠ وزيراً'],1,'لا يتجاوز عدد الوزراء ثلث الأعضاء المنتخبين، أي ١٦ وزيراً بمن فيهم رئيس الوزراء.'],
+ ['من شروط تولي المنصب الوزاري ألا يقل العمر يوم التعيين عن:',['٢١ سنة','٢٥ سنة','٣٠ سنة','٤٠ سنة'],2,'إضافة إلى أن يكون كويتياً بصفة أصلية ويجيد القراءة والكتابة بالعربية.'],
+ ['يُشترط لصحة اجتماع مجلس الوزراء حضور:',['ثلث الوزراء','نصف الوزراء','أكثر من نصف الوزراء','جميع الوزراء'],2,'وتصدر القرارات بأغلبية أصوات الحاضرين.'],
+ ['العفو عن العقوبة أو تخفيضها من الاختصاصات:',['الإدارية','السياسية','القضائية','التشريعية'],2,'يصدر الأمير مرسوماً أميرياً بالعفو أو التخفيض.'],
+ ['من الاختصاصات السياسية في جانبها الدولي:',['إصدار اللوائح','إبرام المعاهدات والاتفاقيات الدولية','العفو عن العقوبة','إنشاء القطاعات الحكومية'],1,'ومنها أيضاً إقامة العلاقات الدولية وافتتاح السفارات.'],
+ ['أُعلنت الأحكام العرفية في تاريخ الكويت الحديث عامي:',['١٩٦١ و١٩٦٢','١٩٦٧ و١٩٩١','١٩٧٣ و١٩٩٠','١٩٨٢ و٢٠٠٣'],1,'عام ١٩٦٧م، وعام ١٩٩١م بعد التحرير لمدة ثلاثة أشهر.'],
+ ['حسب المادة (٦٨) من الدستور فإن الحرب الهجومية:',['تُعلن بمرسوم','تُعلن بقانون','محرّمة','يقررها مجلس الوزراء'],2,'يعلن الأمير الحرب الدفاعية بمرسوم، أما الحرب الهجومية فمحرمة.']];
+function quiz(){ const box=Q('quiz'); if(!box) return; let i=0, score=0;
+  const show=()=>{ if(i>=QZ.length) return finish(); const [q,opts,ans,why]=QZ[i];
+    box.innerHTML=`<div class="qmeta"><span>السؤال ${AR(i+1)} من ${AR(QZ.length)}</span><span>النقاط: ${AR(score)}</span></div><div class="qbar"><i style="width:${i/QZ.length*100}%"></i></div><div class="qq">${q}</div><div class="opts">${opts.map((o,j)=>`<button type="button" data-j="${j}">${o}</button>`).join('')}</div><div id="qwhy"></div>`;
+    box.querySelectorAll('.opts button').forEach(b=>b.onclick=()=>{ const j=+b.dataset.j; box.querySelectorAll('.opts button').forEach((x,xi)=>{ x.disabled=true; if(xi===ans) x.classList.add('right'); });
+      if(j===ans) score++; else b.classList.add('wrong');
+      box.querySelector('#qwhy').innerHTML=`<div class="why"><b>${j===ans?'أحسنت!':'الإجابة الصحيحة موضحة باللون الأخضر.'}</b> ${why}</div><button class="primary" type="button" style="margin-top:.5em">${i===QZ.length-1?'عرض النتيجة':'السؤال التالي'}</button>`;
+      box.querySelector('#qwhy .primary').onclick=()=>{ i++; show(); }; }); };
+  const finish=()=>{ const pct=Math.round(score/QZ.length*100); const msg=pct>=90?'ممتاز! أنت متمكن من الوحدة':pct>=70?'جيد جداً، راجع الأسئلة التي أخطأت فيها':'راجع صفحات الكتاب ثم أعد المحاولة';
+    box.innerHTML=`<div class="medal">${AR(score)} / ${AR(QZ.length)}</div><div class="big" style="font-size:1.6em">${msg}</div><div style="display:flex;gap:.5em;justify-content:center;flex-wrap:wrap"><button class="primary" type="button" id="qAgain">أعد الاختبار</button><button class="chipbtn" type="button" data-go="next">الخلاصة</button></div>`;
+    box.querySelector('#qAgain').onclick=()=>{ i=0; score=0; show(); };
+    const r=Q('result'); if(r) r.innerHTML=`<div class="panel" style="text-align:center;margin-bottom:.5em">نتيجتك في الاختبار: <b>${AR(score)} من ${AR(QZ.length)}</b></div>`; };
+  show(); }
+
+build();
+})();
+</script>
