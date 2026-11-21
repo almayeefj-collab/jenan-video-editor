@@ -62,26 +62,27 @@ type Scene = {
   caption: string; // الكلمات بين [] تتلوّن
   visual: Visual;
   step?: number;
+  say?: [number, number]; // وقت الكلام بالتسجيل (ثواني من بداية الفيديو)
 };
 
 const SCENES: Scene[] = [
-  {from: 0, to: 3.6, kicker: 'سؤال صريح', headline: 'جم ليلة سهرتوا على ملف الإنجاز؟',
+  {from: 0, to: 3.7, say: [0.05, 3.36], kicker: 'سؤال صريح', headline: 'جم ليلة سهرتوا على ملف الإنجاز؟',
     caption: 'جم ليلة سهرتوا وإنتو ترتبون [ملف] [الإنجاز]؟', visual: 'hook'},
-  {from: 3.6, to: 8.8, kicker: 'والمشكلة', headline: 'الشواهد متفرقة',
+  {from: 3.7, to: 10.9, say: [4.03, 10.41], kicker: 'والمشكلة', headline: 'الشواهد متفرقة',
     caption: 'صور بالجوال، شهادات بالإيميل، وأوراق بالدرج… وتجمعونها [ليلة] [التسليم]', visual: 'sources'},
-  {from: 8.8, to: 12.4, kicker: 'أنا شخصياً', headline: 'غيرت الطريقة كلها',
+  {from: 10.9, to: 15.5, say: [11.36, 15.02], kicker: 'أنا شخصياً', headline: 'غيرت الطريقة كلها',
     caption: 'أنا غيرت الطريقة كلها، وصار الذكاء الاصطناعي [مساعدي]', visual: 'person'},
-  {from: 12.4, to: 17.4, kicker: 'الخطوة ١', headline: 'أرفع الشواهد',
+  {from: 15.5, to: 20.6, say: [15.94, 20.21], kicker: 'الخطوة ١', headline: 'أرفع الشواهد',
     caption: 'أرفع كل الشواهد مرة وحدة، وأقوله [رتبها] على المعايير', visual: 'chat', step: 1},
-  {from: 17.4, to: 22.4, kicker: 'الخطوة ٢', headline: 'يصنّف ويكتب الوصف',
+  {from: 20.6, to: 26.0, say: [20.99, 25.5], kicker: 'الخطوة ٢', headline: 'يصنّف ويكتب الوصف',
     caption: 'يوزعها على [المعايير]، ويكتب وصف لكل شاهد [بأسلوبي] أنا', visual: 'sort', step: 2},
-  {from: 22.4, to: 27.4, kicker: 'الخطوة ٣', headline: 'رابط واحد بس',
+  {from: 26.0, to: 32.5, say: [26.38, 32.25], kicker: 'الخطوة ٣', headline: 'رابط واحد بس',
     caption: 'ويطلع لي ملف إنجاز [إلكتروني] بألواني، رابط واحد أرسله لأي أحد', visual: 'phone', step: 3},
-  {from: 27.4, to: 31.4, kicker: 'والأحلى', headline: 'بدون ولا سطر كود',
+  {from: 32.5, to: 36.2, say: [32.86, 35.77], kicker: 'والأحلى', headline: 'بدون ولا سطر كود',
     caption: 'وكل هذا بدون ما أكتب ولا سطر [كود]', visual: 'nocode'},
-  {from: 31.4, to: 41, kicker: 'عندي لكم خبر', headline: 'دورة جديدة',
+  {from: 36.2, to: 44.5, say: [36.57, 43.29], kicker: 'عندي لكم خبر', headline: 'دورة جديدة',
     caption: 'حابة أعطيكم [دورة]: شلون تصممون ملف إنجازكم عبر الذكاء الاصطناعي. إذا حابين، اكتبوا [بالتعليقات]', visual: 'cta'},
-  {from: 41, to: 44.5, kicker: '', headline: '', caption: '', visual: 'end'},
+  {from: 44.5, to: 48, kicker: '', headline: '', caption: '', visual: 'end'},
 ];
 
 const NAME = 'أ. جنان المعيبف';
@@ -165,7 +166,9 @@ const Headline: React.FC<{t: Theme; scene: Scene; local: number}> = ({t, scene, 
 const Captions: React.FC<{t: Theme; scene: Scene; local: number; dur: number}> = ({t, scene, local, dur}) => {
   if (!scene.caption) return null;
   const words = parseWords(scene.caption);
-  const shown = interpolate(local, [4, Math.max(8, dur * 0.75)], [0, words.length], clamp);
+  // الكلمات تطلع مع الصوت
+  const [a, b] = scene.say ? [sec(scene.say[0] - scene.from), sec(scene.say[1] - scene.from)] : [4, Math.max(8, dur * 0.75)];
+  const shown = interpolate(local, [a, b], [0, words.length], clamp);
   const cur = Math.floor(shown);
   return (
     <div style={{position: 'absolute', top: 1560, left: 60, right: 60, direction: 'rtl', textAlign: 'center', fontSize: 50, fontWeight: 800, lineHeight: 1.55}}>
@@ -438,9 +441,9 @@ const SceneVisual: React.FC<{t: Theme; scene: Scene; local: number; dur: number}
     case 'sources':
       return (
         <>
-          <Pop delay={8} local={local} x={810} y={800} rot={6}><SourceCard t={t} label="الجوال" kind="phone" /></Pop>
-          <Pop delay={30} local={local} x={270} y={900} rot={-6}><SourceCard t={t} label="الإيميل" kind="mail" /></Pop>
-          <Pop delay={52} local={local} x={560} y={1220} rot={3}><SourceCard t={t} label="الدرج" kind="drawer" /></Pop>
+          <Pop delay={10} local={local} x={810} y={800} rot={6}><SourceCard t={t} label="الجوال" kind="phone" /></Pop>
+          <Pop delay={57} local={local} x={270} y={900} rot={-6}><SourceCard t={t} label="الإيميل" kind="mail" /></Pop>
+          <Pop delay={110} local={local} x={560} y={1220} rot={3}><SourceCard t={t} label="الدرج" kind="drawer" /></Pop>
         </>
       );
     case 'person':
@@ -493,16 +496,16 @@ const Sfx: React.FC = () => {
   SCENES.forEach((s, i) => {
     const st = sec(s.from);
     if (i > 0) out.push(<Sequence key={'w' + i} from={Math.max(0, st - 6)} durationInFrames={30}><Audio src={staticFile(WIPES.includes(i) ? 'sfx/swoosh-up.wav' : 'sfx/whoosh.wav')} volume={0.3} /></Sequence>);
-    if (s.visual === 'sources') [8, 30, 52].forEach((d) => out.push(<Sequence key={`p${i}${d}`} from={st + d} durationInFrames={20}><Audio src={staticFile('sfx/pop.wav')} volume={0.45} /></Sequence>));
+    if (s.visual === 'sources') [10, 57, 110].forEach((d) => out.push(<Sequence key={`p${i}${d}`} from={st + d} durationInFrames={20}><Audio src={staticFile('sfx/pop.wav')} volume={0.45} /></Sequence>));
     if (s.visual === 'chat') {
       for (let k = 40; k < 80; k += 3) out.push(<Sequence key={`c${k}`} from={st + k} durationInFrames={6}><Audio src={staticFile(`sfx/key${k % 4}.wav`)} volume={0.25} /></Sequence>);
       out.push(<Sequence key="ai-reply" from={st + 95} durationInFrames={20}><Audio src={staticFile('sfx/pop.wav')} volume={0.5} /></Sequence>);
     }
     if (s.visual === 'nocode') out.push(<Sequence key="nc" from={st + 60} durationInFrames={30}><Audio src={staticFile('sfx/impact.wav')} volume={0.35} /></Sequence>);
   });
-  out.push(<Sequence key="cta-pop" from={sec(31.4) + 25} durationInFrames={20}><Audio src={staticFile('sfx/pop.wav')} volume={0.55} /></Sequence>);
-  out.push(<Sequence key="cta-pop2" from={sec(31.4) + 150} durationInFrames={20}><Audio src={staticFile('sfx/pop.wav')} volume={0.45} /></Sequence>);
-  out.push(<Sequence key="sh" from={sec(41)} durationInFrames={60}><Audio src={staticFile('sfx/shimmer.wav')} volume={0.45} /></Sequence>);
+  out.push(<Sequence key="cta-pop" from={sec(SCENES[7].from) + 25} durationInFrames={20}><Audio src={staticFile('sfx/pop.wav')} volume={0.55} /></Sequence>);
+  out.push(<Sequence key="cta-pop2" from={sec(SCENES[7].from) + 150} durationInFrames={20}><Audio src={staticFile('sfx/pop.wav')} volume={0.45} /></Sequence>);
+  out.push(<Sequence key="sh" from={sec(SCENES[8].from)} durationInFrames={60}><Audio src={staticFile('sfx/shimmer.wav')} volume={0.45} /></Sequence>);
   return <>{out}</>;
 };
 
@@ -511,7 +514,9 @@ const Sfx: React.FC = () => {
 export const AchieveReel: React.FC<AchieveProps> = ({theme}) => {
   const t = THEMES[theme] ?? THEMES.pink;
   const total = totalFrames();
-  const musicVol = (fr: number) => 0.32 * interpolate(fr, [0, 10, total - 45, total], [0, 1, 1, 0], clamp);
+  const voiceEnd = sec(SCENES[7].say![1]);
+  const musicVol = (fr: number) =>
+    interpolate(fr, [0, 10, voiceEnd, voiceEnd + 15, total - 30, total], [0, 0.1, 0.1, 0.3, 0.3, 0], clamp);
   return (
     <AbsoluteFill style={{fontFamily, overflow: 'hidden'}}>
       <Background t={t} />
@@ -527,6 +532,7 @@ export const AchieveReel: React.FC<AchieveProps> = ({theme}) => {
       <TopBar t={t} />
       {WIPES.map((i) => <CircleWipe key={i} t={t} at={sec(SCENES[i].from)} />)}
       <Audio src={staticFile('music/background.wav')} volume={musicVol} />
+      <Audio src={staticFile('achieve/voice.wav')} volume={1} />
       <Sfx />
     </AbsoluteFill>
   );
