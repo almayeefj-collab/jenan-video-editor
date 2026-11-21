@@ -15,7 +15,7 @@ import {fontFamily} from '../reel/font';
 
 // ريل «ملف الإنجاز بالذكاء الاصطناعي» — بأسلوب جنان وصورتها الحقيقية.
 // الفكرة مستوحاة من فيديو مرجعي، بس النص والتصميم مختلفين:
-// سؤال افتتاحي → المشكلة → «أنا غيرت الطريقة» → ٣ خطوات → بدون كود → اكتبي «ملف».
+// سؤال افتتاحي → المشكلة → «أنا غيرت الطريقة» → ٣ خطوات → بدون كود → إعلان دورة («إذا حابين اكتبوا بالتعليقات»).
 
 export const FPS = 30;
 export const WIDTH = 1080;
@@ -65,10 +65,10 @@ type Scene = {
 };
 
 const SCENES: Scene[] = [
-  {from: 0, to: 3.6, kicker: 'سؤال صريح', headline: 'كم ليلة سهرتي على ملف الإنجاز؟',
-    caption: 'كم ليلة سهرتي وإنتي ترتبين [ملف] [الإنجاز]؟', visual: 'hook'},
+  {from: 0, to: 3.6, kicker: 'سؤال صريح', headline: 'كم ليلة سهرتوا على ملف الإنجاز؟',
+    caption: 'كم ليلة سهرتوا وإنتوا ترتبون [ملف] [الإنجاز]؟', visual: 'hook'},
   {from: 3.6, to: 8.8, kicker: 'والمشكلة', headline: 'الشواهد متفرقة',
-    caption: 'صور بالجوال، شهادات بالإيميل، وأوراق بالدرج… وتجمعينها [ليلة] [التسليم]', visual: 'sources'},
+    caption: 'صور بالجوال، شهادات بالإيميل، وأوراق بالدرج… وتجمعونها [ليلة] [التسليم]', visual: 'sources'},
   {from: 8.8, to: 12.4, kicker: 'أنا شخصياً', headline: 'غيرت الطريقة كلها',
     caption: 'أنا غيرت الطريقة كلها، وصار الذكاء الاصطناعي [مساعدي]', visual: 'person'},
   {from: 12.4, to: 17.4, kicker: 'الخطوة ١', headline: 'أرفع الشواهد',
@@ -79,8 +79,8 @@ const SCENES: Scene[] = [
     caption: 'ويطلع لي ملف إنجاز [إلكتروني] بألواني، رابط واحد أرسله لأي أحد', visual: 'phone', step: 3},
   {from: 27.4, to: 31.4, kicker: 'والأحلى', headline: 'بدون ولا سطر كود',
     caption: 'وكل هذا بدون ما أكتب ولا سطر [كود]', visual: 'nocode'},
-  {from: 31.4, to: 41, kicker: 'تبين تسوين مثله؟', headline: 'اكتبي «ملف»',
-    caption: 'اكتبي [«ملف»] بالتعليقات، وأعلمج الطريقة [خطوة] [بخطوة]', visual: 'cta'},
+  {from: 31.4, to: 41, kicker: 'عندي لكم خبر', headline: 'دورة جديدة',
+    caption: 'حابة أعطيكم [دورة]: شلون تصممون ملف إنجازكم عبر الذكاء الاصطناعي. إذا حابين، اكتبوا [بالتعليقات]', visual: 'cta'},
   {from: 41, to: 44.5, kicker: '', headline: '', caption: '', visual: 'end'},
 ];
 
@@ -137,7 +137,10 @@ const TopBar: React.FC<{t: Theme}> = ({t}) => {
 /* ───────────── النصوص ───────────── */
 
 const parseWords = (s: string) =>
-  s.split(' ').filter(Boolean).map((w) => (w.startsWith('[') ? {w: w.slice(1, -1), hi: true} : {w, hi: false}));
+  s.split(' ').filter(Boolean).map((w) => {
+    const m = w.match(/^\[(.*)\](.*)$/);
+    return m ? {w: m[1] + m[2], hi: true} : {w, hi: false};
+  });
 
 const Headline: React.FC<{t: Theme; scene: Scene; local: number}> = ({t, scene, local}) => {
   const {fps} = useVideoConfig();
@@ -387,16 +390,22 @@ const NoCodeBadge: React.FC<{t: Theme; local: number}> = ({t, local}) => {
 
 const CtaExtras: React.FC<{t: Theme; local: number}> = ({t, local}) => {
   const {fps} = useVideoConfig();
-  const s = spring({frame: local - 30, fps, config: {damping: 10}});
-  // تعليق وهمي ينكتب
-  const typed = Math.floor(interpolate(local, [45, 60], [0, 3], clamp));
+  const s = spring({frame: local - 25, fps, config: {damping: 11}});
+  const s2 = spring({frame: local - 150, fps, config: {damping: 10}});
+  const nudge = Math.sin(local / 5) * 6;
+  // بطاقة الدورة + دعوة للتعليق
   return (
-    <div style={{position: 'absolute', top: 540, left: 0, right: 0, display: 'flex', justifyContent: 'center', transform: `scale(${s})`, direction: 'rtl'}}>
-      <Card t={t} w={620} style={{padding: '18px 26px', boxSizing: 'border-box', display: 'flex', alignItems: 'center', gap: 18}}>
-        <div style={{width: 60, height: 60, borderRadius: 30, background: t.soft, border: `2px solid ${t.line}`}} />
-        <div style={{flex: 1, fontSize: 42, fontWeight: 800, color: t.text}}>{'ملف'.slice(0, typed)}<span style={{color: t.accent, opacity: local % 16 < 8 ? 1 : 0}}>|</span></div>
-        <div style={{background: t.accent, color: t.onAccent, borderRadius: 30, padding: '6px 22px', fontSize: 30, fontWeight: 900}}>نشر</div>
-      </Card>
+    <div style={{position: 'absolute', top: 520, left: 0, right: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 22, direction: 'rtl'}}>
+      <div style={{transform: `scale(${s}) rotate(-2deg)`}}>
+        <Card t={t} w={820} style={{padding: '24px 34px', boxSizing: 'border-box', border: `3px solid ${t.accent}`, display: 'flex', alignItems: 'center', gap: 24}}>
+          <div style={{flex: 1, fontSize: 42, fontWeight: 800, color: t.text, lineHeight: 1.35, textAlign: 'center'}}>
+            شلون تصممون <span style={{color: t.accent}}>ملف إنجازكم</span> عبر الذكاء الاصطناعي
+          </div>
+        </Card>
+      </div>
+      <div style={{transform: `scale(${s2})`, fontSize: 40, fontWeight: 800, color: t.second, display: 'flex', alignItems: 'center', gap: 14}}>
+        إذا حابين، اكتبوا بالتعليقات <span style={{display: 'inline-block', transform: `translateY(${nudge}px)`, color: t.accent}}>↓</span>
+      </div>
     </div>
   );
 };
@@ -411,7 +420,7 @@ const EndCard: React.FC<{t: Theme; local: number}> = ({t, local}) => {
         <div style={{width: 320, height: 320, borderRadius: 160, border: `8px solid ${t.accent}`, background: `url(${staticFile(PHOTO)}) 50% 10% / 200% ${t.soft}`}} />
         <div style={{fontSize: 82, fontWeight: 900, color: t.text}}>{NAME}</div>
         <div style={{fontSize: 44, fontWeight: 700, color: t.second}}>ملف الإنجاز بالذكاء الاصطناعي</div>
-        <div style={{marginTop: 16, background: t.accent, color: t.onAccent, fontSize: 48, fontWeight: 900, padding: '12px 44px', borderRadius: 40}}>اكتبي «ملف» بالتعليقات</div>
+        <div style={{marginTop: 16, background: t.accent, color: t.onAccent, fontSize: 48, fontWeight: 900, padding: '12px 44px', borderRadius: 40}}>إذا حابين الدورة، اكتبوا بالتعليقات</div>
       </div>
     </AbsoluteFill>
   );
@@ -491,7 +500,8 @@ const Sfx: React.FC = () => {
     }
     if (s.visual === 'nocode') out.push(<Sequence key="nc" from={st + 60} durationInFrames={30}><Audio src={staticFile('sfx/impact.wav')} volume={0.35} /></Sequence>);
   });
-  out.push(<Sequence key="cta-pop" from={sec(31.4) + 30} durationInFrames={20}><Audio src={staticFile('sfx/pop.wav')} volume={0.55} /></Sequence>);
+  out.push(<Sequence key="cta-pop" from={sec(31.4) + 25} durationInFrames={20}><Audio src={staticFile('sfx/pop.wav')} volume={0.55} /></Sequence>);
+  out.push(<Sequence key="cta-pop2" from={sec(31.4) + 150} durationInFrames={20}><Audio src={staticFile('sfx/pop.wav')} volume={0.45} /></Sequence>);
   out.push(<Sequence key="sh" from={sec(41)} durationInFrames={60}><Audio src={staticFile('sfx/shimmer.wav')} volume={0.45} /></Sequence>);
   return <>{out}</>;
 };
