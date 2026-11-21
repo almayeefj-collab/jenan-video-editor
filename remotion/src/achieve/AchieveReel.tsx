@@ -13,9 +13,9 @@ import {
 } from 'remotion';
 import {fontFamily} from '../reel/font';
 
-// ريل «ملف الإنجاز بالذكاء الاصطناعي» — بصورة حقيقية (مو كرتون)
-// نفس فكرة الفيديو المرجعي: واجهة لعبة + صندوق حوار + كتابة متحركة،
-// بس الشخصية صورة جنان الحقيقية، والختام يدعو تكتبين «ملف» عشان تتعلمين الطريقة.
+// ريل «ملف الإنجاز بالذكاء الاصطناعي» — بأسلوب جنان وصورتها الحقيقية.
+// الفكرة مستوحاة من فيديو مرجعي، بس النص والتصميم مختلفين:
+// سؤال افتتاحي → المشكلة → «أنا غيرت الطريقة» → ٣ خطوات → بدون كود → اكتبي «ملف».
 
 export const FPS = 30;
 export const WIDTH = 1080;
@@ -27,136 +27,109 @@ export type AchieveProps = {theme: ThemeName};
 type Theme = {
   bg1: string;
   bg2: string;
-  grid: string;
-  glow: string;
+  blobA: string;
+  blobB: string;
   accent: string;
+  onAccent: string;
   text: string;
   second: string;
-  box: string;
-  border: string;
-  wipe: string;
-  chip: string;
+  card: string;
+  line: string;
+  soft: string;
 };
 
 const THEMES: Record<ThemeName, Theme> = {
-  // وردي ناعم بطابع اللعبة (أقرب للفيديو الأصلي)
   pink: {
-    bg1: '#fdeef0', bg2: '#f6d3d9', grid: '#e7a0ab', glow: 'rgba(255,214,150,0.75)',
-    accent: '#e8697a', text: '#3a2a4c', second: '#7b5ca8', box: '#fffafa', border: '#8a6cb0',
-    wipe: '#2b2140', chip: '#ffe9ec',
+    bg1: '#fff4f5', bg2: '#fbdde3', blobA: 'rgba(240,120,150,0.35)', blobB: 'rgba(150,120,220,0.28)',
+    accent: '#e2577a', onAccent: '#ffffff', text: '#2e2140', second: '#7a5aa8', card: '#ffffff', line: '#f1c4cf', soft: '#ffe7ec',
   },
-  // كحلي وذهبي (نفس ألوان صورتج)
   navy: {
-    bg1: '#0a1736', bg2: '#13306e', grid: '#2c55b0', glow: 'rgba(90,150,255,0.55)',
-    accent: '#f2c14e', text: '#ffffff', second: '#9cc0ff', box: 'rgba(12,28,70,0.92)', border: '#5b86ea',
-    wipe: '#f2c14e', chip: 'rgba(255,255,255,0.1)',
+    bg1: '#081430', bg2: '#123072', blobA: 'rgba(70,130,255,0.45)', blobB: 'rgba(242,193,78,0.22)',
+    accent: '#f2c14e', onAccent: '#14213d', text: '#ffffff', second: '#a9c6ff', card: '#102a5e', line: '#2d55ad', soft: 'rgba(255,255,255,0.08)',
   },
-  // أبيض وأسود راقي (ستايل مجلة)
   clean: {
-    bg1: '#faf7f2', bg2: '#efe8dd', grid: '#ddd3c4', glow: 'rgba(214,180,140,0.55)',
-    accent: '#c4513f', text: '#1c1c1e', second: '#8a7358', box: '#ffffff', border: '#1c1c1e',
-    wipe: '#1c1c1e', chip: '#f3ece2',
+    bg1: '#fbf8f3', bg2: '#efe7db', blobA: 'rgba(214,170,120,0.35)', blobB: 'rgba(196,81,63,0.15)',
+    accent: '#c4513f', onAccent: '#ffffff', text: '#1c1c1e', second: '#8a7358', card: '#ffffff', line: '#e2d8c8', soft: '#f4ede3',
   },
 };
 
-type Visual = 'person' | 'scatter' | 'ai' | 'sort' | 'website' | 'cta' | 'end';
+type Visual = 'hook' | 'sources' | 'person' | 'chat' | 'sort' | 'phone' | 'nocode' | 'cta' | 'end';
 type Scene = {
-  from: number; // ثواني
+  from: number;
   to: number;
   kicker: string;
   headline: string;
   caption: string; // الكلمات بين [] تتلوّن
   visual: Visual;
-  person?: {scale: number; x: number};
+  step?: number;
 };
 
 const SCENES: Scene[] = [
-  {from: 0, to: 3.5, kicker: 'لين الحين', headline: 'ترتبين ملف الإنجاز بإيدج؟',
-    caption: 'لين الحين ترتبين [ملف] [الإنجاز] بإيدج؟', visual: 'person', person: {scale: 1, x: 0}},
-  {from: 3.5, to: 8.5, kicker: 'وبعدين', headline: 'تدورين الشواهد',
-    caption: 'وبعدين راح تدورين [الصور] [والشواهد] بكل مكان، وما تدرين من وين تبدين', visual: 'scatter'},
-  {from: 8.5, to: 12.5, kicker: 'بس الحين', headline: 'الذكاء الاصطناعي',
-    caption: 'بس الحين ممكن تعطين [الذكاء] [الاصطناعي] الشواهد والصور', visual: 'ai'},
-  {from: 12.5, to: 16, kicker: 'يقراها ويوزعها', headline: 'على المعايير',
-    caption: 'ويقراها ويوزعها على [المعايير] المطلوبة', visual: 'sort'},
-  {from: 16, to: 21, kicker: 'ويكتب لج', headline: 'وصف دقيق',
-    caption: 'ويكتب لج [وصف] [دقيق] لكل شاهد وصورة، ويكون [بأسلوبج] إنتي', visual: 'person', person: {scale: 0.98, x: 0}},
-  {from: 21, to: 26, kicker: 'وبدل ما يكون', headline: 'ورقي',
-    caption: 'وبدل ما يكون ورقي، ممكن يكون [موقع] بشخصيتج وألوانج الخاصة', visual: 'website'},
-  {from: 26, to: 30.5, kicker: 'وهذا كله', headline: 'بمساعدة الذكاء الاصطناعي',
-    caption: 'وهذا كله بمساعدة الذكاء الاصطناعي، بدون [كود] وبدون [برمجة]', visual: 'person', person: {scale: 1.05, x: 150}},
-  {from: 30.5, to: 35, kicker: 'وأنا', headline: 'سويت ملف إنجازي كذا',
-    caption: 'وأنا سويت [ملف] [إنجازي] بهالطريقة، وحابة أعلمج شلون', visual: 'person', person: {scale: 1.15, x: 0}},
-  {from: 35, to: 44, kicker: '', headline: 'دورج!',
-    caption: 'اكتبي كلمة [«ملف»] بالتعليقات، وأعلمج خطوة بخطوة شلون تسوين ملف إنجاز مثل ملفي', visual: 'cta', person: {scale: 1, x: 0}},
-  {from: 44, to: 47.5, kicker: '', headline: '', caption: '', visual: 'end'},
+  {from: 0, to: 3.6, kicker: 'سؤال صريح', headline: 'كم ليلة سهرتي على ملف الإنجاز؟',
+    caption: 'كم ليلة سهرتي وإنتي ترتبين [ملف] [الإنجاز]؟', visual: 'hook'},
+  {from: 3.6, to: 8.8, kicker: 'والمشكلة', headline: 'الشواهد متفرقة',
+    caption: 'صور بالجوال، شهادات بالإيميل، وأوراق بالدرج… وتجمعينها [ليلة] [التسليم]', visual: 'sources'},
+  {from: 8.8, to: 12.4, kicker: 'أنا شخصياً', headline: 'غيرت الطريقة كلها',
+    caption: 'أنا غيرت الطريقة كلها، وصار الذكاء الاصطناعي [مساعدي]', visual: 'person'},
+  {from: 12.4, to: 17.4, kicker: 'الخطوة ١', headline: 'أرفع الشواهد',
+    caption: 'أرفع كل الشواهد مرة وحدة، وأقوله [رتبها] على المعايير', visual: 'chat', step: 1},
+  {from: 17.4, to: 22.4, kicker: 'الخطوة ٢', headline: 'يصنّف ويكتب الوصف',
+    caption: 'يوزعها على [المعايير]، ويكتب وصف لكل شاهد [بأسلوبي] أنا', visual: 'sort', step: 2},
+  {from: 22.4, to: 27.4, kicker: 'الخطوة ٣', headline: 'رابط واحد بس',
+    caption: 'ويطلع لي ملف إنجاز [إلكتروني] بألواني، رابط واحد أرسله لأي أحد', visual: 'phone', step: 3},
+  {from: 27.4, to: 31.4, kicker: 'والأحلى', headline: 'بدون ولا سطر كود',
+    caption: 'وكل هذا بدون ما أكتب ولا سطر [كود]', visual: 'nocode'},
+  {from: 31.4, to: 41, kicker: 'تبين تسوين مثله؟', headline: 'اكتبي «ملف»',
+    caption: 'اكتبي [«ملف»] بالتعليقات، وأعلمج الطريقة [خطوة] [بخطوة]', visual: 'cta'},
+  {from: 41, to: 44.5, kicker: '', headline: '', caption: '', visual: 'end'},
 ];
 
 const NAME = 'أ. جنان المعيبف';
+const PHOTO = 'achieve/jenan_cut.png';
 const sec = (s: number) => Math.round(s * FPS);
 export const totalFrames = () => sec(SCENES[SCENES.length - 1].to);
-
-// انتقالات بالمربعات (مثل الأصلي) عند بداية هالمشاهد
-const WIPES = [2, 5, 8];
-
 const clamp = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
 
 /* ───────────── الخلفية ───────────── */
 
 const Background: React.FC<{t: Theme}> = ({t}) => {
   const f = useCurrentFrame();
-  const shift = (f * 2) % 80;
-  const lines: React.ReactNode[] = [];
-  // أرضية بمنظور (خطوط أفقية تتحرك للأمام + خطوط شعاعية)
-  for (let i = 0; i < 14; i++) {
-    const p = ((i * 80 + shift) / (14 * 80));
-    const y = 1500 + Math.pow(p, 1.9) * 420;
-    lines.push(<line key={'h' + i} x1={0} x2={1080} y1={y} y2={y} stroke={t.grid} strokeWidth={2} opacity={0.25 + p * 0.6} />);
-  }
-  for (let i = -12; i <= 12; i++) {
-    lines.push(<line key={'v' + i} x1={540 + i * 22} y1={1500} x2={540 + i * 190} y2={1920} stroke={t.grid} strokeWidth={2} opacity={0.55} />);
-  }
+  const blob = (c: string, x: number, y: number, r: number, sp: number) => (
+    <div style={{position: 'absolute', left: x + Math.sin(f / sp) * 80, top: y + Math.cos(f / (sp * 1.3)) * 60, width: r, height: r, borderRadius: '50%', background: c, filter: 'blur(90px)'}} />
+  );
   return (
-    <AbsoluteFill style={{background: `linear-gradient(180deg, ${t.bg1} 0%, ${t.bg2} 100%)`}}>
-      {/* نقاط صغيرة تلمع */}
-      {new Array(40).fill(0).map((_, i) => {
-        const x = random('sx' + i) * 1080;
-        const y = random('sy' + i) * 1450;
-        const tw = 0.25 + 0.75 * Math.abs(Math.sin(f / 18 + i));
-        return <div key={i} style={{position: 'absolute', left: x, top: y, width: 5, height: 5, borderRadius: 1, background: t.second, opacity: 0.25 * tw}} />;
-      })}
-      <svg width={1080} height={1920} style={{position: 'absolute'}}>
-        <line x1={0} x2={1080} y1={1500} y2={1500} stroke={t.grid} strokeWidth={3} />
-        {lines}
-      </svg>
+    <AbsoluteFill style={{background: `linear-gradient(160deg, ${t.bg1} 0%, ${t.bg2} 100%)`}}>
+      {blob(t.blobA, -150, 200, 700, 40)}
+      {blob(t.blobB, 550, 900, 750, 55)}
+      {blob(t.blobA, 300, 1500, 600, 47)}
+      {/* نقاط شبكة خفيفة */}
+      <AbsoluteFill style={{backgroundImage: `radial-gradient(${t.line} 2.5px, transparent 2.5px)`, backgroundSize: '48px 48px', opacity: 0.55,
+        WebkitMaskImage: 'linear-gradient(180deg, transparent 0%, #000 30%, #000 70%, transparent 100%)'}} />
     </AbsoluteFill>
   );
 };
 
-const TopHud: React.FC<{t: Theme}> = ({t}) => {
-  const f = useCurrentFrame();
-  const p = f / totalFrames();
-  return (
-    <div style={{position: 'absolute', top: 70, left: 50, right: 50, display: 'flex', alignItems: 'center', gap: 18, direction: 'ltr'}}>
-      <div style={{border: `3px solid ${t.border}`, borderRadius: 8, padding: '2px 12px', fontWeight: 900, fontSize: 26, color: t.text, background: t.box}}>LV 9</div>
-      <div style={{width: 330, height: 22, border: `3px solid ${t.border}`, borderRadius: 6, background: t.box, overflow: 'hidden'}}>
-        <div style={{width: `${p * 100}%`, height: '100%', background: `repeating-linear-gradient(90deg, ${t.accent} 0 14px, transparent 14px 18px)`}} />
-      </div>
-      <div style={{fontWeight: 800, fontSize: 22, color: t.accent}}>XP</div>
-      <div style={{flex: 1}} />
-      <div style={{fontWeight: 800, fontSize: 26, color: t.second, direction: 'rtl'}}>{NAME}</div>
-    </div>
-  );
-};
+/* ───────────── الشريط العلوي ───────────── */
 
-const Equalizer: React.FC<{t: Theme; active: boolean}> = ({t, active}) => {
+const TopBar: React.FC<{t: Theme}> = ({t}) => {
   const f = useCurrentFrame();
+  const cur = SCENES.find((s) => f >= sec(s.from) && f < sec(s.to));
+  const step = cur?.step ?? 0;
+  const done = f >= sec(SCENES[5].to);
   return (
-    <div style={{position: 'absolute', top: 1590, left: 60, right: 60, height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
-      {new Array(44).fill(0).map((_, i) => {
-        const n = active ? 0.25 + 0.75 * Math.abs(Math.sin(f / 3.1 + i * 1.7) * Math.cos(f / 5.3 + i * 0.6)) : 0.15;
-        return <div key={i} style={{width: 10, height: 8 + n * 50, background: t.accent, opacity: 0.85, borderRadius: 2}} />;
-      })}
+    <div style={{position: 'absolute', top: 80, left: 60, right: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between', direction: 'rtl'}}>
+      <div style={{display: 'flex', alignItems: 'center', gap: 14}}>
+        <div style={{width: 64, height: 64, borderRadius: 32, background: `url(${staticFile(PHOTO)}) 50% 8% / 230% ${t.soft}`, border: `3px solid ${t.accent}`}} />
+        <div style={{fontSize: 30, fontWeight: 800, color: t.text}}>{NAME}</div>
+      </div>
+      <div style={{display: 'flex', gap: 10, direction: 'rtl'}}>
+        {[1, 2, 3].map((n) => {
+          const on = done || step >= n;
+          return (
+            <div key={n} style={{width: on ? 56 : 18, height: 18, borderRadius: 9, background: on ? t.accent : t.line, transition: 'none'}} />
+          );
+        })}
+      </div>
     </div>
   );
 };
@@ -166,263 +139,321 @@ const Equalizer: React.FC<{t: Theme; active: boolean}> = ({t, active}) => {
 const parseWords = (s: string) =>
   s.split(' ').filter(Boolean).map((w) => (w.startsWith('[') ? {w: w.slice(1, -1), hi: true} : {w, hi: false}));
 
-const Headline: React.FC<{t: Theme; scene: Scene; local: number; dur: number}> = ({t, scene, local}) => {
+const Headline: React.FC<{t: Theme; scene: Scene; local: number}> = ({t, scene, local}) => {
   const {fps} = useVideoConfig();
-  const k = spring({frame: local, fps, config: {damping: 14}});
-  const h = spring({frame: local - 6, fps, config: {damping: 12, stiffness: 120}});
+  const k = spring({frame: local, fps, config: {damping: 16}});
+  const h = spring({frame: local - 5, fps, config: {damping: 14, stiffness: 110}});
   if (!scene.headline) return null;
-  const isCta = scene.visual === 'cta';
+  const isStep = !!scene.step;
+  const size = scene.headline.length > 18 ? 76 : scene.headline.length > 12 ? 92 : 118;
   return (
-    <div style={{position: 'absolute', top: isCta ? 230 : 250, left: 60, right: 60, textAlign: 'center', direction: 'rtl'}}>
-      {/* هالة خلف العنوان */}
-      <div style={{position: 'absolute', left: 140, right: 140, top: 10, height: 230, borderRadius: '50%', background: t.glow, filter: 'blur(60px)', opacity: 0.8}} />
-      {scene.kicker ? (
-        <div style={{position: 'relative', fontSize: 46, fontWeight: 700, color: t.accent, opacity: k, transform: `translateY(${(1 - k) * 20}px)`}}>{scene.kicker}</div>
-      ) : null}
-      <div style={{position: 'relative', fontSize: isCta ? 150 : scene.headline.length > 16 ? 74 : 96, fontWeight: 900, color: scene.visual === 'website' ? t.text : t.second, lineHeight: 1.25,
-        opacity: h, transform: `scale(${0.8 + 0.2 * h})`}}>
-        {scene.visual === 'website' ? <Strike t={t} local={local} text={scene.headline} /> : scene.headline}
+    <div style={{position: 'absolute', top: 210, left: 60, right: 60, textAlign: 'center', direction: 'rtl'}}>
+      <div style={{display: 'inline-block', fontSize: 38, fontWeight: 800, padding: '6px 26px', borderRadius: 40,
+        background: isStep ? t.accent : t.soft, color: isStep ? t.onAccent : t.accent, border: isStep ? 'none' : `2px solid ${t.line}`,
+        opacity: k, transform: `translateY(${(1 - k) * -20}px)`}}>{scene.kicker}</div>
+      <div style={{marginTop: 18, fontSize: size, fontWeight: 900, color: t.text, lineHeight: 1.2, opacity: h, transform: `translateY(${(1 - h) * 40}px)`}}>
+        {scene.headline}
       </div>
     </div>
   );
 };
 
-const Strike: React.FC<{t: Theme; local: number; text: string}> = ({t, local, text}) => {
-  const p = interpolate(local, [40, 52], [0, 1], clamp);
-  const {fps} = useVideoConfig();
-  const s = spring({frame: local - 54, fps, config: {damping: 10}});
-  return (
-    <span style={{position: 'relative', display: 'inline-block'}}>
-      <span style={{opacity: 1 - p * 0.45}}>{text}</span>
-      <span style={{position: 'absolute', right: 0, top: '52%', height: 10, width: `${p * 100}%`, background: t.accent, borderRadius: 5}} />
-      <div style={{position: 'absolute', left: '50%', top: '118%', transform: `translateX(-50%) scale(${s})`, whiteSpace: 'nowrap', fontSize: 88, color: t.accent}}>موقع بشخصيتج!</div>
-    </span>
-  );
-};
-
-const Avatar: React.FC<{t: Theme; size: number}> = ({t, size}) => (
-  <div style={{width: size, height: size, borderRadius: 14, border: `4px solid ${t.border}`, background: `${t.chip} url(${staticFile('achieve/jenan_cut.png')})`,
-    backgroundSize: '230%', backgroundPosition: '50% 8%', flexShrink: 0}} />
-);
-
-const DialogBox: React.FC<{t: Theme; scene: Scene; local: number; dur: number}> = ({t, scene, local, dur}) => {
-  const words = parseWords(scene.caption);
-  const shown = interpolate(local, [3, Math.max(6, dur * 0.72)], [0, words.length], clamp);
-  const blink = Math.floor(local / 8) % 2 === 0;
+// ترجمة بأسلوب الريلز: الكلمة الحالية تكبر وتتلون
+const Captions: React.FC<{t: Theme; scene: Scene; local: number; dur: number}> = ({t, scene, local, dur}) => {
   if (!scene.caption) return null;
+  const words = parseWords(scene.caption);
+  const shown = interpolate(local, [4, Math.max(8, dur * 0.75)], [0, words.length], clamp);
+  const cur = Math.floor(shown);
   return (
-    <div style={{position: 'absolute', top: 1290, left: 50, right: 50, height: 200, background: t.box, border: `5px solid ${t.border}`, borderRadius: 18,
-      boxShadow: `8px 8px 0 ${t.grid}`, display: 'flex', alignItems: 'center', gap: 26, padding: '0 34px', direction: 'rtl'}}>
-      <div style={{position: 'absolute', top: -26, right: 34, background: t.accent, color: '#fff', fontWeight: 900, fontSize: 24, padding: '2px 18px', borderRadius: 8}}>جنان</div>
-      <div style={{flex: 1, fontSize: 44, fontWeight: 700, color: t.text, lineHeight: 1.45}}>
+    <div style={{position: 'absolute', top: 1560, left: 60, right: 60, direction: 'rtl', textAlign: 'center', fontSize: 50, fontWeight: 800, lineHeight: 1.55}}>
+      <span style={{background: t.card, boxShadow: `0 10px 40px rgba(0,0,0,0.12)`, padding: '10px 26px', borderRadius: 22, boxDecorationBreak: 'clone', WebkitBoxDecorationBreak: 'clone'}}>
         {words.map((w, i) => {
           const o = Math.max(0, Math.min(1, shown - i));
-          if (o <= 0) return null;
+          const active = i === cur || (i === words.length - 1 && cur >= words.length);
           return (
-            <span key={i} style={{opacity: o, color: w.hi ? t.accent : t.text, textDecoration: w.hi ? `underline dotted ${t.accent}` : undefined, textUnderlineOffset: 10}}>
-              {w.w}{' '}
-            </span>
+            <span key={i} style={{opacity: 0.18 + 0.82 * o, color: w.hi && o > 0 ? t.accent : t.text, display: 'inline-block',
+              transform: `scale(${active && o > 0 ? 1.08 : 1})`, margin: '0 6px'}}>{w.w}</span>
           );
         })}
-        <span style={{display: 'inline-block', width: 12, height: 40, background: t.accent, opacity: blink ? 1 : 0, verticalAlign: 'middle'}} />
-      </div>
-      <Avatar t={t} size={140} />
+      </span>
     </div>
   );
 };
 
-/* ───────────── الأيقونات (رسومات مسطحة مو كرتون) ───────────── */
+/* ───────────── عناصر مرسومة ───────────── */
 
-const PhotoCard: React.FC<{t: Theme; size?: number; hue?: number}> = ({t, size = 170, hue = 0}) => (
-  <svg width={size} height={size * 1.12} viewBox="0 0 100 112">
-    <rect x={3} y={3} width={94} height={106} rx={6} fill="#fff" stroke={t.border} strokeWidth={3} />
-    <rect x={11} y={11} width={78} height={66} rx={3} fill={`hsl(${200 + hue},70%,80%)`} />
-    <circle cx={70} cy={28} r={8} fill="#ffd36b" />
-    <path d="M11 77 L38 46 L56 66 L66 56 L89 77 Z" fill={`hsl(${150 + hue},40%,55%)`} />
-    <rect x={18} y={88} width={64} height={6} rx={3} fill={t.grid} />
+const Card: React.FC<{t: Theme; w: number; h?: number; children?: React.ReactNode; style?: React.CSSProperties}> = ({t, w, h, children, style}) => (
+  <div style={{width: w, height: h, background: t.card, borderRadius: 28, boxShadow: '0 20px 60px rgba(0,0,0,0.15)', border: `2px solid ${t.line}`, ...style}}>{children}</div>
+);
+
+const Thumb: React.FC<{hue: number; size: number}> = ({hue, size}) => (
+  <svg width={size} height={size} viewBox="0 0 100 100">
+    <rect width={100} height={100} rx={14} fill={`hsl(${200 + hue},70%,82%)`} />
+    <circle cx={72} cy={28} r={10} fill="#ffd36b" />
+    <path d="M0 100 L0 78 L32 44 L56 70 L70 56 L100 84 L100 100 Z" fill={`hsl(${150 + hue},40%,55%)`} />
   </svg>
 );
-
-const Certificate: React.FC<{t: Theme; size?: number}> = ({t, size = 190}) => (
-  <svg width={size} height={size * 0.8} viewBox="0 0 120 96">
-    <rect x={3} y={3} width={114} height={80} rx={6} fill="#fffdf6" stroke={t.border} strokeWidth={3} />
-    <rect x={10} y={10} width={100} height={66} rx={3} fill="none" stroke="#e3c27a" strokeWidth={2} />
-    <rect x={30} y={22} width={60} height={6} rx={3} fill={t.second} />
-    <rect x={22} y={36} width={76} height={4} rx={2} fill={t.grid} />
-    <rect x={22} y={46} width={60} height={4} rx={2} fill={t.grid} />
-    <circle cx={92} cy={70} r={14} fill="#e9b949" stroke="#c48f1d" strokeWidth={3} />
-    <path d="M84 80 L80 94 L88 90 L92 96 L94 82 Z" fill={t.accent} />
-  </svg>
-);
-
-const AIChip: React.FC<{t: Theme; size?: number; glow?: number}> = ({t, size = 260, glow = 1}) => (
-  <svg width={size} height={size} viewBox="0 0 120 120" style={{filter: `drop-shadow(0 0 ${20 * glow}px ${t.accent})`}}>
-    {[30, 50, 70, 90].map((p) => (
-      <g key={p}>
-        <rect x={p - 3} y={4} width={6} height={14} rx={2} fill={t.border} />
-        <rect x={p - 3} y={102} width={6} height={14} rx={2} fill={t.border} />
-        <rect x={4} y={p - 3} width={14} height={6} rx={2} fill={t.border} />
-        <rect x={102} y={p - 3} width={14} height={6} rx={2} fill={t.border} />
-      </g>
-    ))}
-    <rect x={16} y={16} width={88} height={88} rx={16} fill={t.second} stroke={t.border} strokeWidth={4} />
-    <text x={60} y={74} textAnchor="middle" fontSize={40} fontWeight={900} fill="#fff" fontFamily="Cairo">AI</text>
-    <path d="M88 28 l3 8 l8 3 l-8 3 l-3 8 l-3 -8 l-8 -3 l8 -3 z" fill="#ffd36b" />
-  </svg>
-);
-
-const Folder: React.FC<{color: string; label: string; t: Theme; count: number}> = ({color, label, t, count}) => (
-  <div style={{position: 'relative', width: 250, height: 230}}>
-    <svg width={250} height={200} viewBox="0 0 125 100" style={{position: 'absolute', bottom: 0}}>
-      <path d="M4 18 Q4 10 12 10 L44 10 L54 20 L113 20 Q121 20 121 28 L121 90 Q121 96 115 96 L10 96 Q4 96 4 90 Z" fill={color} stroke={t.border} strokeWidth={3} />
-      <rect x={4} y={32} width={117} height={64} rx={6} fill={color} stroke={t.border} strokeWidth={3} style={{filter: 'brightness(1.12)'}} />
-    </svg>
-    <div style={{position: 'absolute', bottom: 40, width: '100%', textAlign: 'center', fontSize: 34, fontWeight: 900, color: '#fff', direction: 'rtl'}}>{label}</div>
-    <div style={{position: 'absolute', top: 16, left: 14, background: '#fff', border: `3px solid ${t.border}`, borderRadius: 20, minWidth: 44, textAlign: 'center', fontWeight: 900, fontSize: 26, color: t.text}}>{count}</div>
-  </div>
-);
-
-const Laptop: React.FC<{t: Theme; local: number}> = ({t, local}) => {
-  const {fps} = useVideoConfig();
-  const build = (d: number) => spring({frame: local - 58 - d, fps, config: {damping: 13}});
-  const sw = ['#e8697a', '#7b5ca8', '#f2c14e', '#5fb7a3'];
-  return (
-    <div style={{position: 'relative', width: 640, height: 450}}>
-      <div style={{position: 'absolute', left: 40, right: 40, top: 0, height: 380, background: '#2b2140', borderRadius: 22, padding: 18}}>
-        <div style={{width: '100%', height: '100%', background: '#fff', borderRadius: 10, overflow: 'hidden', direction: 'rtl', padding: 18, boxSizing: 'border-box'}}>
-          <div style={{display: 'flex', gap: 8, transform: `scaleX(${build(0)})`, transformOrigin: 'right'}}>
-            <div style={{width: 60, height: 60, borderRadius: 30, background: `url(${staticFile('achieve/jenan_cut.png')}) 50% 8% / 230% ${t.chip}`}} />
-            <div style={{flex: 1}}>
-              <div style={{fontSize: 24, fontWeight: 900, color: t.text}}>ملف إنجاز {NAME}</div>
-              <div style={{height: 8, width: '60%', background: t.grid, borderRadius: 4, marginTop: 6}} />
-            </div>
-          </div>
-          <div style={{display: 'flex', gap: 12, marginTop: 18}}>
-            {[0, 1, 2].map((i) => (
-              <div key={i} style={{flex: 1, height: 150, borderRadius: 10, background: sw[i], opacity: 0.9 * build(6 + i * 5), transform: `translateY(${(1 - build(6 + i * 5)) * 40}px)`}} />
-            ))}
-          </div>
-          <div style={{display: 'flex', gap: 10, marginTop: 16, transform: `scale(${build(24)})`, transformOrigin: 'right'}}>
-            {sw.map((c) => <div key={c} style={{width: 36, height: 36, borderRadius: 18, background: c, border: '3px solid #fff', boxShadow: '0 0 0 2px #ccc'}} />)}
-          </div>
-        </div>
-      </div>
-      <div style={{position: 'absolute', left: 0, right: 0, bottom: 30, height: 40, background: t.border, borderRadius: '0 0 30px 30px'}} />
-    </div>
-  );
-};
-
-/* ───────────── المشاهد ───────────── */
-
-const Person: React.FC<{t: Theme; scene: Scene; local: number; dur: number}> = ({t, scene, local, dur}) => {
-  const {fps} = useVideoConfig();
-  const inn = spring({frame: local, fps, config: {damping: 15}});
-  const out = interpolate(local, [dur - 6, dur], [1, 1], clamp);
-  const pp = scene.person ?? {scale: 1, x: 0};
-  const zoom = interpolate(local, [0, dur], [pp.scale, pp.scale + 0.05]);
-  const bob = Math.sin(local / 14) * 6;
-  const h = scene.visual === 'cta' ? 600 : 700;
-  return (
-    <div style={{position: 'absolute', left: 0, right: 0, bottom: 1920 - 1300, display: 'flex', justifyContent: 'center', opacity: inn * out}}>
-      <div style={{position: 'absolute', bottom: 60, width: 620, height: 520, borderRadius: '50%', background: t.glow, filter: 'blur(70px)'}} />
-      <Img src={staticFile('achieve/jenan_cut.png')} style={{height: h, transform: `translate(${pp.x}px, ${bob + (1 - inn) * 80}px) scale(${zoom})`, transformOrigin: 'bottom center',
-        filter: 'drop-shadow(0 18px 30px rgba(0,0,0,0.25))', WebkitMaskImage: 'linear-gradient(180deg, #000 82%, transparent 100%)'}} />
-    </div>
-  );
-};
 
 const Pop: React.FC<{delay: number; local: number; x: number; y: number; rot?: number; children: React.ReactNode}> = ({delay, local, x, y, rot = 0, children}) => {
   const {fps} = useVideoConfig();
-  const s = spring({frame: local - delay, fps, config: {damping: 9, stiffness: 140}});
-  const bob = Math.sin((local + delay * 3) / 12) * 8;
-  return <div style={{position: 'absolute', left: x, top: y + bob, transform: `translate(-50%,-50%) scale(${s}) rotate(${rot * s}deg)`}}>{children}</div>;
+  const s = spring({frame: local - delay, fps, config: {damping: 11, stiffness: 140}});
+  const bob = Math.sin((local + delay * 3) / 14) * 7;
+  return <div style={{position: 'absolute', left: x, top: y + bob, transform: `translate(-50%,-50%) scale(${s}) rotate(${rot * s}deg)`, opacity: Math.min(1, s * 1.5)}}>{children}</div>;
+};
+
+const Person: React.FC<{t: Theme; local: number; dur: number; scale?: number; x?: number; height?: number}> = ({t, local, dur, scale = 1, x = 0, height = 760}) => {
+  const {fps} = useVideoConfig();
+  const inn = spring({frame: local, fps, config: {damping: 16}});
+  const zoom = interpolate(local, [0, dur], [scale, scale + 0.04]);
+  return (
+    <div style={{position: 'absolute', left: 0, right: 0, top: 1530 - height, height, display: 'flex', justifyContent: 'center', opacity: inn}}>
+      <Img src={staticFile(PHOTO)} style={{height, transform: `translate(${x}px, ${(1 - inn) * 60}px) scale(${zoom})`, transformOrigin: 'bottom center',
+        filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.25))', WebkitMaskImage: 'linear-gradient(180deg, #000 84%, transparent 100%)'}} />
+    </div>
+  );
+};
+
+const Clock: React.FC<{t: Theme; local: number}> = ({t, local}) => (
+  <svg width={190} height={190} viewBox="0 0 100 100">
+    <circle cx={50} cy={50} r={44} fill={t.card} stroke={t.accent} strokeWidth={6} />
+    {new Array(12).fill(0).map((_, i) => (
+      <line key={i} x1={50} y1={12} x2={50} y2={18} stroke={t.text} strokeWidth={3} transform={`rotate(${i * 30} 50 50)`} />
+    ))}
+    <line x1={50} y1={50} x2={50} y2={26} stroke={t.text} strokeWidth={5} strokeLinecap="round" transform={`rotate(${local * 2} 50 50)`} />
+    <line x1={50} y1={50} x2={50} y2={18} stroke={t.accent} strokeWidth={3} strokeLinecap="round" transform={`rotate(${local * 24} 50 50)`} />
+    <text x={50} y={78} textAnchor="middle" fontSize={11} fontWeight={800} fill={t.second} fontFamily="Cairo">3:00 AM</text>
+  </svg>
+);
+
+/* ───────────── المشاهد ───────────── */
+
+const SourceCard: React.FC<{t: Theme; label: string; kind: 'phone' | 'mail' | 'drawer'}> = ({t, label, kind}) => (
+  <Card t={t} w={290} h={330} style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 18}}>
+    <svg width={150} height={150} viewBox="0 0 100 100">
+      {kind === 'phone' && (
+        <>
+          <rect x={26} y={4} width={48} height={92} rx={10} fill={t.text} />
+          <rect x={30} y={12} width={40} height={74} rx={4} fill={t.soft} />
+          <rect x={33} y={16} width={16} height={16} rx={3} fill="#9cd3f0" /><rect x={51} y={16} width={16} height={16} rx={3} fill="#f6b7c5" />
+          <rect x={33} y={34} width={16} height={16} rx={3} fill="#b9e3b0" /><rect x={51} y={34} width={16} height={16} rx={3} fill="#ffd98a" />
+          <rect x={33} y={52} width={16} height={16} rx={3} fill="#c9b7f0" />
+        </>
+      )}
+      {kind === 'mail' && (
+        <>
+          <rect x={22} y={10} width={56} height={46} rx={4} fill="#fffdf4" stroke="#e3c27a" strokeWidth={3} />
+          <circle cx={64} cy={44} r={7} fill="#e9b949" />
+          <rect x={30} y={20} width={30} height={4} rx={2} fill={t.second} />
+          <rect x={8} y={40} width={84} height={54} rx={8} fill={t.accent} />
+          <path d="M8 44 L50 72 L92 44" fill="none" stroke={t.onAccent} strokeWidth={4} />
+        </>
+      )}
+      {kind === 'drawer' && (
+        <>
+          <rect x={18} y={8} width={44} height={30} rx={2} fill="#fff" stroke={t.line} strokeWidth={2} transform="rotate(-10 40 23)" />
+          <rect x={34} y={6} width={44} height={30} rx={2} fill="#fff" stroke={t.line} strokeWidth={2} transform="rotate(8 56 21)" />
+          <rect x={8} y={34} width={84} height={60} rx={8} fill={t.second} />
+          <rect x={36} y={58} width={28} height={8} rx={4} fill={t.card} />
+        </>
+      )}
+    </svg>
+    <div style={{fontSize: 40, fontWeight: 900, color: t.text}}>{label}</div>
+  </Card>
+);
+
+const ChatWindow: React.FC<{t: Theme; local: number}> = ({t, local}) => {
+  const {fps} = useVideoConfig();
+  const s1 = spring({frame: local - 8, fps, config: {damping: 14}});
+  const prompt = 'رتبها على معايير ملف الإنجاز';
+  const typed = Math.floor(interpolate(local, [40, 80], [0, prompt.length], clamp));
+  const s2 = spring({frame: local - 95, fps, config: {damping: 12}});
+  const dots = local > 82 && local < 95;
+  return (
+    <div style={{position: 'absolute', top: 560, left: 90, right: 90, transform: `translateY(${(1 - s1) * 80}px)`, opacity: s1}}>
+      <Card t={t} w={900} h={640} style={{padding: 34, boxSizing: 'border-box', direction: 'rtl', display: 'flex', flexDirection: 'column', gap: 26}}>
+        <div style={{display: 'flex', alignItems: 'center', gap: 14, borderBottom: `2px solid ${t.line}`, paddingBottom: 18}}>
+          <div style={{width: 56, height: 56, borderRadius: 16, background: t.accent, color: t.onAccent, fontWeight: 900, fontSize: 26, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>AI</div>
+          <div style={{fontSize: 34, fontWeight: 800, color: t.text}}>مساعدي الذكي</div>
+        </div>
+        {/* رسالتي */}
+        <div style={{alignSelf: 'flex-start', background: t.soft, borderRadius: '26px 26px 26px 6px', padding: 22, maxWidth: 680}}>
+          <div style={{display: 'flex', gap: 12, marginBottom: 14}}>
+            {[0, 1, 2, 3, 4].map((i) => {
+              const s = spring({frame: local - 14 - i * 5, fps, config: {damping: 10}});
+              return <div key={i} style={{transform: `scale(${s})`}}><Thumb hue={i * 45} size={96} /></div>;
+            })}
+          </div>
+          <div style={{fontSize: 22, fontWeight: 700, color: t.second, marginBottom: 6}}>+١٢ شاهد</div>
+          <div style={{fontSize: 38, fontWeight: 800, color: t.text, minHeight: 52}}>{prompt.slice(0, typed)}<span style={{opacity: local % 16 < 8 && typed < prompt.length ? 1 : 0, color: t.accent}}>|</span></div>
+        </div>
+        {/* رده */}
+        {dots ? <div style={{alignSelf: 'flex-end', fontSize: 50, color: t.second, letterSpacing: 6}}>{'•'.repeat(1 + (Math.floor(local / 4) % 3))}</div> : null}
+        <div style={{alignSelf: 'flex-end', background: t.accent, color: t.onAccent, borderRadius: '26px 26px 6px 26px', padding: '20px 28px', fontSize: 38, fontWeight: 800,
+          transform: `scale(${s2})`, transformOrigin: 'left bottom'}}>
+          تم ✓ رتبتها على ٣ معايير
+        </div>
+      </Card>
+    </div>
+  );
+};
+
+const SortBoard: React.FC<{t: Theme; local: number}> = ({t, local}) => {
+  const {fps} = useVideoConfig();
+  const cols = [t.accent, t.second, '#e3a93c'];
+  const desc = 'شاركت في ورشة «التعلم النشط» وطبقت استراتيجياتها مع طالباتي…';
+  const typed = Math.floor(interpolate(local, [55, 120], [0, desc.length], clamp));
+  const s = spring({frame: local - 45, fps, config: {damping: 13}});
+  return (
+    <>
+      <div style={{position: 'absolute', top: 560, left: 70, right: 70, display: 'flex', gap: 24, direction: 'rtl'}}>
+        {cols.map((c, i) => {
+          const sp = spring({frame: local - 4 - i * 5, fps, config: {damping: 13}});
+          const n = Math.min(3, Math.max(0, Math.floor((local - 12 - i * 4) / 9)));
+          return (
+            <Card key={i} t={t} w={300} h={330} style={{transform: `translateY(${(1 - sp) * 60}px)`, opacity: sp, padding: 20, boxSizing: 'border-box'}}>
+              <div style={{background: c, color: '#fff', borderRadius: 14, textAlign: 'center', fontSize: 32, fontWeight: 900, padding: '6px 0'}}>المعيار {['١', '٢', '٣'][i]}</div>
+              <div style={{display: 'flex', flexWrap: 'wrap', gap: 10, marginTop: 16, justifyContent: 'center'}}>
+                {new Array(n).fill(0).map((_, k) => <Thumb key={k} hue={i * 60 + k * 25} size={110} />)}
+              </div>
+            </Card>
+          );
+        })}
+      </div>
+      <div style={{position: 'absolute', top: 940, left: 90, right: 90, transform: `scale(${s})`, direction: 'rtl'}}>
+        <Card t={t} w={900} style={{padding: '26px 34px', boxSizing: 'border-box', border: `3px solid ${t.accent}`}}>
+          <div style={{display: 'flex', alignItems: 'center', gap: 16}}>
+            <Thumb hue={20} size={110} />
+            <div style={{flex: 1}}>
+              <div style={{fontSize: 26, fontWeight: 800, color: t.accent}}>وصف الشاهد · بأسلوبج</div>
+              <div style={{fontSize: 34, fontWeight: 700, color: t.text, lineHeight: 1.45, minHeight: 100}}>{desc.slice(0, typed)}</div>
+            </div>
+          </div>
+        </Card>
+      </div>
+    </>
+  );
+};
+
+const PhoneSite: React.FC<{t: Theme; local: number}> = ({t, local}) => {
+  const {fps} = useVideoConfig();
+  const s = spring({frame: local - 4, fps, config: {damping: 14}});
+  const scroll = interpolate(local, [30, 120], [0, -330], clamp);
+  const link = spring({frame: local - 70, fps, config: {damping: 10}});
+  const sw = [t.accent, t.second, '#e3a93c'];
+  return (
+    <>
+      <div style={{position: 'absolute', left: 540, top: 590, transform: `translateX(-50%) translateY(${(1 - s) * 120}px) rotate(${-4 * s}deg)`, opacity: s}}>
+        <div style={{width: 430, height: 860, background: '#111', borderRadius: 64, padding: 16, boxShadow: '0 30px 80px rgba(0,0,0,0.35)'}}>
+          <div style={{width: '100%', height: '100%', borderRadius: 50, overflow: 'hidden', background: '#fff', direction: 'rtl', position: 'relative'}}>
+            <div style={{transform: `translateY(${scroll}px)`}}>
+              <div style={{height: 300, background: `linear-gradient(160deg, ${sw[0]}, ${sw[1]})`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10}}>
+                <div style={{width: 130, height: 130, borderRadius: 65, border: '5px solid #fff', background: `url(${staticFile(PHOTO)}) 50% 8% / 230% #fff`}} />
+                <div style={{color: '#fff', fontSize: 30, fontWeight: 900}}>ملف إنجاز {NAME}</div>
+              </div>
+              {['المعيار الأول', 'المعيار الثاني', 'المعيار الثالث', 'الشهادات'].map((h, i) => (
+                <div key={h} style={{margin: '22px 22px 0', padding: 18, borderRadius: 20, background: '#f7f3f6'}}>
+                  <div style={{fontSize: 26, fontWeight: 900, color: sw[i % 3]}}>{h}</div>
+                  <div style={{display: 'flex', gap: 10, marginTop: 10}}>
+                    {[0, 1, 2].map((k) => <Thumb key={k} hue={i * 50 + k * 30} size={105} />)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style={{position: 'absolute', top: 1330, left: 0, right: 0, display: 'flex', justifyContent: 'center', transform: `scale(${link})`}}>
+        <div style={{background: t.accent, color: t.onAccent, borderRadius: 40, padding: '12px 34px', fontSize: 38, fontWeight: 900, direction: 'rtl', boxShadow: '0 14px 40px rgba(0,0,0,0.2)'}}>
+          رابط ملف الإنجاز ↗
+        </div>
+      </div>
+    </>
+  );
+};
+
+const NoCodeBadge: React.FC<{t: Theme; local: number}> = ({t, local}) => {
+  const {fps} = useVideoConfig();
+  const s = spring({frame: local - 25, fps, config: {damping: 10}});
+  const n = Math.round(interpolate(local, [30, 60], [999, 0], clamp));
+  return (
+    <div style={{position: 'absolute', top: 620, right: 60, transform: `scale(${s}) rotate(6deg)`, direction: 'rtl'}}>
+      <Card t={t} w={330} style={{padding: '22px 26px', boxSizing: 'border-box', textAlign: 'center', border: `3px solid ${t.accent}`}}>
+        <div style={{fontSize: 30, fontWeight: 800, color: t.second}}>أسطر الكود</div>
+        <div style={{fontSize: 110, fontWeight: 900, color: t.accent, lineHeight: 1.1}}>{n}</div>
+      </Card>
+    </div>
+  );
+};
+
+const CtaExtras: React.FC<{t: Theme; local: number}> = ({t, local}) => {
+  const {fps} = useVideoConfig();
+  const s = spring({frame: local - 30, fps, config: {damping: 10}});
+  // تعليق وهمي ينكتب
+  const typed = Math.floor(interpolate(local, [45, 60], [0, 3], clamp));
+  return (
+    <div style={{position: 'absolute', top: 540, left: 0, right: 0, display: 'flex', justifyContent: 'center', transform: `scale(${s})`, direction: 'rtl'}}>
+      <Card t={t} w={620} style={{padding: '18px 26px', boxSizing: 'border-box', display: 'flex', alignItems: 'center', gap: 18}}>
+        <div style={{width: 60, height: 60, borderRadius: 30, background: t.soft, border: `2px solid ${t.line}`}} />
+        <div style={{flex: 1, fontSize: 42, fontWeight: 800, color: t.text}}>{'ملف'.slice(0, typed)}<span style={{color: t.accent, opacity: local % 16 < 8 ? 1 : 0}}>|</span></div>
+        <div style={{background: t.accent, color: t.onAccent, borderRadius: 30, padding: '6px 22px', fontSize: 30, fontWeight: 900}}>نشر</div>
+      </Card>
+    </div>
+  );
+};
+
+const EndCard: React.FC<{t: Theme; local: number}> = ({t, local}) => {
+  const {fps} = useVideoConfig();
+  const s = spring({frame: local, fps, config: {damping: 13}});
+  const fade = interpolate(local, [80, 105], [1, 0], clamp);
+  return (
+    <AbsoluteFill style={{alignItems: 'center', justifyContent: 'center', direction: 'rtl', opacity: fade}}>
+      <div style={{transform: `scale(${s})`, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24}}>
+        <div style={{width: 320, height: 320, borderRadius: 160, border: `8px solid ${t.accent}`, background: `url(${staticFile(PHOTO)}) 50% 10% / 200% ${t.soft}`}} />
+        <div style={{fontSize: 82, fontWeight: 900, color: t.text}}>{NAME}</div>
+        <div style={{fontSize: 44, fontWeight: 700, color: t.second}}>ملف الإنجاز بالذكاء الاصطناعي</div>
+        <div style={{marginTop: 16, background: t.accent, color: t.onAccent, fontSize: 48, fontWeight: 900, padding: '12px 44px', borderRadius: 40}}>اكتبي «ملف» بالتعليقات</div>
+      </div>
+    </AbsoluteFill>
+  );
 };
 
 const SceneVisual: React.FC<{t: Theme; scene: Scene; local: number; dur: number}> = ({t, scene, local, dur}) => {
-  const {fps} = useVideoConfig();
   switch (scene.visual) {
+    case 'hook':
+      return (
+        <>
+          <Person t={t} local={local} dur={dur} />
+          <Pop delay={14} local={local} x={850} y={800} rot={8}><Clock t={t} local={local} /></Pop>
+        </>
+      );
+    case 'sources':
+      return (
+        <>
+          <Pop delay={8} local={local} x={810} y={800} rot={6}><SourceCard t={t} label="الجوال" kind="phone" /></Pop>
+          <Pop delay={30} local={local} x={270} y={900} rot={-6}><SourceCard t={t} label="الإيميل" kind="mail" /></Pop>
+          <Pop delay={52} local={local} x={560} y={1220} rot={3}><SourceCard t={t} label="الدرج" kind="drawer" /></Pop>
+        </>
+      );
     case 'person':
+      return <Person t={t} local={local} dur={dur} scale={1.05} />;
+    case 'chat':
+      return <ChatWindow t={t} local={local} />;
+    case 'sort':
+      return <SortBoard t={t} local={local} />;
+    case 'phone':
+      return <PhoneSite t={t} local={local} />;
+    case 'nocode':
       return (
         <>
-          <Person t={t} scene={scene} local={local} dur={dur} />
-          {scene.headline.startsWith('ترتبين') ? (
-            <Pop delay={14} local={local} x={880} y={760} rot={10}><Folder color={t.accent} label="" t={t} count={0} /></Pop>
-          ) : null}
-          {scene.headline === 'وصف دقيق' ? <Chips t={t} local={local} items={['لكل شاهد', 'وصورة', 'بأسلوبج إنتي']} /> : null}
-          {scene.headline.startsWith('بمساعدة') ? <ZeroCard t={t} local={local} /> : null}
-          {scene.headline.startsWith('سويت') ? (
-            <Pop delay={20} local={local} x={870} y={800} rot={-8}><Certificate t={t} size={220} /></Pop>
-          ) : null}
+          <Person t={t} local={local} dur={dur} x={-120} />
+          <NoCodeBadge t={t} local={local} />
         </>
-      );
-    case 'scatter': {
-      const items = [
-        {x: 260, y: 640, r: -12, d: 6, el: <PhotoCard t={t} hue={0} />},
-        {x: 790, y: 690, r: 10, d: 14, el: <Certificate t={t} />},
-        {x: 540, y: 900, r: -4, d: 24, el: <PhotoCard t={t} hue={60} size={200} />},
-        {x: 230, y: 1080, r: 8, d: 34, el: <Certificate t={t} size={170} />},
-        {x: 850, y: 1060, r: -10, d: 44, el: <PhotoCard t={t} hue={120} />},
-        {x: 560, y: 1180, r: 14, d: 56, el: <PhotoCard t={t} hue={250} size={140} />},
-      ];
-      return <>{items.map((it, i) => <Pop key={i} delay={it.d} local={local} x={it.x} y={it.y} rot={it.r}>{it.el}</Pop>)}</>;
-    }
-    case 'ai': {
-      const pulse = 0.6 + 0.4 * Math.abs(Math.sin(local / 8));
-      return (
-        <>
-          <Pop delay={4} local={local} x={540} y={900}><AIChip t={t} size={320} glow={pulse} /></Pop>
-          {[0, 1, 2, 3, 4, 5].map((i) => {
-            const start = 18 + i * 12;
-            const p = interpolate(local, [start, start + 22], [0, 1], clamp);
-            const ang = (i / 6) * Math.PI * 2 + 0.4;
-            const x = 540 + Math.cos(ang) * 470 * (1 - p);
-            const y = 900 + Math.sin(ang) * 420 * (1 - p);
-            return (
-              <div key={i} style={{position: 'absolute', left: x, top: y, transform: `translate(-50%,-50%) scale(${1 - p * 0.75}) rotate(${(1 - p) * 30}deg)`, opacity: local < start ? 0 : 1 - p * 0.9}}>
-                {i % 2 ? <Certificate t={t} size={150} /> : <PhotoCard t={t} size={130} hue={i * 40} />}
-              </div>
-            );
-          })}
-        </>
-      );
-    }
-    case 'sort': {
-      const cols = [
-        {x: 220, c: t.accent, l: 'معيار ١'},
-        {x: 540, c: t.second, l: 'معيار ٢'},
-        {x: 860, c: '#e3a93c', l: 'معيار ٣'},
-      ];
-      return (
-        <>
-          <Pop delay={0} local={local} x={540} y={640}><AIChip t={t} size={170} glow={0.6} /></Pop>
-          {cols.map((c, i) => (
-            <Pop key={i} delay={6 + i * 5} local={local} x={c.x} y={1080}>
-              <Folder color={c.c} label={c.l} t={t} count={Math.min(3, Math.max(0, Math.floor((local - 20 - i * 6) / 14)))} />
-            </Pop>
-          ))}
-          {new Array(9).fill(0).map((_, k) => {
-            const col = k % 3;
-            const start = 20 + col * 6 + Math.floor(k / 3) * 14;
-            const p = interpolate(local, [start, start + 14], [0, 1], clamp);
-            if (p <= 0 || p >= 1) return null;
-            const x = interpolate(p, [0, 1], [540, cols[col].x]);
-            const y = interpolate(p, [0, 1], [700, 1030]) - Math.sin(p * Math.PI) * 120;
-            return <div key={k} style={{position: 'absolute', left: x, top: y, transform: 'translate(-50%,-50%) scale(0.55)'}}><PhotoCard t={t} size={140} hue={k * 30} /></div>;
-          })}
-        </>
-      );
-    }
-    case 'website':
-      return (
-        <div style={{position: 'absolute', left: 220, top: 760, transform: `scale(${spring({frame: local - 50, fps, config: {damping: 12}})})`}}>
-          <Laptop t={t} local={local} />
-        </div>
       );
     case 'cta':
       return (
         <>
-          <Person t={t} scene={scene} local={local} dur={dur} />
-          <CtaPill t={t} local={local} />
+          <Person t={t} local={local} dur={dur} height={700} />
+          <CtaExtras t={t} local={local} />
         </>
       );
     default:
@@ -430,96 +461,21 @@ const SceneVisual: React.FC<{t: Theme; scene: Scene; local: number; dur: number}
   }
 };
 
-const Chips: React.FC<{t: Theme; local: number; items: string[]}> = ({t, local, items}) => {
-  const {fps} = useVideoConfig();
-  return (
-    <div style={{position: 'absolute', top: 520, left: 0, right: 0, display: 'flex', justifyContent: 'center', gap: 20, direction: 'rtl'}}>
-      {items.map((it, i) => {
-        const s = spring({frame: local - 30 - i * 22, fps, config: {damping: 10}});
-        return (
-          <div key={it} style={{transform: `scale(${s})`, background: t.box, border: `4px solid ${t.border}`, borderRadius: 12, padding: '4px 24px', fontSize: 40, fontWeight: 800,
-            color: i === 2 ? t.accent : t.text, boxShadow: `5px 5px 0 ${t.grid}`}}>{it}</div>
-        );
-      })}
-    </div>
-  );
-};
+/* ───────────── الانتقال: دائرة تكبر ───────────── */
 
-const ZeroCard: React.FC<{t: Theme; local: number}> = ({t, local}) => {
-  const {fps} = useVideoConfig();
-  const s = spring({frame: local - 40, fps, config: {damping: 11}});
-  const bars = Math.floor(interpolate(local, [50, 90], [5, 0], clamp));
+const CircleWipe: React.FC<{t: Theme; at: number}> = ({t, at}) => {
+  const f = useCurrentFrame();
+  const local = f - at;
+  if (local < -10 || local > 10) return null;
+  const r = local < 0 ? interpolate(local, [-10, 0], [0, 1200]) : 1200;
+  const o = local < 0 ? 1 : interpolate(local, [0, 10], [1, 0]);
   return (
-    <div style={{position: 'absolute', top: 640, left: 30, width: 470, transform: `scale(${s}) rotate(-4deg)`, background: t.box, border: `4px solid ${t.accent}`, borderRadius: 14,
-      padding: '14px 28px', direction: 'rtl', boxShadow: `6px 6px 0 ${t.grid}`}}>
-      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-        <div style={{fontSize: 40, fontWeight: 900, color: t.text}}>الكود والبرمجة</div>
-        <div style={{display: 'flex', gap: 6, direction: 'ltr'}}>
-          {new Array(5).fill(0).map((_, i) => <div key={i} style={{width: 26, height: 22, background: i < bars ? t.grid : 'transparent', border: `2px solid ${t.grid}`}} />)}
-        </div>
-      </div>
-      <div style={{fontSize: 52, fontWeight: 900, color: t.accent}}>صفر</div>
-    </div>
-  );
-};
-
-const CtaPill: React.FC<{t: Theme; local: number}> = ({t, local}) => {
-  const {fps} = useVideoConfig();
-  const s = spring({frame: local - 20, fps, config: {damping: 10}});
-  const sub = spring({frame: local - 45, fps, config: {damping: 14}});
-  const nudge = Math.sin(local / 5) * 8;
-  return (
-    <>
-      <div style={{position: 'absolute', top: 470, left: 0, right: 0, display: 'flex', justifyContent: 'center', direction: 'rtl'}}>
-        <div style={{transform: `scale(${s})`, background: t.chip, border: `5px solid ${t.accent}`, borderRadius: 16, padding: '8px 34px', fontSize: 52, fontWeight: 900, color: t.text,
-          display: 'flex', gap: 18, alignItems: 'center', boxShadow: `6px 6px 0 ${t.grid}`}}>
-          <span style={{color: t.accent, transform: `translateX(${nudge}px)`, display: 'inline-block'}}>◀</span> اكتبي «ملف» بالتعليقات
-        </div>
-      </div>
-      <div style={{position: 'absolute', top: 610, left: 80, right: 80, textAlign: 'center', fontSize: 40, fontWeight: 700, color: t.text, opacity: sub, direction: 'rtl', lineHeight: 1.4}}>
-        وأعلمج شلون تسوين ملف إنجاز <span style={{color: t.accent}}>مثل ملفي</span>
-      </div>
-    </>
-  );
-};
-
-const EndCard: React.FC<{t: Theme; local: number}> = ({t, local}) => {
-  const {fps} = useVideoConfig();
-  const s = spring({frame: local, fps, config: {damping: 13}});
-  const fade = interpolate(local, [70, 100], [1, 0], clamp);
-  return (
-    <AbsoluteFill style={{alignItems: 'center', justifyContent: 'center', direction: 'rtl', opacity: fade}}>
-      <div style={{transform: `scale(${s})`, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 26}}>
-        <div style={{width: 300, height: 300, borderRadius: 150, border: `8px solid ${t.accent}`, background: `url(${staticFile('achieve/jenan_cut.png')}) 50% 10% / 200% ${t.chip}`, boxShadow: `0 0 60px ${t.glow}`}} />
-        <div style={{fontSize: 80, fontWeight: 900, color: t.text}}>{NAME}</div>
-        <div style={{fontSize: 44, fontWeight: 700, color: t.second}}>ملف الإنجاز بالذكاء الاصطناعي</div>
-        <div style={{marginTop: 20, background: t.accent, color: '#fff', fontSize: 48, fontWeight: 900, padding: '10px 40px', borderRadius: 14}}>اكتبي «ملف» بالتعليقات</div>
-      </div>
+    <AbsoluteFill style={{pointerEvents: 'none'}}>
+      <div style={{position: 'absolute', left: 540 - r, top: 960 - r, width: r * 2, height: r * 2, borderRadius: '50%', background: t.accent, opacity: o}} />
     </AbsoluteFill>
   );
 };
-
-/* ───────────── الانتقال بالمربعات ───────────── */
-
-const PixelWipe: React.FC<{t: Theme; at: number}> = ({t, at}) => {
-  const f = useCurrentFrame();
-  const local = f - at;
-  if (local < -12 || local > 14) return null;
-  const cols = 12;
-  const rows = 22;
-  const size = 1080 / cols;
-  const cells: React.ReactNode[] = [];
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      const d = (c + r) / (cols + rows); // قطري
-      const p = local < 0 ? interpolate(local, [-12, 0], [0, 1]) : interpolate(local, [0, 14], [1, 0]);
-      const k = Math.max(0, Math.min(1, (p - d * 0.5) * 2.2 + (local < 0 ? 0 : 0)));
-      if (k <= 0) continue;
-      cells.push(<div key={r * cols + c} style={{position: 'absolute', left: c * size, top: r * size, width: size, height: size, transform: `scale(${k * 1.02})`, background: t.wipe}} />);
-    }
-  }
-  return <AbsoluteFill>{cells}</AbsoluteFill>;
-};
+const WIPES = [3, 7]; // قبل الخطوات، وقبل الدعوة
 
 /* ───────────── الصوت ───────────── */
 
@@ -527,17 +483,16 @@ const Sfx: React.FC = () => {
   const out: React.ReactNode[] = [];
   SCENES.forEach((s, i) => {
     const st = sec(s.from);
-    if (i > 0) out.push(<Sequence key={'w' + i} from={Math.max(0, st - 8)} durationInFrames={30}><Audio src={staticFile('sfx/whoosh.wav')} volume={0.35} /></Sequence>);
-    // نقرات كيبورد خفيفة مع الكتابة
-    const words = s.caption ? parseWords(s.caption).length : 0;
-    const dur = sec(s.to - s.from);
-    for (let w = 0; w < words; w++) {
-      const fr = st + 3 + Math.round((w / Math.max(1, words)) * (dur * 0.72 - 3));
-      out.push(<Sequence key={`k${i}-${w}`} from={fr} durationInFrames={8}><Audio src={staticFile(`sfx/key${w % 4}.wav`)} volume={0.22} /></Sequence>);
+    if (i > 0) out.push(<Sequence key={'w' + i} from={Math.max(0, st - 6)} durationInFrames={30}><Audio src={staticFile(WIPES.includes(i) ? 'sfx/swoosh-up.wav' : 'sfx/whoosh.wav')} volume={0.3} /></Sequence>);
+    if (s.visual === 'sources') [8, 30, 52].forEach((d) => out.push(<Sequence key={`p${i}${d}`} from={st + d} durationInFrames={20}><Audio src={staticFile('sfx/pop.wav')} volume={0.45} /></Sequence>));
+    if (s.visual === 'chat') {
+      for (let k = 40; k < 80; k += 3) out.push(<Sequence key={`c${k}`} from={st + k} durationInFrames={6}><Audio src={staticFile(`sfx/key${k % 4}.wav`)} volume={0.25} /></Sequence>);
+      out.push(<Sequence key="ai-reply" from={st + 95} durationInFrames={20}><Audio src={staticFile('sfx/pop.wav')} volume={0.5} /></Sequence>);
     }
+    if (s.visual === 'nocode') out.push(<Sequence key="nc" from={st + 60} durationInFrames={30}><Audio src={staticFile('sfx/impact.wav')} volume={0.35} /></Sequence>);
   });
-  out.push(<Sequence key="pop-cta" from={sec(35) + 20} durationInFrames={30}><Audio src={staticFile('sfx/pop.wav')} volume={0.6} /></Sequence>);
-  out.push(<Sequence key="sh" from={sec(44)} durationInFrames={60}><Audio src={staticFile('sfx/shimmer.wav')} volume={0.5} /></Sequence>);
+  out.push(<Sequence key="cta-pop" from={sec(31.4) + 30} durationInFrames={20}><Audio src={staticFile('sfx/pop.wav')} volume={0.55} /></Sequence>);
+  out.push(<Sequence key="sh" from={sec(41)} durationInFrames={60}><Audio src={staticFile('sfx/shimmer.wav')} volume={0.45} /></Sequence>);
   return <>{out}</>;
 };
 
@@ -545,7 +500,6 @@ const Sfx: React.FC = () => {
 
 export const AchieveReel: React.FC<AchieveProps> = ({theme}) => {
   const t = THEMES[theme] ?? THEMES.pink;
-  const f = useCurrentFrame();
   const total = totalFrames();
   const musicVol = (fr: number) => 0.32 * interpolate(fr, [0, 10, total - 45, total], [0, 1, 1, 0], clamp);
   return (
@@ -560,9 +514,8 @@ export const AchieveReel: React.FC<AchieveProps> = ({theme}) => {
           </Sequence>
         );
       })}
-      <TopHud t={t} />
-      <Equalizer t={t} active={f < sec(44)} />
-      {WIPES.map((i) => <PixelWipe key={i} t={t} at={sec(SCENES[i].from)} />)}
+      <TopBar t={t} />
+      {WIPES.map((i) => <CircleWipe key={i} t={t} at={sec(SCENES[i].from)} />)}
       <Audio src={staticFile('music/background.wav')} volume={musicVol} />
       <Sfx />
     </AbsoluteFill>
@@ -572,11 +525,12 @@ export const AchieveReel: React.FC<AchieveProps> = ({theme}) => {
 const SceneLayer: React.FC<{t: Theme; scene: Scene; dur: number}> = ({t, scene, dur}) => {
   const local = useCurrentFrame();
   if (scene.visual === 'end') return <EndCard t={t} local={local} />;
+  const exit = interpolate(local, [dur - 6, dur], [1, 0], clamp);
   return (
-    <AbsoluteFill>
+    <AbsoluteFill style={{opacity: exit}}>
       <SceneVisual t={t} scene={scene} local={local} dur={dur} />
-      <Headline t={t} scene={scene} local={local} dur={dur} />
-      <DialogBox t={t} scene={scene} local={local} dur={dur} />
+      <Headline t={t} scene={scene} local={local} />
+      <Captions t={t} scene={scene} local={local} dur={dur} />
     </AbsoluteFill>
   );
 };
