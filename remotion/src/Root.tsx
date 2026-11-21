@@ -10,11 +10,16 @@ import {FPS as C46_FPS, HEIGHT as C46_H, totalFrames as c46Frames, WIDTH as C46_
 import {Recommendations46} from './conference46/Recommendations';
 import {FPS as C46B_FPS, HEIGHT as C46B_H, Recommendations46V2, totalFrames as c46bFrames, WIDTH as C46B_W} from './conference46/v2/Recommendations2';
 
+import {AchieveReel, FPS as AR_FPS, HEIGHT as AR_H, totalFrames as arFrames, WIDTH as AR_W} from './achieve/AchieveReel';
 import {FPS as PR_FPS, HEIGHT as PR_H, PRTeam, totalFrames as prFrames, WIDTH as PR_W} from './pr/PRTeam';
 
 export const RemotionRoot: React.FC = () => {
   return (
     <>
+      {/* ملف الإنجاز بالذكاء الاصطناعي — بصورة جنان الحقيقية، ٣ ألوان */}
+      <Composition id="AchieveReel" component={AchieveReel} durationInFrames={arFrames()} fps={AR_FPS} width={AR_W} height={AR_H} defaultProps={{theme: 'pink' as const}} />
+      <Composition id="AchieveReelNavy" component={AchieveReel} durationInFrames={arFrames()} fps={AR_FPS} width={AR_W} height={AR_H} defaultProps={{theme: 'navy' as const}} />
+      <Composition id="AchieveReelClean" component={AchieveReel} durationInFrames={arFrames()} fps={AR_FPS} width={AR_W} height={AR_H} defaultProps={{theme: 'clean' as const}} />
       {/* فريق العلاقات العامة — فاطمة الهاشمية، نسخة رسمية */}
       <Composition id="PRTeam" component={PRTeam} durationInFrames={prFrames()} fps={PR_FPS} width={PR_W} height={PR_H} />
       {/* ريل مستقبل التعليم بكلمة — جمعية المعلمين الكويتية */}
