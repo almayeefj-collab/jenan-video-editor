@@ -47,19 +47,19 @@ const Rule: React.FC<{width: number}> = ({width}) => (
 const Logo: React.FC<{logo?: string; size: number}> = ({logo, size}) =>
   logo ? <Img src={staticFile(logo)} style={{height: size, width: size, objectFit: 'contain', filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.6))'}} /> : null;
 
-// شعار المؤتمر، ومعه شعار الجهة المشاركة إن وجد
-const Logos: React.FC<{logo?: string; partner?: string; size: number; gap: number}> = ({logo, partner, size, gap}) => (
+// شعار المؤتمر، وبعده شعارات المنظّم والجهات المشاركة (من اليمين)
+const Logos: React.FC<{logo?: string; extra: string[]; size: number; gap: number}> = ({logo, extra, size, gap}) => (
   <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap}}>
     <Logo logo={logo} size={size} />
-    <Logo logo={partner} size={size} />
+    {logo ? extra.map((l) => <Logo key={l} logo={l} size={size} />) : null}
   </div>
 );
 
 // تحت: الشعار إذا موجود (فيه اسم المؤتمر والسنة)، وإلا اسم المؤتمر نص
-const Footer: React.FC<{logo?: string; partner?: string}> = ({logo, partner}) =>
+const Footer: React.FC<{logo?: string; extra: string[]}> = ({logo, extra}) =>
   logo ? (
     <div style={{position: 'absolute', bottom: 64, left: 0, right: 0, display: 'flex', justifyContent: 'center'}}>
-      <Logos logo={logo} partner={partner} size={150} gap={44} />
+      <Logos logo={logo} extra={extra} size={extra.length > 1 ? 128 : 150} gap={extra.length > 1 ? 34 : 44} />
     </div>
   ) : (
   <div style={{position: 'absolute', bottom: 74, left: 0, right: 0, textAlign: 'center'}}>
@@ -77,13 +77,13 @@ export const PostTitle: React.FC<PostProps> = ({logo, session}) => {
   <AbsoluteFill style={{background: INK, direction: 'rtl', fontFamily}}>
     <Background seed="title" bg={ss.postBg} />
     <AbsoluteFill style={{alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '0 110px'}}>
-      <Logos logo={logo} partner={ss.partnerLogo} size={ss.partnerLogo ? 250 : 300} gap={60} />
+      <Logos logo={logo} extra={ss.logos} size={ss.logos.length > 1 ? 220 : 250} gap={ss.logos.length > 1 ? 40 : 60} />
       <div style={{marginTop: logo ? 56 : 0, padding: '10px 40px', borderRadius: 40, border: `1.5px solid ${GOLD}`, fontSize: 38, fontWeight: 700, color: GOLD}}>{ss.kicker}</div>
       <div style={{marginTop: 40, fontSize: big ? 92 : 112, fontWeight: 800, color: '#fff', lineHeight: 1.18, textShadow: shadow, whiteSpace: 'nowrap'}}>{l1}</div>
       <div style={{fontSize: big ? 84 : 92, fontWeight: 800, color: GOLD, lineHeight: 1.25, textShadow: shadow, whiteSpace: 'nowrap'}}>{l2}</div>
       <Rule width={520} />
     </AbsoluteFill>
-    {logo ? null : <Footer />}
+    {logo ? null : <Footer extra={[]} />}
   </AbsoluteFill>
   );
 };
@@ -134,7 +134,7 @@ export const PostPeople: React.FC<PostProps> = ({logo, session}) => {
         ))}
       </div>
     </AbsoluteFill>
-    <Footer logo={logo} partner={ss.partnerLogo} />
+    <Footer logo={logo} extra={ss.logos} />
   </AbsoluteFill>
   );
 };

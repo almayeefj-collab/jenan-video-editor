@@ -15,13 +15,14 @@ export type Session = {
   event: string;
   dir: string;      // مجلد اللقطات والصور داخل public/
   postBg: string;   // خلفية البوستات
-  partnerLogo?: string; // شعار ثاني جنب شعار المؤتمر في البوستات (مثل فريق الخطوة الأولى)
+  logos: string[];  // الشعارات في البوستات بعد شعار المؤتمر: الجهة المنظمة (الطراروة) وأي جهة مشاركة
   host: string;
   guests: string[]; // بالترتيب من يمين البوست
   people: Record<string, Person>;
 };
 
 const EVENT = 'مؤتمر الكويت الدولي الأول للتدريب والتطوير';
+const TARARWA = 'brand/tararwa-logo.png'; // شركة الطراروة الدولية — منظّم المؤتمر
 const HOST: Person = {name: 'أ. إلهام دكسن', role: 'محاورة الجلسة', postRole: 'مهتمة في صحة الدماغ', side: 'right', pos: '35% 30%'};
 
 export const SESSIONS = {
@@ -33,6 +34,7 @@ export const SESSIONS = {
     event: EVENT,
     dir: 'footage/panel',
     postBg: 'footage/panel/bg05.jpg',
+    logos: [TARARWA],
     host: 'host',
     guests: ['hakami', 'jaza'],
     people: {
@@ -49,7 +51,7 @@ export const SESSIONS = {
     event: EVENT,
     dir: 'footage/panel/najah',
     postBg: 'footage/panel/najah/bg02.jpg',
-    partnerLogo: 'brand/first-step-logo.png',
+    logos: [TARARWA, 'brand/first-step-logo.png'],
     host: 'host',
     guests: ['hessa', 'badr', 'afrah'],
     people: {
