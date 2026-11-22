@@ -15,6 +15,7 @@ export type Session = {
   event: string;
   dir: string;      // مجلد اللقطات والصور داخل public/
   postBg: string;   // خلفية البوستات
+  partnerLogo?: string; // شعار ثاني جنب شعار المؤتمر في البوستات (مثل فريق الخطوة الأولى)
   host: string;
   guests: string[]; // بالترتيب من يمين البوست
   people: Record<string, Person>;
@@ -48,6 +49,7 @@ export const SESSIONS = {
     event: EVENT,
     dir: 'footage/panel/najah',
     postBg: 'footage/panel/najah/bg02.jpg',
+    partnerLogo: 'brand/first-step-logo.png',
     host: 'host',
     guests: ['hessa', 'badr', 'afrah'],
     people: {
