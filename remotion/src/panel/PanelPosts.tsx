@@ -3,7 +3,7 @@
 // الصور من لقطات الفيديو في public/footage/panel/ (ما ترفع للمستودع)، والشعار اختياري.
 import {AbsoluteFill, Img, random, staticFile} from 'remotion';
 import {fontFamily, numberFamily} from '../reel/font';
-import {PEOPLE, SESSION, Who} from './PanelSession';
+import {getSession, SessionKey} from './sessions';
 
 export const POST_W = 1080;
 export const POST_H = 1350;
@@ -15,12 +15,12 @@ const INK = '#070B18';
 const shadow = '0 4px 24px rgba(0,0,0,0.7)';
 const EVENT = 'مؤتمر الكويت الدولي الأول للتدريب والتطوير';
 
-type PostProps = {logo?: string};
+type PostProps = {logo?: string; session?: SessionKey};
 
-const Background: React.FC<{seed: string}> = ({seed}) => (
+const Background: React.FC<{seed: string; bg: string}> = ({seed, bg}) => (
   <>
     <AbsoluteFill style={{transform: 'scale(1.15)'}}>
-      <Img src={staticFile('footage/panel/bg05.jpg')} style={{width: '100%', height: '100%', objectFit: 'cover', filter: 'blur(22px) brightness(0.34) saturate(1.1)'}} />
+      <Img src={staticFile(bg)} style={{width: '100%', height: '100%', objectFit: 'cover', filter: 'blur(22px) brightness(0.34) saturate(1.1)'}} />
     </AbsoluteFill>
     <AbsoluteFill style={{background: `linear-gradient(180deg, ${NAVY}e6 0%, ${NAVY}99 45%, ${INK}f0 100%)`}} />
     <AbsoluteFill>
@@ -61,33 +61,42 @@ const Footer: React.FC<{logo?: string}> = ({logo}) =>
 );
 
 // البوست اليمين: اسم الجلسة
-export const PostTitle: React.FC<PostProps> = ({logo}) => (
+export const PostTitle: React.FC<PostProps> = ({logo, session}) => {
+  const ss = getSession(session);
+  const [l1, l2] = ss.titleLines;
+  const big = l1.length > 14 || l2.length > 20; // سطور أطول = خط أصغر عشان ما يطلع برا
+  return (
   <AbsoluteFill style={{background: INK, direction: 'rtl', fontFamily}}>
-    <Background seed="title" />
+    <Background seed="title" bg={ss.postBg} />
     <AbsoluteFill style={{alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '0 110px'}}>
       <Logo logo={logo} size={300} />
-      <div style={{marginTop: logo ? 56 : 0, padding: '10px 40px', borderRadius: 40, border: `1.5px solid ${GOLD}`, fontSize: 38, fontWeight: 700, color: GOLD}}>{SESSION.kicker}</div>
-      <div style={{marginTop: 40, fontSize: 112, fontWeight: 800, color: '#fff', lineHeight: 1.18, textShadow: shadow}}>الصحة النفسية</div>
-      <div style={{fontSize: 92, fontWeight: 800, color: GOLD, lineHeight: 1.25, textShadow: shadow}}>بين الانهيار والتكيف</div>
+      <div style={{marginTop: logo ? 56 : 0, padding: '10px 40px', borderRadius: 40, border: `1.5px solid ${GOLD}`, fontSize: 38, fontWeight: 700, color: GOLD}}>{ss.kicker}</div>
+      <div style={{marginTop: 40, fontSize: big ? 92 : 112, fontWeight: 800, color: '#fff', lineHeight: 1.18, textShadow: shadow, whiteSpace: 'nowrap'}}>{l1}</div>
+      <div style={{fontSize: big ? 84 : 92, fontWeight: 800, color: GOLD, lineHeight: 1.25, textShadow: shadow, whiteSpace: 'nowrap'}}>{l2}</div>
       <Rule width={520} />
     </AbsoluteFill>
     {logo ? null : <Footer />}
   </AbsoluteFill>
-);
+  );
+};
 
-const Portrait: React.FC<{who: Who; size: number; pos: string}> = ({who, size, pos}) => (
+const Portrait: React.FC<{src: string; size: number; pos: string}> = ({src, size, pos}) => (
   <div style={{width: size, height: size, borderRadius: '50%', padding: 6, background: `linear-gradient(135deg, ${GOLD}, #8a6d3b, ${GOLD})`, boxShadow: '0 12px 40px rgba(0,0,0,0.55)'}}>
-    <Img src={staticFile(`footage/panel/face-${who}.jpg`)} style={{width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover', objectPosition: pos}} />
+    <Img src={staticFile(src)} style={{width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover', objectPosition: pos}} />
   </div>
 );
 
-const Person: React.FC<{who: Who; size: number; pos: string; role: string; nameSize: number}> = ({who, size, pos, role, nameSize}) => (
-  <div style={{width: 400, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center'}}>
-    <Portrait who={who} size={size} pos={pos} />
-    <div style={{marginTop: 22, fontSize: nameSize, fontWeight: 800, color: '#fff', textShadow: shadow, whiteSpace: 'nowrap'}}>{PEOPLE[who].name}</div>
-    <div style={{marginTop: 4, fontSize: nameSize * 0.56, fontWeight: 500, color: GOLD, lineHeight: 1.35, maxWidth: 420, whiteSpace: 'pre-line'}}>{role}</div>
-  </div>
-);
+const Person: React.FC<{who: string; session?: SessionKey; size: number; nameSize: number; width: number}> = ({who, session, size, nameSize, width}) => {
+  const ss = getSession(session);
+  const p = ss.people[who];
+  return (
+    <div style={{width, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center'}}>
+      <Portrait src={`${ss.dir}/face-${who}.jpg`} size={size} pos={p.pos} />
+      <div style={{marginTop: 22, fontSize: nameSize, fontWeight: 800, color: '#fff', textShadow: shadow, whiteSpace: 'nowrap'}}>{p.name}</div>
+      <div style={{marginTop: 4, fontSize: nameSize * 0.56, fontWeight: 500, color: GOLD, lineHeight: 1.35, maxWidth: width, whiteSpace: 'pre-line'}}>{p.postRole}</div>
+    </div>
+  );
+};
 
 const Label: React.FC<{text: string}> = ({text}) => (
   <div style={{display: 'flex', alignItems: 'center', gap: 18, fontSize: 32, fontWeight: 700, color: GOLD}}>
@@ -98,21 +107,26 @@ const Label: React.FC<{text: string}> = ({text}) => (
 );
 
 // البوست اليسار: رئيسة الجلسة فوق، والمحاورون تحت
-export const PostPeople: React.FC<PostProps> = ({logo}) => (
+export const PostPeople: React.FC<PostProps> = ({logo, session}) => {
+  const ss = getSession(session);
+  const three = ss.guests.length > 2;
+  return (
   <AbsoluteFill style={{background: INK, direction: 'rtl', fontFamily}}>
-    <Background seed="people" />
+    <Background seed="people" bg={ss.postBg} />
     <AbsoluteFill style={{alignItems: 'center', paddingTop: logo ? 78 : 100}}>
-      <div style={{fontSize: 36, fontWeight: 700, color: CREAM}}>{SESSION.kicker}</div>
+      <div style={{fontSize: 36, fontWeight: 700, color: CREAM}}>{ss.kicker}</div>
       <div style={{marginTop: 28}}><Label text="رئيسة الجلسة" /></div>
       <div style={{marginTop: 22}}>
-        <Person who="host" size={250} pos="35% 30%" role="مهتمة في صحة الدماغ" nameSize={46} />
+        <Person who={ss.host} session={session} size={three ? 230 : 250} nameSize={46} width={400} />
       </div>
       <div style={{marginTop: 36}}><Label text="المحاورون" /></div>
       <div style={{marginTop: 22, display: 'flex', gap: 10, justifyContent: 'center'}}>
-        <Person who="hakami" size={196} pos="50% 25%" role={'رئيس جمعية علم النفس\nالشرق الأوسط'} nameSize={38} />
-        <Person who="jaza" size={196} pos="50% 25%" role={'رئيس جمعية علم النفس\nالكويتية'} nameSize={38} />
+        {ss.guests.map((g) => (
+          <Person key={g} who={g} session={session} size={three ? 168 : 196} nameSize={three ? 32 : 38} width={three ? 310 : 400} />
+        ))}
       </div>
     </AbsoluteFill>
     <Footer logo={logo} />
   </AbsoluteFill>
-);
+  );
+};

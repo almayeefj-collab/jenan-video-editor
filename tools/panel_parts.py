@@ -21,7 +21,6 @@ import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 REMOTION = os.path.join(ROOT, 'remotion')
-PUB = os.path.join(REMOTION, 'public', 'footage', 'panel')
 FADE = 0.4      # ظهور واختفاء الصور
 NAME_DUR = 6.0  # مدة اسم المتحدث
 MUSIC = os.path.join(REMOTION, 'public', 'c46', 'soft.mp3')
@@ -55,6 +54,7 @@ def main():
     ap.add_argument('config')
     ap.add_argument('out')
     ap.add_argument('--only', type=int, nargs='*')
+    ap.add_argument('--light', action='store_true', help='ملفات أخف (~50-65MB للجزء) تنحفظ وتنرفع بسهولة من الجوال')
     a = ap.parse_args()
 
     cfg = json.load(open(a.config))
@@ -63,7 +63,12 @@ def main():
     parts = len(bounds) - 1
     work = os.path.join(a.out, 'work')
     os.makedirs(work, exist_ok=True)
-    os.makedirs(PUB, exist_ok=True)
+    # كل جلسة لها مفتاح في remotion/src/panel/sessions.ts ومجلد لقطات داخل public/
+    session = cfg.get('session', 'mental')
+    sdir = cfg.get('assets', 'footage/panel')
+    pub = os.path.join(REMOTION, 'public', sdir)
+    os.makedirs(pub, exist_ok=True)
+    S = {'session': session}
 
     for i in range(parts):
         n = i + 1
@@ -80,23 +85,23 @@ def main():
 
         # خلفية بطاقة البداية: لقطة من وسط الجزء
         bg = f'bg{tag}.jpg'
-        run(['ffmpeg', '-v', 'error', '-y', '-ss', start + min(60, (end - start) / 2), '-i', a.source, '-frames:v', 1, '-q:v', 3, os.path.join(PUB, bg)])
+        run(['ffmpeg', '-v', 'error', '-y', '-ss', start + min(60, (end - start) / 2), '-i', a.source, '-frames:v', 1, '-q:v', 3, os.path.join(pub, bg)])
         intro = os.path.join(work, f'intro{tag}.mp4')
-        remotion('render', 'PanelIntro', intro, {'part': n, 'parts': parts, 'bg': 'footage/panel/' + bg})
+        remotion('render', 'PanelIntro', intro, {**S, 'part': n, 'parts': parts, 'bg': f'{sdir}/{bg}'})
         outro = None
         if n == parts:
             outro = os.path.join(work, 'outro.mp4')
-            remotion('render', 'PanelOutro', outro, {'bg': 'footage/panel/' + bg})
+            remotion('render', 'PanelOutro', outro, {**S, 'bg': f'{sdir}/{bg}'})
 
         # الصور الشفافة اللي تركب فوق المقطع: [(png, from, to)] بتوقيت المقطع بعد الاختصار
         layers = []
         badge = os.path.join(work, f'badge{tag}.png')
-        remotion('still', 'PanelBadge', badge, {'part': n, 'parts': parts})
+        remotion('still', 'PanelBadge', badge, {**S, 'part': n, 'parts': parts})
         layers.append((badge, 1.0, body_dur))
         for k, q in enumerate(cfg['questions']):
             if start <= q['at'] < end:
                 png = os.path.join(work, f'q{tag}_{k}.png')
-                props = {'text': q['text']}
+                props = {**S, 'text': q['text']}
                 for key in ('to', 'from'):
                     if q.get(key):
                         props[key] = q[key]
@@ -107,7 +112,7 @@ def main():
             if start <= nm['at'] < end:
                 png = os.path.join(work, f'name_{nm["who"]}.png')
                 if not os.path.exists(png):
-                    remotion('still', 'PanelLowerThird', png, {'who': nm['who']})
+                    remotion('still', 'PanelLowerThird', png, {**S, 'who': nm['who']})
                 t0 = tmap(nm['at'])
                 layers.append((png, t0, min(t0 + NAME_DUR, body_dur)))
 
@@ -144,8 +149,10 @@ def main():
 
         out = os.path.join(a.out, f'الجلسة-الحوارية-الجزء-{tag}.mp4')
         cmd += ['-filter_complex', ';'.join(f), '-map', '[v]', '-map', '[a]',
-                '-c:v', 'libx264', '-preset', 'fast', '-crf', 21, '-pix_fmt', 'yuv420p', '-r', 25,
-                '-c:a', 'aac', '-b:a', '192k', '-movflags', '+faststart', out]
+                '-c:v', 'libx264', '-preset', 'fast', '-pix_fmt', 'yuv420p', '-r', 25]
+        cmd += (['-crf', 23, '-maxrate', '3M', '-bufsize', '6M', '-profile:v', 'high', '-level', '4.0', '-c:a', 'aac', '-b:a', '128k']
+                if a.light else ['-crf', 21, '-c:a', 'aac', '-b:a', '192k'])
+        cmd += ['-movflags', '+faststart', out]
         run(cmd)
         d = duration(out)
         print(f'   ✓ {out}  ({d:.2f}s){"  ⚠ أطول من 3 دقائق" if d > MAX_LEN else ""}', flush=True)
