@@ -16,7 +16,7 @@ import {FPS as PR_FPS, HEIGHT as PR_H, PRTeam, totalFrames as prFrames, WIDTH as
 export const RemotionRoot: React.FC = () => {
   return (
     <>
-      {/* أكاديميات جمعية المعلمين الكويتية — عمودي بنفس هوية فيديو التوصيات */}
+      {/* أكاديميات جمعية المعلمين الكويتية — أفقي 16:9 بنفس هوية فيديو التوصيات */}
       <Composition id="Academies" component={Academies} durationInFrames={acFrames()} fps={AC_FPS} width={AC_W} height={AC_H} />
       {/* فريق العلاقات العامة — فاطمة الهاشمية، نسخة رسمية */}
       <Composition id="PRTeam" component={PRTeam} durationInFrames={prFrames()} fps={PR_FPS} width={PR_W} height={PR_H} />
