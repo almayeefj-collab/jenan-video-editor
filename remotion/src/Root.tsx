@@ -12,11 +12,14 @@ import {FPS as C46B_FPS, HEIGHT as C46B_H, Recommendations46V2, totalFrames as c
 
 import {Academies, FPS as AC_FPS, HEIGHT as AC_H, totalFrames as acFrames, WIDTH as AC_W} from './academies/Academies';
 import {FPS as PT_FPS, HEIGHT as PT_H, Protocol, totalFrames as ptFrames, WIDTH as PT_W} from './protocol/Protocol';
+import {Conference, FPS as CF_FPS, HEIGHT as CF_H, totalFrames as cfFrames, WIDTH as CF_W} from './conference/Conference';
 import {FPS as PR_FPS, HEIGHT as PR_H, PRTeam, totalFrames as prFrames, WIDTH as PR_W} from './pr/PRTeam';
 
 export const RemotionRoot: React.FC = () => {
   return (
     <>
+      {/* المؤتمر التربوي السادس والأربعون — أفقي 16:9 للتلفزيون، نفس هوية الأكاديميات والبروتوكول */}
+      <Composition id="Conference" component={Conference} durationInFrames={cfFrames()} fps={CF_FPS} width={CF_W} height={CF_H} />
       {/* بروتوكول تعاون جمعية المعلمين الكويتية مع وزارة التربية — أفقي 16:9 للتلفزيون، نفس هوية الأكاديميات */}
       <Composition id="Protocol" component={Protocol} durationInFrames={ptFrames()} fps={PT_FPS} width={PT_W} height={PT_H} />
       {/* أكاديميات جمعية المعلمين الكويتية — أفقي 16:9 بنفس هوية فيديو التوصيات */}
