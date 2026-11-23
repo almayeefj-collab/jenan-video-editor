@@ -10,6 +10,7 @@
 import {z} from 'zod';
 import {AbsoluteFill, Easing, Img, interpolate, OffthreadVideo, Sequence, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {fontFamily} from '../reel/font';
+import {SlidesDemo} from './SlidesDemo';
 
 export const FPS = 30;
 export const WIDTH = 1080;
@@ -41,7 +42,7 @@ export const splitTutorialDefaults: SplitTutorialProps = {
   screenFrom: 0,
   logoImage: null,
   toolName: 'NotebookLM',
-  hook: 'حوّل أي كتاب أو مقالة إلى مقطع صوتي تسمعه في الزحمة',
+  hook: 'حوّل أي ملف إلى عرض تقديمي كامل بضغطة زر',
   hookEnd: 4.8,
   duration: 59.3,
   segments: [
@@ -109,7 +110,7 @@ const Screen: React.FC<{file: string | null; from: number}> = ({file, from}) =>
   file ? (
     <OffthreadVideo src={src(file)} startFrom={Math.round(from * FPS)} muted style={{width: '100%', height: '100%', objectFit: 'contain', background: '#fff'}} />
   ) : (
-    <Placeholder label="تسجيل شاشة الأداة" />
+    <SlidesDemo /> // بدون تسجيل شاشة: عرض متحرك لخطوات عمل عرض تقديمي في NotebookLM
   );
 
 // جملة الافتتاح: تطلع كلمة كلمة بخط أبيض عريض فوق المتكلم
