@@ -10,11 +10,24 @@ import {FPS as C46_FPS, HEIGHT as C46_H, totalFrames as c46Frames, WIDTH as C46_
 import {Recommendations46} from './conference46/Recommendations';
 import {FPS as C46B_FPS, HEIGHT as C46B_H, Recommendations46V2, totalFrames as c46bFrames, WIDTH as C46B_W} from './conference46/v2/Recommendations2';
 
+import {FPS as ST_FPS, HEIGHT as ST_H, SplitTutorial, type SplitTutorialProps, splitTutorialDefaults, splitTutorialFrames, splitTutorialSchema, WIDTH as ST_W} from './splitTutorial/SplitTutorial';
 import {FPS as PR_FPS, HEIGHT as PR_H, PRTeam, totalFrames as prFrames, WIDTH as PR_W} from './pr/PRTeam';
 
 export const RemotionRoot: React.FC = () => {
   return (
     <>
+      {/* قالب ريل شرح أداة: شعار/تسجيل شاشة فوق، وأنت تتكلم تحت */}
+      <Composition
+        id="SplitTutorial"
+        component={SplitTutorial}
+        durationInFrames={splitTutorialFrames(splitTutorialDefaults)}
+        fps={ST_FPS}
+        width={ST_W}
+        height={ST_H}
+        schema={splitTutorialSchema}
+        defaultProps={splitTutorialDefaults}
+        calculateMetadata={({props}: {props: SplitTutorialProps}) => ({durationInFrames: splitTutorialFrames(props)})}
+      />
       {/* فريق العلاقات العامة — فاطمة الهاشمية، نسخة رسمية */}
       <Composition id="PRTeam" component={PRTeam} durationInFrames={prFrames()} fps={PR_FPS} width={PR_W} height={PR_H} />
       {/* ريل مستقبل التعليم بكلمة — جمعية المعلمين الكويتية */}
