@@ -11,11 +11,14 @@ import {Recommendations46} from './conference46/Recommendations';
 import {FPS as C46B_FPS, HEIGHT as C46B_H, Recommendations46V2, totalFrames as c46bFrames, WIDTH as C46B_W} from './conference46/v2/Recommendations2';
 
 import {Academies, FPS as AC_FPS, HEIGHT as AC_H, totalFrames as acFrames, WIDTH as AC_W} from './academies/Academies';
+import {FPS as PT_FPS, HEIGHT as PT_H, Protocol, totalFrames as ptFrames, WIDTH as PT_W} from './protocol/Protocol';
 import {FPS as PR_FPS, HEIGHT as PR_H, PRTeam, totalFrames as prFrames, WIDTH as PR_W} from './pr/PRTeam';
 
 export const RemotionRoot: React.FC = () => {
   return (
     <>
+      {/* بروتوكول تعاون جمعية المعلمين الكويتية مع وزارة التربية — أفقي 16:9 للتلفزيون، نفس هوية الأكاديميات */}
+      <Composition id="Protocol" component={Protocol} durationInFrames={ptFrames()} fps={PT_FPS} width={PT_W} height={PT_H} />
       {/* أكاديميات جمعية المعلمين الكويتية — أفقي 16:9 بنفس هوية فيديو التوصيات */}
       <Composition id="Academies" component={Academies} durationInFrames={acFrames()} fps={AC_FPS} width={AC_W} height={AC_H} />
       {/* فريق العلاقات العامة — فاطمة الهاشمية، نسخة رسمية */}

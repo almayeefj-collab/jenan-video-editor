@@ -25,6 +25,7 @@ ap.add_argument('durs')
 ap.add_argument('out')
 ap.add_argument('sections', nargs='+')
 ap.add_argument('--motion')
+ap.add_argument('--dense', type=float, default=0, help='كل المقاطع: نسبة المقطع اللي تنأخذ (مثلاً 0.75) بلقطات متعددة من أجزاء مختلفة، بدل لقطتين بالكثير')
 a = ap.parse_args()
 durs = {n: float(t) for n, t in (l.split() for l in open(a.durs))}
 motion = json.load(open(a.motion)) if a.motion else {}
@@ -55,6 +56,15 @@ def segs_for(n, full, split):
         return OVR[n]
     L = durs[n]
     d = BAR if full else HALF
+    if split and a.dense and L >= 4.6:
+        k = max(1, int(L * a.dense / 2.3))
+        out = []
+        for j in range(k):
+            lo, hi = L * j / k, L * (j + 1) / k
+            st, cost = best_start(n, BAR, lo, min(L, hi + 0.3))
+            if cost <= SHAKY and (not out or st - out[-1][0] >= 2.3):
+                out.append((st, BAR))
+        return out
     if split and L >= 6:
         out = []
         for lo, hi in ((0, L / 2 + 1), (L / 2 - 1, L)):
