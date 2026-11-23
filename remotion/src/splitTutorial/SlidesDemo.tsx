@@ -141,8 +141,8 @@ const Opt: React.FC<{label: string; on?: boolean}> = ({label, on}) => (
       flex: 1,
       padding: '12px 16px',
       borderRadius: 14,
-      border: `2px solid ${on ? '#4a6cf7' : '#dde'}`,
-      background: on ? '#eef2ff' : '#fff',
+      border: `2px solid ${on ? '#4285F4' : '#dde'}`,
+      background: on ? '#e8f0fe' : '#fff',
       fontFamily: latin,
       fontSize: 20,
       color: '#333',
@@ -242,7 +242,7 @@ export const SlidesDemo: React.FC<{t?: Partial<DemoT>}> = ({t}) => {
         >
           <div style={{fontFamily: latin, fontSize: 14, fontWeight: 700, color: '#fff', background: '#d93025', borderRadius: 4, padding: '3px 6px'}}>PDF</div>
           <div style={{fontFamily, fontSize: 22, color: '#333', flex: 1}}>ملفك.pdf</div>
-          <div style={{fontFamily: latin, fontSize: 20, color: '#4a6cf7'}}>✓</div>
+          <div style={{fontFamily: latin, fontSize: 20, color: '#4285F4'}}>✓</div>
         </div>
       </div>
 
@@ -273,7 +273,7 @@ export const SlidesDemo: React.FC<{t?: Partial<DemoT>}> = ({t}) => {
               height: 54,
               borderRadius: 12,
               background: bg,
-              border: `2px solid ${on ? '#4a6cf7' : hover ? '#9aa' : 'transparent'}`,
+              border: `2px solid ${on ? '#4285F4' : hover ? '#9aa' : 'transparent'}`,
               fontFamily: latin,
               fontSize: 15,
               color: '#333',
@@ -290,7 +290,7 @@ export const SlidesDemo: React.FC<{t?: Partial<DemoT>}> = ({t}) => {
       })}
       {generating && (
         <div style={{position: 'absolute', left: COL.studio[0] + 18, top: BAR + 350, display: 'flex', alignItems: 'center', gap: 12, fontFamily: latin, fontSize: 18, color: '#333'}}>
-          <div style={{width: 22, height: 22, borderRadius: 11, border: '3px solid #ccd', borderTopColor: '#4a6cf7', transform: `rotate(${frame * 12}deg)`}} />
+          <div style={{width: 22, height: 22, borderRadius: 11, border: '3px solid #ccd', borderTopColor: '#4285F4', transform: `rotate(${frame * 12}deg)`}} />
           Generating Slide Deck…
         </div>
       )}
@@ -330,7 +330,7 @@ export const SlidesDemo: React.FC<{t?: Partial<DemoT>}> = ({t}) => {
               <Typed text={SLIDES_PROMPT} sec={sec} />
             </div>
             <div style={{display: 'flex', justifyContent: 'flex-end', marginTop: 18}}>
-              <div style={{fontFamily: latin, fontSize: 20, background: sec >= T.genClick ? '#3550d4' : '#4a6cf7', color: '#fff', padding: '10px 26px', borderRadius: 20}}>Generate</div>
+              <div style={{fontFamily: latin, fontSize: 20, background: sec >= T.genClick ? '#1a5fd6' : '#4285F4', color: '#fff', padding: '10px 26px', borderRadius: 20}}>Generate</div>
             </div>
           </div>
         </AbsoluteFill>
@@ -344,9 +344,9 @@ export const SlidesDemo: React.FC<{t?: Partial<DemoT>}> = ({t}) => {
               <Slide i={slideIdx} big />
             </div>
             <div style={{display: 'flex', flexDirection: 'column', gap: 12}}>
-              <div style={{fontFamily: latin, fontSize: 18, padding: '10px 16px', borderRadius: 18, background: sec >= T.downloadClick ? '#3550d4' : '#111', color: '#fff', textAlign: 'center'}}>⤓ Download PDF</div>
+              <div style={{fontFamily: latin, fontSize: 18, padding: '10px 16px', borderRadius: 18, background: sec >= T.downloadClick ? '#1a5fd6' : '#111', color: '#fff', textAlign: 'center'}}>⤓ Download PDF</div>
               {[0, 1, 2].map((j) => (
-                <div key={j} style={{outline: (slideIdx + 1 + j) % 4 === (slideIdx + 1) % 4 ? '3px solid #4a6cf7' : 'none', borderRadius: 6}}>
+                <div key={j} style={{outline: (slideIdx + 1 + j) % 4 === (slideIdx + 1) % 4 ? '3px solid #4285F4' : 'none', borderRadius: 6}}>
                   <Slide i={slideIdx + 1 + j} />
                 </div>
               ))}
@@ -370,7 +370,7 @@ export const SlidesDemo: React.FC<{t?: Partial<DemoT>}> = ({t}) => {
           bottom: 26,
           transform: `translateX(-50%) translateY(${(1 - stepP) * 20}px)`,
           opacity: stepP,
-          background: '#4a6cf7',
+          background: ['#4285F4', '#EA4335', '#F9AB00', '#34A853', '#4285F4'][stepIdx],
           color: '#fff',
           fontFamily,
           fontWeight: 800,
@@ -379,7 +379,7 @@ export const SlidesDemo: React.FC<{t?: Partial<DemoT>}> = ({t}) => {
           borderRadius: 40,
           direction: 'rtl',
           whiteSpace: 'nowrap',
-          boxShadow: '0 6px 20px rgba(74,108,247,0.4)',
+          boxShadow: '0 6px 20px rgba(66,133,244,0.35)',
         }}
         key={stepIdx}
       >
