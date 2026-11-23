@@ -203,16 +203,16 @@ const Montage: React.FC<{i: number}> = ({i}) => {
         <AbsoluteFill style={{background: 'linear-gradient(180deg, rgba(4,18,48,.85) 0%, rgba(4,18,48,.35) 16%, transparent 28%, transparent 76%, rgba(4,18,48,.55) 88%, rgba(4,18,48,.9) 100%)'}} />
         <AbsoluteFill style={{background: 'radial-gradient(ellipse at center, transparent 60%, rgba(4,18,48,.45) 100%)'}} />
       </AbsoluteFill>
-      {/* اسم الموضوع جنب الشعار */}
-      <div style={{position: 'absolute', top: 62, right: 175, left: 0, display: 'flex', justifyContent: 'flex-start', opacity: Math.min(1, pill * 1.4) * (1 - exit)}}>
+      {/* اسم الموضوع جنب الشعار: صغير وفوق عشان ما يغطي على وجيه الحضور */}
+      <div style={{position: 'absolute', top: 40, right: 168, left: 0, display: 'flex', justifyContent: 'flex-start', opacity: Math.min(1, pill * 1.4) * (1 - exit)}}>
         <div
           style={{
-            display: 'flex', alignItems: 'center', gap: 14, padding: '6px 34px 10px', borderRadius: 44, transform: `translateX(${(1 - pill) * 60}px)`, transformOrigin: 'right center',
+            display: 'flex', alignItems: 'center', gap: 10, padding: '3px 22px 6px', borderRadius: 30, transform: `translateX(${(1 - pill) * 60}px)`, transformOrigin: 'right center',
             background: 'rgba(4,18,48,.6)', border: `1.5px solid ${C.gold}`, boxShadow: '0 8px 30px rgba(0,0,0,.35)',
           }}
         >
-          <span style={{width: 14, height: 14, transform: 'rotate(45deg)', background: C.gold}} />
-          <span style={{fontSize: 46, fontWeight: 800, color: '#fff'}}>{a.name}</span>
+          <span style={{width: 10, height: 10, transform: 'rotate(45deg)', background: C.gold}} />
+          <span style={{fontSize: 30, fontWeight: 800, color: '#fff'}}>{a.name}</span>
         </div>
       </div>
     </AbsoluteFill>
