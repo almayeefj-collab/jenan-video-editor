@@ -13,7 +13,7 @@ export const HEIGHT = 1080;
 const W = WIDTH;
 const H = HEIGHT;
 const BAR = 69;
-export const INTRO = 3 * BAR;
+export const INTRO = 4 * BAR;
 const CARD = 2 * BAR; // بطاقة عنوان الأكاديمية
 // مدة مقتطفات كل أكاديمية = مجموع لقطاتها (مضاعف للبار)
 const montageLen = (i: number) => ACADEMIES[i].shots.reduce((a, s) => a + s[2], 0);
@@ -93,9 +93,9 @@ const Badge: React.FC<{n: string; size: number; k: number}> = ({n, size, k}) => 
 const KTS_RATIO = 824 / 1232;
 type Pose = {cx: number; cy: number; h: number};
 const lerp = (a: Pose, b: Pose, k: number): Pose => ({cx: a.cx + (b.cx - a.cx) * k, cy: a.cy + (b.cy - a.cy) * k, h: a.h + (b.h - a.h) * k});
-const P_INTRO = {cx: 560, cy: 500, h: 600};
+const P_INTRO = {cx: 960, cy: 160, h: 240};
 const P_TOP = {cx: 1830, cy: 104, h: 150};
-const P_OUTRO = {cx: 960, cy: 330, h: 400};
+const P_OUTRO = {cx: 960, cy: 225, h: 330};
 const Logo: React.FC = () => {
   const f = useCurrentFrame();
   const {fps} = useVideoConfig();
@@ -132,43 +132,42 @@ const Footer: React.FC = () => {
           <div key={i} style={{width: i === cur ? 46 : 12, height: 12, borderRadius: 6, background: i < cur ? 'rgba(127,230,242,.75)' : i === cur ? C.gold : 'rgba(255,255,255,.3)', boxShadow: i === cur ? `0 0 12px ${C.gold}` : undefined}} />
         ))}
       </div>
-      <div style={{fontSize: 26, fontWeight: 700, color: '#e9f4ff', textShadow: '0 2px 12px rgba(0,0,0,.6)'}}>جمعية المعلمين الكويتية</div>
+      <div style={{fontSize: 32, fontWeight: 700, color: '#e9f4ff', textShadow: '0 2px 12px rgba(0,0,0,.6)'}}>جمعية المعلمين الكويتية</div>
     </div>
   );
 };
 
-// ===== الانترو: الشعار يسار والنصوص يمين =====
+// ===== الانترو: الشعار فوق بالنص، وتحته العنوان كبير وعدد الأكاديميات وأسماؤها (مقاسات كبيرة للعرض على التلفزيون) =====
 const Intro: React.FC = () => {
   const f = useCurrentFrame();
   const {fps} = useVideoConfig();
   const exit = 1 - pr(f, INTRO - 30, 18);
-  const num = spring({frame: f - 62, fps, config: {damping: 11}});
+  const num = spring({frame: f - 56, fps, config: {damping: 11}});
   return (
-    <AbsoluteFill style={{direction: 'rtl', fontFamily}}>
-      <div style={{position: 'absolute', top: 190, right: 130, width: 1060, opacity: exit, transform: `translateX(${(1 - exit) * 80}px)`}}>
-        <div style={{fontSize: 44, fontWeight: 800, color: C.cyan, ...reveal(f, 30)}}>الأكاديميات التابعة لـ</div>
-        <div style={{fontSize: 84, fontWeight: 900, color: '#fff', marginTop: -6, whiteSpace: 'nowrap', lineHeight: 1.35, textShadow: '0 0 40px rgba(127,230,242,.35)', ...reveal(f, 38, 20)}}>جمعية المعلمين الكويتية</div>
-        <div style={{display: 'flex', alignItems: 'center', gap: 22, marginTop: 26}}>
-          <Badge n={String(ACADEMIES.length)} size={110} k={num} />
-          <div style={reveal(f, 68)}>
-            <div style={{fontSize: 50, fontWeight: 900, color: '#fff', lineHeight: 1.2}}>أكاديميات</div>
-            <div style={{fontSize: 30, fontWeight: 700, color: C.gold}}>للتدريب والتطوير المهني</div>
-          </div>
+    <AbsoluteFill style={{direction: 'rtl', fontFamily, textAlign: 'center'}}>
+      <div style={{position: 'absolute', top: 292, left: 0, right: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', opacity: exit, transform: `translateY(${(1 - exit) * -50}px)`}}>
+        <div style={{fontSize: 82, fontWeight: 900, whiteSpace: 'nowrap', lineHeight: 1.35, textShadow: '0 0 40px rgba(127,230,242,.35), 0 4px 20px rgba(0,0,0,.5)', ...reveal(f, 30, 20)}}>
+          <span style={{color: C.cyan}}>الأكاديميات التابعة </span>
+          <span style={{color: '#fff'}}>لجمعية المعلمين الكويتية</span>
         </div>
-        <div style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 14, marginTop: 34}}>
+        <div style={{display: 'flex', alignItems: 'center', gap: 22, marginTop: 14}}>
+          <Badge n={String(ACADEMIES.length)} size={92} k={num} />
+          <div style={{fontSize: 66, fontWeight: 900, color: C.gold, ...reveal(f, 62)}}>أكاديميات</div>
+        </div>
+        <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, marginTop: 20}}>
           {ACADEMIES.map((a, i) => {
-            const q = pr(f, 92 + i * 12, 16, Easing.out(Easing.back(1.5)));
+            const q = pr(f, 86 + i * 14, 16, Easing.out(Easing.back(1.5)));
             return (
               <div
                 key={i}
                 style={{
-                  display: 'flex', alignItems: 'center', gap: 18, padding: '12px 36px', borderRadius: 40, minWidth: 640,
-                  background: 'linear-gradient(270deg, rgba(127,230,242,.22), rgba(127,230,242,.03))', border: '1.5px solid rgba(127,230,242,.45)',
-                  opacity: Math.min(1, q * 1.5), transform: `translateX(${(1 - q) * 300}px)`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 22, padding: '2px 44px 6px', borderRadius: 50, minWidth: 820,
+                  background: 'linear-gradient(90deg, rgba(127,230,242,.05), rgba(127,230,242,.22), rgba(127,230,242,.05))', border: '2px solid rgba(127,230,242,.5)',
+                  opacity: Math.min(1, q * 1.5), transform: `translateX(${(1 - q) * (i % 2 ? -400 : 400)}px)`,
                 }}
               >
-                <span style={{fontFamily: numberFamily, fontSize: 34, fontWeight: 900, color: C.gold, fontVariantNumeric: 'lining-nums'}}>{ORD[i]}</span>
-                <div style={{fontSize: 40, fontWeight: 800, color: '#fff'}}>{a.name}</div>
+                <span style={{fontFamily: numberFamily, fontSize: 46, fontWeight: 900, color: C.gold, fontVariantNumeric: 'lining-nums'}}>{ORD[i]}</span>
+                <div style={{fontSize: 52, fontWeight: 800, color: '#fff'}}>{a.name}</div>
               </div>
             );
           })}
@@ -178,7 +177,7 @@ const Intro: React.FC = () => {
       <Sfx at={4} src="cinematic-boom" v={0.4} dur={FPS * 3} />
       <Sfx at={32} src="shimmer" v={0.3} />
       {ACADEMIES.map((_, i) => (
-        <Sfx key={i} at={92 + i * 12} src="pop" v={0.25} dur={15} />
+        <Sfx key={i} at={86 + i * 14} src="pop" v={0.25} dur={15} />
       ))}
       <Sfx at={INTRO - 34} src="swoosh-up" v={0.35} dur={20} />
     </AbsoluteFill>
@@ -196,13 +195,13 @@ const TitleCard: React.FC<{i: number}> = ({i}) => {
   const line = pr(f, 30, 24);
   return (
     <AbsoluteFill style={{direction: 'rtl', fontFamily, textAlign: 'center', opacity: 1 - ex, transform: `scale(${1 + ex * 0.15})`, filter: `blur(${ex * 10}px)`}}>
-      <Rays cx={960} cy={300} size={900} o={pr(f, 0, 20)} />
-      <div style={{position: 'absolute', top: 210, left: 0, right: 0, display: 'flex', justifyContent: 'center'}}>
-        <Badge n={ORD[i]} size={180} k={badge} />
+      <Rays cx={960} cy={210} size={900} o={pr(f, 0, 20)} />
+      <div style={{position: 'absolute', top: 110, left: 0, right: 0, display: 'flex', justifyContent: 'center'}}>
+        <Badge n={ORD[i]} size={200} k={badge} />
       </div>
-      <div style={{position: 'absolute', top: 440, left: 100, right: 100}}>
-        <div style={{fontSize: 44, fontWeight: 800, color: C.cyan, ...reveal(f, 10)}}>{a.kicker}</div>
-        <div style={{fontSize: a.titleSize ?? 110, fontWeight: 900, color: '#fff', lineHeight: 1.25, marginTop: 4, textShadow: '0 6px 30px rgba(0,0,0,.5)', display: 'flex', flexWrap: 'wrap', justifyContent: 'center', columnGap: 26}}>
+      <div style={{position: 'absolute', top: 340, left: 60, right: 60}}>
+        <div style={{fontSize: 68, fontWeight: 800, color: C.cyan, ...reveal(f, 10)}}>{a.kicker}</div>
+        <div style={{fontSize: a.titleSize ?? 150, fontWeight: 900, color: '#fff', lineHeight: 1.2, marginTop: 0, textShadow: '0 6px 30px rgba(0,0,0,.5)', display: 'flex', flexWrap: 'wrap', justifyContent: 'center', columnGap: 26}}>
           {words.map((w, k) => {
             const q = pr(f, 16 + k * 5, 12, out);
             return (
@@ -213,11 +212,11 @@ const TitleCard: React.FC<{i: number}> = ({i}) => {
           })}
         </div>
         <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, margin: '28px auto 0'}}>
-          <div style={{height: 3, width: 280 * line, background: `linear-gradient(to left, ${C.gold}, transparent)`}} />
+          <div style={{height: 4, width: 360 * line, background: `linear-gradient(to left, ${C.gold}, transparent)`}} />
           <div style={{width: 14, height: 14, transform: `rotate(45deg) scale(${line})`, background: C.gold}} />
-          <div style={{height: 3, width: 280 * line, background: `linear-gradient(to right, ${C.gold}, transparent)`}} />
+          <div style={{height: 4, width: 360 * line, background: `linear-gradient(to right, ${C.gold}, transparent)`}} />
         </div>
-        <div style={{fontSize: 40, fontWeight: 700, color: C.gold, marginTop: 22, ...reveal(f, 40)}}>مقتطفات من برامج الأكاديمية</div>
+        <div style={{fontSize: 62, fontWeight: 800, color: C.gold, marginTop: 20, ...reveal(f, 40)}}>مقتطفات من برامج الأكاديمية</div>
       </div>
       <Sfx at={0} src="whoosh" v={0.3} />
       <Sfx at={6} src="impact" v={0.25} />
@@ -274,16 +273,16 @@ const Montage: React.FC<{i: number}> = ({i}) => {
         <AbsoluteFill style={{background: 'radial-gradient(ellipse at center, transparent 60%, rgba(4,18,48,.45) 100%)'}} />
       </AbsoluteFill>
       {/* اسم الأكاديمية جنب الشعار */}
-      <div style={{position: 'absolute', top: 70, right: 175, left: 0, display: 'flex', justifyContent: 'flex-start', opacity: Math.min(1, pill * 1.4) * (1 - exit)}}>
+      <div style={{position: 'absolute', top: 62, right: 175, left: 0, display: 'flex', justifyContent: 'flex-start', opacity: Math.min(1, pill * 1.4) * (1 - exit)}}>
         <div
           style={{
-            display: 'flex', alignItems: 'center', gap: 14, padding: '8px 30px 10px', borderRadius: 40, transform: `translateX(${(1 - pill) * 60}px)`, transformOrigin: 'right center',
+            display: 'flex', alignItems: 'center', gap: 14, padding: '6px 34px 10px', borderRadius: 44, transform: `translateX(${(1 - pill) * 60}px)`, transformOrigin: 'right center',
             background: 'rgba(4,18,48,.6)', border: `1.5px solid ${C.gold}`, boxShadow: '0 8px 30px rgba(0,0,0,.35)',
           }}
         >
-          <span style={{fontFamily: numberFamily, fontSize: 34, fontWeight: 900, color: C.gold, fontVariantNumeric: 'lining-nums'}}>{ORD[i]}</span>
-          <span style={{width: 2, height: 30, background: 'rgba(127,230,242,.6)'}} />
-          <span style={{fontSize: 36, fontWeight: 800, color: '#fff'}}>{a.name}</span>
+          <span style={{fontFamily: numberFamily, fontSize: 42, fontWeight: 900, color: C.gold, fontVariantNumeric: 'lining-nums'}}>{ORD[i]}</span>
+          <span style={{width: 2, height: 38, background: 'rgba(127,230,242,.6)'}} />
+          <span style={{fontSize: 46, fontWeight: 800, color: '#fff'}}>{a.name}</span>
         </div>
       </div>
     </AbsoluteFill>
@@ -320,12 +319,12 @@ const Outro: React.FC = () => {
   const f = useCurrentFrame();
   return (
     <AbsoluteFill style={{direction: 'rtl', fontFamily, textAlign: 'center'}}>
-      <div style={{position: 'absolute', top: 560, left: 40, right: 40}}>
-        <div style={{fontSize: 80, fontWeight: 900, color: '#fff', ...reveal(f, 26, 20)}}>جمعية المعلمين الكويتية</div>
-        <div style={{fontSize: 44, fontWeight: 800, color: C.gold, marginTop: 0, ...reveal(f, 40)}}>أكاديميات تصنع الفرق</div>
-        <div style={{display: 'flex', justifyContent: 'center', gap: 16, marginTop: 28}}>
+      <div style={{position: 'absolute', top: 410, left: 30, right: 30}}>
+        <div style={{fontSize: 108, fontWeight: 900, color: '#fff', lineHeight: 1.3, textShadow: '0 0 40px rgba(127,230,242,.3)', ...reveal(f, 26, 20)}}>جمعية المعلمين الكويتية</div>
+        <div style={{fontSize: 70, fontWeight: 800, color: C.gold, lineHeight: 1.3, ...reveal(f, 40)}}>أكاديميات تصنع الفرق</div>
+        <div style={{display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: 18, marginTop: 30}}>
           {ACADEMIES.map((a, i) => (
-            <div key={i} style={{fontSize: 30, fontWeight: 700, color: C.cyan, padding: '6px 24px', borderRadius: 30, border: '1.5px solid rgba(127,230,242,.45)', ...reveal(f, 54 + i * 8)}}>
+            <div key={i} style={{fontSize: 44, fontWeight: 800, color: '#fff', padding: '2px 32px 8px', borderRadius: 44, border: '2px solid rgba(127,230,242,.55)', background: 'rgba(127,230,242,.1)', ...reveal(f, 54 + i * 8)}}>
               {a.name}
             </div>
           ))}
