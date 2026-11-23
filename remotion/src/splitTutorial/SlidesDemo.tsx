@@ -10,7 +10,7 @@ const s = (sec: number) => Math.round(sec * FPS);
 const latin = 'Helvetica, Arial, sans-serif';
 
 // توقيت الخطوات (بالثواني من بداية العرض)
-const T = {
+export const DEFAULT_T = {
   addClick: 1.4,
   fileIn: 2.2,
   toStudio: 5.5,
@@ -24,9 +24,12 @@ const T = {
   downloadClick: 30.0,
 };
 
+export type DemoT = typeof DEFAULT_T;
+let T: DemoT = DEFAULT_T; // يتحدد لكل إطار من props (Remotion يرسم الإطار بشكل متزامن)
+
 export const SLIDES_PROMPT = 'عرض مختصر لطلاب الثانوي، ١٠ شرائح';
 
-const STEPS: {at: number; label: string}[] = [
+const steps = (): {at: number; label: string}[] => [
   {at: 0, label: 'الخطوة ١: أضف ملفك كمصدر'},
   {at: T.toStudio, label: 'الخطوة ٢: من Studio اختر Slide Deck'},
   {at: T.dialogIn, label: 'الخطوة ٣: اختر النوع واللغة واكتب طلبك'},
@@ -66,7 +69,7 @@ const TILES = [
 const tilePos = (i: number) => ({x: COL.studio[0] + 14 + (i % 2) * 140, y: BAR + 70 + Math.floor(i / 2) * 64});
 
 // مسار الماوس: [ثانية، x، y]
-const PATH: [number, number, number][] = [
+const path = (): [number, number, number][] => [
   [0, 560, 500],
   [T.addClick - 0.3, 158, BAR + 74],
   [T.addClick + 1.2, 158, BAR + 74],
@@ -82,6 +85,7 @@ const PATH: [number, number, number][] = [
   [99, 900, 132],
 ];
 const cursorAt = (sec: number) => {
+  const PATH = path();
   for (let i = 0; i < PATH.length - 1; i++) {
     const [t0, x0, y0] = PATH[i];
     const [t1, x1, y1] = PATH[i + 1];
@@ -190,7 +194,9 @@ const Slide: React.FC<{i: number; big?: boolean}> = ({i, big}) => {
   );
 };
 
-export const SlidesDemo: React.FC = () => {
+export const SlidesDemo: React.FC<{t?: Partial<DemoT>}> = ({t}) => {
+  T = {...DEFAULT_T, ...t};
+  const STEPS = steps();
   const frame = useCurrentFrame();
   const sec = frame / FPS;
   const fileP = interpolate(frame, [s(T.fileIn), s(T.fileIn) + 10], [0, 1], clamp);

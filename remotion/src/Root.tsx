@@ -11,11 +11,14 @@ import {Recommendations46} from './conference46/Recommendations';
 import {FPS as C46B_FPS, HEIGHT as C46B_H, Recommendations46V2, totalFrames as c46bFrames, WIDTH as C46B_W} from './conference46/v2/Recommendations2';
 
 import {FPS as ST_FPS, HEIGHT as ST_H, SplitTutorial, type SplitTutorialProps, splitTutorialDefaults, splitTutorialFrames, splitTutorialSchema, WIDTH as ST_W} from './splitTutorial/SplitTutorial';
+import {FPS as NV_FPS, HEIGHT as NV_H, NotebookSlidesVO, totalFrames as nvFrames, WIDTH as NV_W} from './splitTutorial/NotebookSlidesVO';
 import {FPS as PR_FPS, HEIGHT as PR_H, PRTeam, totalFrames as prFrames, WIDTH as PR_W} from './pr/PRTeam';
 
 export const RemotionRoot: React.FC = () => {
   return (
     <>
+      {/* عرض تقديمي من أي ملف بـ NotebookLM — شرح صوتي بدون متكلم */}
+      <Composition id="NotebookSlidesVO" component={NotebookSlidesVO} durationInFrames={nvFrames()} fps={NV_FPS} width={NV_W} height={NV_H} />
       {/* قالب ريل شرح أداة: شعار/تسجيل شاشة فوق، وأنت تتكلم تحت */}
       <Composition
         id="SplitTutorial"
