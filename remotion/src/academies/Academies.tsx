@@ -5,7 +5,7 @@
 import {AbsoluteFill, Audio, Easing, Img, interpolate, OffthreadVideo, random, Sequence, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {fontFamily, numberFamily} from '../reel/font';
 import {C, LOGO} from '../conference46/config';
-import {ACADEMIES, CLIP_DIR, PATTERN} from './config';
+import {ACADEMIES, CLIP_DIR} from './config';
 
 export const FPS = 30;
 export const WIDTH = 1920;
@@ -15,11 +15,12 @@ const H = HEIGHT;
 const BAR = 69;
 export const INTRO = 3 * BAR;
 const CARD = 2 * BAR; // بطاقة عنوان الأكاديمية
-const MONTAGE = PATTERN.reduce((a, b) => a + b, 0); // مقتطفات الفيديو
-const SECTION = CARD + MONTAGE;
+// مدة مقتطفات كل أكاديمية = مجموع لقطاتها (مضاعف للبار)
+const montageLen = (i: number) => ACADEMIES[i].shots.reduce((a, s) => a + s[2], 0);
 export const OUTRO = 3 * BAR;
+const XF = 8; // تداخل ناعم بين اللقطات
 
-const secStart = (i: number) => INTRO + i * SECTION;
+const secStart = (i: number) => INTRO + ACADEMIES.slice(0, i).reduce((a, _, k) => a + CARD + montageLen(k), 0);
 const outroStart = () => secStart(ACADEMIES.length);
 export const totalFrames = () => outroStart() + OUTRO;
 
@@ -120,7 +121,10 @@ const Logo: React.FC = () => {
 const Footer: React.FC = () => {
   const f = useCurrentFrame();
   const vis = pr(f, INTRO - 10, 20) * (1 - pr(f, outroStart(), 14));
-  const cur = Math.max(0, Math.min(ACADEMIES.length - 1, Math.floor((f - INTRO) / SECTION)));
+  let cur = 0;
+  ACADEMIES.forEach((_, i) => {
+    if (f >= secStart(i)) cur = i;
+  });
   return (
     <div style={{position: 'absolute', left: 0, right: 0, bottom: 30, textAlign: 'center', direction: 'rtl', fontFamily, opacity: vis}}>
       <div style={{display: 'flex', justifyContent: 'center', gap: 12, marginBottom: 10}}>
@@ -226,13 +230,12 @@ const TitleCard: React.FC<{i: number}> = ({i}) => {
 const Shot: React.FC<{src: string; from: number; dur: number; k: number}> = ({src, from, dur, k}) => {
   const f = useCurrentFrame();
   const dir = k % 2 ? 1 : -1;
-  const scale = interpolate(f, [0, dur + 8], [1.02, 1.09]);
-  const tx = interpolate(f, [0, dur + 8], [0, dir * 18]);
-  const enter = pr(f, 0, 8, out);
-  const flash = interpolate(f, [0, 2, 8], [0.0, 0.25, 0], clamp);
+  const scale = interpolate(f, [0, dur + XF], [1.02, 1.08]);
+  const tx = interpolate(f, [0, dur + XF], [0, dir * 16]);
+  const enter = pr(f, 0, XF, out);
   return (
-    <AbsoluteFill style={{background: C.deep}}>
-      <AbsoluteFill style={{opacity: k === 0 ? 1 : enter, transform: `scale(${1 + (1 - enter) * 0.05})`}}>
+    <AbsoluteFill>
+      <AbsoluteFill style={{opacity: k === 0 ? 1 : enter}}>
         <OffthreadVideo
           src={staticFile(CLIP_DIR + src)}
           trimBefore={Math.round(from * FPS)}
@@ -240,7 +243,6 @@ const Shot: React.FC<{src: string; from: number; dur: number; k: number}> = ({sr
           style={{width: '100%', height: '100%', objectFit: 'cover', transform: `scale(${scale}) translateX(${tx}px)`, filter: 'contrast(1.05) saturate(1.06)'}}
         />
       </AbsoluteFill>
-      {k > 0 ? <AbsoluteFill style={{background: '#fff', opacity: flash}} /> : null}
     </AbsoluteFill>
   );
 };
@@ -249,11 +251,11 @@ const Shot: React.FC<{src: string; from: number; dur: number; k: number}> = ({sr
 const Montage: React.FC<{i: number}> = ({i}) => {
   const f = useCurrentFrame();
   const a = ACADEMIES[i];
+  const MONTAGE = montageLen(i);
   let t = 0;
-  const shots = PATTERN.map((dur, k) => {
-    const c = a.clips[k % a.clips.length];
-    const s = {from: t, dur, c, k};
-    t += dur;
+  const shots = a.shots.map((c, k) => {
+    const s = {from: t, dur: c[2], c, k};
+    t += c[2];
     return s;
   });
   const enter = pr(f, 0, 18, out);
@@ -263,8 +265,8 @@ const Montage: React.FC<{i: number}> = ({i}) => {
     <AbsoluteFill style={{direction: 'rtl', fontFamily}}>
       <AbsoluteFill style={{clipPath: `circle(${enter * 120}% at 50% 50%)`, opacity: 1 - exit}}>
         {shots.map((s) => (
-          <Sequence key={s.k} from={s.from} durationInFrames={s.dur}>
-            <Shot src={s.c[0]} from={s.c[1]} dur={s.dur} k={s.k} />
+          <Sequence key={s.k} from={s.k === 0 ? 0 : s.from - XF} durationInFrames={s.dur + (s.k === 0 ? 0 : XF)}>
+            <Shot src={s.c[0]} from={Math.max(0, s.c[1] - (s.k === 0 ? 0 : XF / FPS))} dur={s.dur} k={s.k} />
           </Sequence>
         ))}
         {/* تظليل فوق وتحت عشان الشعار والعناوين تنقرا */}
@@ -284,9 +286,6 @@ const Montage: React.FC<{i: number}> = ({i}) => {
           <span style={{fontSize: 36, fontWeight: 800, color: '#fff'}}>{a.name}</span>
         </div>
       </div>
-      {shots.slice(1).map((s) => (
-        <Sfx key={s.k} at={s.from} src="tick" v={0.12} dur={6} />
-      ))}
     </AbsoluteFill>
   );
 };
@@ -341,7 +340,7 @@ const Outro: React.FC = () => {
 
 const musicVolume = (f: number) => {
   const total = totalFrames();
-  return 0.6 * interpolate(f, [0, 10], [0, 1], clamp) * interpolate(f, [total - 50, total], [1, 0], clamp);
+  return 0.75 * interpolate(f, [0, 10], [0, 1], clamp) * interpolate(f, [total - 50, total], [1, 0], clamp);
 };
 
 export const Academies: React.FC = () => (
@@ -356,7 +355,7 @@ export const Academies: React.FC = () => (
       </Sequence>
     ))}
     {ACADEMIES.map((_, i) => (
-      <Sequence key={`m${i}`} from={secStart(i) + CARD} durationInFrames={MONTAGE}>
+      <Sequence key={`m${i}`} from={secStart(i) + CARD} durationInFrames={montageLen(i)}>
         <Montage i={i} />
       </Sequence>
     ))}
@@ -370,6 +369,6 @@ export const Academies: React.FC = () => (
     </Sequence>
     <Footer />
     <Logo />
-    <Audio src={staticFile('c46/soft.mp3')} volume={musicVolume} />
+    <Audio src={staticFile('academies/music.mp3')} volume={musicVolume} />
   </AbsoluteFill>
 );
