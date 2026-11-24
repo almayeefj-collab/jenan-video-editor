@@ -103,10 +103,12 @@ export const PanelIntro: React.FC<{part: number; parts: number; bg: string} & S>
         <div style={{...useReveal(2), fontSize: 40, fontWeight: 600, color: CREAM, textShadow: shadow}}>{ss.kicker}</div>
         <div style={{...useReveal(8), fontSize: ss.title.length > 36 ? 78 : 92, fontWeight: 800, color: GOLD, textShadow: shadow, lineHeight: 1.2}}>{ss.title}</div>
         <Rule width={560} delay={16} />
-        <div style={{...useReveal(20), display: 'flex', alignItems: 'baseline', gap: 18, fontSize: 52, fontWeight: 700, color: '#fff', textShadow: shadow}}>
-          <span>الجزء {arabicDigits(part)}</span>
-          <span style={{fontSize: 34, color: CREAM, fontWeight: 500}}>من {arabicDigits(parts)}</span>
-        </div>
+        {parts > 1 ? (
+          <div style={{...useReveal(20), display: 'flex', alignItems: 'baseline', gap: 18, fontSize: 52, fontWeight: 700, color: '#fff', textShadow: shadow}}>
+            <span>الجزء {arabicDigits(part)}</span>
+            <span style={{fontSize: 34, color: CREAM, fontWeight: 500}}>من {arabicDigits(parts)}</span>
+          </div>
+        ) : null}
         <div style={{height: 40}} />
         <Names delay={30} session={session} />
       </AbsoluteFill>
@@ -179,8 +181,8 @@ export const Badge: React.FC<{part: number; parts: number} & S> = ({part, parts,
   <AbsoluteFill style={{direction: 'rtl', fontFamily}}>
     <div style={{position: 'absolute', top: 56, left: 70, display: 'flex', alignItems: 'center', gap: 16, padding: '10px 26px', borderRadius: 40, background: `${NAVY}b0`, border: `1.5px solid ${GOLD}88`}}>
       <div style={{fontSize: 26, fontWeight: 600, color: CREAM}}>{getSession(session).title}</div>
-      <div style={{width: 1.5, height: 26, background: `${GOLD}aa`}} />
-      <div style={{fontFamily: numberFamily, fontSize: 26, color: GOLD}}>{part}/{parts}</div>
+      {parts > 1 ? <div style={{width: 1.5, height: 26, background: `${GOLD}aa`}} /> : null}
+      {parts > 1 ? <div style={{fontFamily: numberFamily, fontSize: 26, color: GOLD}}>{part}/{parts}</div> : null}
     </div>
   </AbsoluteFill>
 );
