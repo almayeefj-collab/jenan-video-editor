@@ -25,6 +25,22 @@ const EVENT = 'مؤتمر الكويت الدولي الأول للتدريب و
 const TARARWA = 'brand/tararwa-logo.png'; // شركة الطراروة الدولية — منظّم المؤتمر
 const HOST: Person = {name: 'أ. إلهام دكسن', role: 'محاورة الجلسة', postRole: 'مهتمة في صحة الدماغ', side: 'right', pos: '35% 30%'};
 
+const ZAWAYA = (title: string, titleLines: [string, string]): Session => ({
+  kicker: 'برنامج زوايا',
+  title,
+  titleLines,
+  event: 'برنامج زوايا',
+  dir: 'footage/panel/zawaya',
+  postBg: 'footage/panel/zawaya/bg01.jpg',
+  logos: [TARARWA],
+  host: 'host',
+  guests: ['salwa'],
+  people: {
+    host: {name: 'فاطمة البدر', role: 'مقدّمة برنامج زوايا', postRole: 'مقدّمة البرنامج', side: 'right', pos: '50% 30%'},
+    salwa: {name: 'أ. سلوى الطراروة', role: 'محامية أمام محكمة التمييز والدستورية ومدربة معتمدة', postRole: 'محامية ومدربة معتمدة', side: 'right', pos: '50% 30%'},
+  },
+});
+
 export const SESSIONS = {
   // «الصحة النفسية بين الانهيار والتكيف» — 05.mp4
   mental: {
@@ -61,6 +77,9 @@ export const SESSIONS = {
       afrah: {name: 'أ. أفراح الخراز', role: 'نائب رئيس فريق الخطوة الأولى', postRole: 'نائب رئيس فريق\nالخطوة الأولى', side: 'left', pos: '80% 35%'},
     },
   },
+  // برنامج زوايا — لقاء أ. سلوى الطراروة مع فاطمة البدر، مقسوم موضوعين
+  zawaya_law: ZAWAYA('أهمية المحاماة', ['أهمية', 'المحاماة']),
+  zawaya_training: ZAWAYA('أهمية التدريب', ['أهمية', 'التدريب']),
 } satisfies Record<string, Session>;
 
 export type SessionKey = keyof typeof SESSIONS;

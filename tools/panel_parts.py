@@ -126,7 +126,7 @@ def main():
 
         intro_d = duration(intro)
         sel = '+'.join(f'gte(t,{a_:.3f})*lt(t,{b:.3f})' for a_, b in keep)
-        f = [f"[1:v]fps=25,select='{sel}',setpts=N/(25*TB),format=yuv420p,fade=in:st=0:d=0.5,fade=out:st={body_dur - 0.6:.2f}:d=0.6[b0]"]
+        f = [f"[1:v]fps=25,scale=1920:1080:flags=lanczos,setsar=1,select='{sel}',setpts=N/(25*TB),format=yuv420p,fade=in:st=0:d=0.5,fade=out:st={body_dur - 0.6:.2f}:d=0.6[b0]"]
         cur = 'b0'
         for j, (_, t0, t1) in enumerate(layers):
             src = 2 + j
