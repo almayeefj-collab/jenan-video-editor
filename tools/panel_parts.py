@@ -8,7 +8,8 @@
   cuts:      أوقات القطع بالثواني (بداية كل جزء بعد الأول) — على سكتة بين الجمل
   questions: [{at, dur, to, text}]  سؤال المحاورة، يظهر من at لمدة dur ثانية
   names:     [{at, who}]            اسم المتحدث تحت (يظهر 6 ثواني)
-  hooks:     {"رقم الجزء": {from, to, text}}  جملة قوية تطلع أول الفيديو كتشويق قبل بطاقة البداية
+  hooks:     {"رقم الجزء": {from, to, text, key, highlight, freeze?}}  جملة قوية أول الفيديو كتشويق:
+             زوم وضربة على الكلمة المفتاحية (key = بدايتها)، وتجميد مع صدى بعدها، وانتقالات بووش وفلاش
   exact:     180                    طول كل فيديو بالضبط بالثواني (يتعدّل طول السكتات عشان يطابق)
   trims:     [[from, to]]           مقاطع تنشال (مجاملات وكلام تنظيمي) عشان كل جزء ما يتعدى 3 دقائق
 السكتات الطويلة تنضغط تلقائياً، وأوقات الأسئلة والأسماء تتحول لتوقيت الجزء بعد الاختصار.
@@ -29,6 +30,9 @@ MUSIC = os.path.join(REMOTION, 'public', 'c46', 'soft.mp3')
 SIL_MIN = 0.5   # السكتة اللي طولها كذا أو أكثر تنضغط
 SIL_KEEP = 0.3  # ...لهالطول
 MAX_LEN = 180.0 # حد الريلز
+SFX = os.path.join(REMOTION, 'public', 'sfx')
+HOOK_FREEZE = 1.4  # تجميد بعد الكلمة المفتاحية
+HOOK_SFX = ['whoosh.wav', 'impact.wav', 'swoosh-up.wav']
 
 
 def run(cmd, **kw):
@@ -95,11 +99,14 @@ def main():
         # الهوك: جملة قوية من المقابلة تطلع أول الفيديو كتشويق، ونصها مكتوب عليها
         hook = cfg.get('hooks', {}).get(str(n))
         grid = lambda t: round(t * 25) / 25
-        hook_d = grid(hook['to'] - hook['from']) if hook else 0.0
+        # الهوك = المقطع لين آخر الكلمة المفتاحية + تجميد على آخر فريم (مع زوم بطيء وصدى الكلمة)
+        hook_a = grid(hook['to'] - hook['from']) if hook else 0.0
+        hook_f = grid(hook.get('freeze', HOOK_FREEZE)) if hook else 0.0
+        hook_d = hook_a + hook_f
         hook_png = None
         if hook:
             hook_png = os.path.join(work, f'hook{tag}.png')
-            remotion('still', 'PanelHook', hook_png, {**S, 'text': hook['text'], 'who': hook.get('who', '')})
+            remotion('still', 'PanelHook', hook_png, {**S, 'text': hook['text'], 'who': hook.get('who', ''), 'highlight': hook.get('highlight', '')})
 
         # المقاطع اللي تنحفظ (بتوقيت داخل الجزء): الجزء كامل ناقص الاختصارات وناقص السكتات الطويلة.
         # مع "exact": طول السكتات يتعدّل لين يطلع الفيديو كامل بالطول المطلوب بالضبط
@@ -144,7 +151,9 @@ def main():
             cmd += ['-i', outro, '-i', MUSIC]
         hk = nxt + (3 if outro else 1)
         if hook:
-            cmd += ['-ss', hook['from'], '-t', hook_d, '-i', a.source, '-loop', 1, '-t', hook_d, '-i', hook_png]
+            cmd += ['-ss', hook['from'], '-t', hook_a, '-i', a.source, '-loop', 1, '-t', hook_d, '-i', hook_png]
+            for sfx in HOOK_SFX:
+                cmd += ['-i', os.path.join(SFX, sfx)]
         sel = '+'.join(f'gte(t,{a_:.3f})*lt(t,{b:.3f})' for a_, b in keep)
         f = [f"[1:v]fps=25,scale=1920:1080:flags=lanczos,setsar=1,select='{sel}',setpts=N/(25*TB),format=yuv420p,fade=in:st=0:d=0.5,fade=out:st={body_dur - 0.6:.2f}:d=0.6[b0]"]
         cur = 'b0'
@@ -160,10 +169,7 @@ def main():
         f.append('[0:v]fps=25,format=yuv420p,setsar=1[iv]')
         f.append(f'[{cur}]setsar=1[bv]')
         if hook:
-            f.append(f'[{hk}:v]fps=25,scale=1920:1080:flags=lanczos,setsar=1,trim=duration={hook_d:.2f},setpts=PTS-STARTPTS,format=yuv420p[h0]')
-            f.append(f'[{hk + 1}:v]format=rgba,fade=in:st=0.2:d=0.4:alpha=1[hl]')
-            f.append(f'[h0][hl]overlay=0:0,fade=in:st=0:d=0.25,fade=out:st={hook_d - 0.35:.2f}:d=0.35,setsar=1[hv]')
-            f.append(f'[{hk}:a]aformat=sample_rates=48000:channel_layouts=stereo,atrim=duration={hook_d:.2f},asetpts=PTS-STARTPTS,afade=in:st=0:d=0.15,afade=out:st={hook_d - 0.35:.2f}:d=0.35[ha]')
+            f += hook_filters(hk, hook, hook_a, hook_f, hook_d)
         H = '[hv][ha]' if hook else ''
         nseg = 1 if hook else 0
         if outro:
@@ -182,6 +188,39 @@ def main():
         run(cmd)
         d = duration(out)
         print(f'   ✓ {out}  ({d:.2f}s){"  ⚠ أطول من 3 دقائق" if d > MAX_LEN + 0.01 else ""}', flush=True)
+
+
+def hook_filters(hk, hook, A, F, D):
+    """مؤثرات الهوك: فلاش أبيض + ووش بالبداية، زوم سريع على الكلمة المفتاحية مع ضربة، تجميد على آخر فريم
+    مع زوم بطيء وصدى الكلمة يتكرر ويخفت، وسووش + فلاش أبيض للانتقال لبطاقة البداية."""
+    K = round((hook.get('key', hook['to'] - 0.6) - hook['from']) * 25) / 25  # بداية الكلمة المفتاحية داخل الهوك
+    z = (f"if(lt(it,{K:.2f}),1+0.08*max(0,1-it/0.35),"
+         f"1+0.13*min(1,(it-{K:.2f})/0.15)+0.05*max(0,it-{K + 0.15:.2f}))")
+    v = [
+        f"[{hk}:v]fps=25,scale=1920:1080:flags=lanczos,setsar=1,trim=duration={A:.2f},setpts=PTS-STARTPTS,"
+        f"tpad=stop_mode=clone:stop_duration={F:.2f},"
+        f"zoompan=z='{z}':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=1:s=1920x1080:fps=25,"
+        f"format=yuv420p,trim=duration={D:.2f},setpts=PTS-STARTPTS[h0]",
+        f"[{hk + 1}:v]format=rgba,fade=in:st=0:d=0.08:alpha=1[hl]",
+        f"[h0][hl]overlay=0:0,fade=in:st=0:d=0.22:color=white,fade=out:st={D - 0.18:.2f}:d=0.18:color=white,setsar=1[hv]",
+    ]
+    fmt = 'aformat=sample_rates=48000:channel_layouts=stereo'
+    w = K  # الصدى ياخذ الكلمة المفتاحية من بدايتها لآخر المقطع
+    s1, s2, s3 = hk + 2, hk + 3, hk + 4
+    a = [
+        f"[{hk}:a]{fmt},atrim=duration={A:.2f},asetpts=PTS-STARTPTS,asplit=2[hm][hw]",
+        f"[hm]afade=in:st=0:d=0.08,afade=out:st={A - 0.08:.2f}:d=0.08,apad=whole_dur={D:.2f}[hmain]",
+        # الكلمة المفتاحية تتكرر 3 مرات بعدها وتخفت (صدى)، مع شوي تصفية عشان يبين بعيد
+        f"[hw]atrim=start={w:.2f},asetpts=PTS-STARTPTS,highpass=f=250,lowpass=f=5000,asplit=3[e1][e2][e3]",
+        f"[e1]volume=0.75,adelay={int((A - 0.05) * 1000)}|{int((A - 0.05) * 1000)}[d1]",
+        f"[e2]volume=0.48,adelay={int((A + 0.35) * 1000)}|{int((A + 0.35) * 1000)}[d2]",
+        f"[e3]volume=0.26,adelay={int((A + 0.75) * 1000)}|{int((A + 0.75) * 1000)}[d3]",
+        f"[{s1}:a]{fmt},volume=0.55[x1]",
+        f"[{s2}:a]{fmt},volume=0.45,adelay={int(K * 1000)}|{int(K * 1000)}[x2]",
+        f"[{s3}:a]{fmt},volume=0.55,adelay={int(max(0, D - 0.45) * 1000)}|{int(max(0, D - 0.45) * 1000)}[x3]",
+        f"[hmain][d1][d2][d3][x1][x2][x3]amix=inputs=7:normalize=0:duration=first,atrim=duration={D:.2f},afade=out:st={D - 0.2:.2f}:d=0.2[ha]",
+    ]
+    return v + a
 
 
 _SIL_CACHE = {}

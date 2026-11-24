@@ -188,7 +188,8 @@ export const Badge: React.FC<{part: number; parts: number} & S> = ({part, parts,
 );
 
 // الهوك أول الفيديو: نص الجملة القوية كبير تحت، بعلامات تنصيص ذهبية، وتحته اسم صاحبها
-export const HookCard: React.FC<{text: string; who?: string} & S> = ({text, who, session}) => {
+// highlight: كلمة أو عبارة من النص تطلع ذهبية وأكبر (الكلمة اللي يصير عليها الصدى والتجميد)
+export const HookCard: React.FC<{text: string; who?: string; highlight?: string} & S> = ({text, who, highlight, session}) => {
   const ss = getSession(session);
   const p = who ? ss.people[who] : undefined;
   return (
@@ -197,7 +198,17 @@ export const HookCard: React.FC<{text: string; who?: string} & S> = ({text, who,
       <div style={{position: 'absolute', top: 56, right: 70, padding: '10px 26px', borderRadius: 40, background: `${NAVY}b0`, border: `1.5px solid ${GOLD}88`, fontSize: 26, fontWeight: 600, color: CREAM}}>{ss.kicker}</div>
       <div style={{position: 'absolute', bottom: 90, left: 150, right: 150, textAlign: 'center'}}>
         <div style={{fontFamily: 'Georgia, serif', fontSize: 130, lineHeight: 0.6, color: GOLD, height: 56}}>&#8221;</div>
-        <div style={{fontSize: 64, fontWeight: 800, color: '#fff', lineHeight: 1.45, textShadow: shadow}}>{text}</div>
+        <div style={{fontSize: 64, fontWeight: 800, color: '#fff', lineHeight: 1.45, textShadow: shadow}}>
+          {highlight && text.includes(highlight) ? (
+            <>
+              {text.slice(0, text.lastIndexOf(highlight))}
+              <span style={{color: GOLD, fontSize: 76, fontWeight: 900}}>{highlight}</span>
+              {text.slice(text.lastIndexOf(highlight) + highlight.length)}
+            </>
+          ) : (
+            text
+          )}
+        </div>
         {p ? (
           <div style={{marginTop: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16}}>
             <div style={{width: 50, height: 2, background: GOLD}} />
