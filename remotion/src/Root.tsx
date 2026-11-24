@@ -9,7 +9,7 @@ import {Teacher4} from './teacher4/Teacher4';
 import {FPS as C46_FPS, HEIGHT as C46_H, totalFrames as c46Frames, WIDTH as C46_W} from './conference46/config';
 import {Recommendations46} from './conference46/Recommendations';
 import {FPS as C46B_FPS, HEIGHT as C46B_H, Recommendations46V2, totalFrames as c46bFrames, WIDTH as C46B_W} from './conference46/v2/Recommendations2';
-import {Badge, FPS as PN_FPS, HEIGHT as PN_H, INTRO_FRAMES, LowerThird, OUTRO_FRAMES, PanelIntro, PanelOutro, QuestionCard, WIDTH as PN_W} from './panel/PanelSession';
+import {Badge, HookCard, FPS as PN_FPS, HEIGHT as PN_H, INTRO_FRAMES, LowerThird, OUTRO_FRAMES, PanelIntro, PanelOutro, QuestionCard, WIDTH as PN_W} from './panel/PanelSession';
 import {POST_H, POST_W, PostPeople, PostTitle} from './panel/PanelPosts';
 import {COVER_H, COVER_W, ReelCover} from './panel/ReelCover';
 import {FPS as PR_FPS, HEIGHT as PR_H, PRTeam, totalFrames as prFrames, WIDTH as PR_W} from './pr/PRTeam';
@@ -26,6 +26,7 @@ export const RemotionRoot: React.FC = () => {
       <Still id="PostTitle" component={PostTitle} width={POST_W} height={POST_H} defaultProps={{logo: 'brand/kicd-2026-logo.png'}} />
       <Still id="PostPeople" component={PostPeople} width={POST_W} height={POST_H} defaultProps={{logo: 'brand/kicd-2026-logo.png'}} />
       <Still id="ReelCover" component={ReelCover} width={COVER_W} height={COVER_H} defaultProps={{session: 'zawaya_law' as const, who: 'salwa', photo: 'footage/panel/zawaya/cover-law.jpg', accent: '#0D1A3A', layout: 'band' as const}} />
+      <Still id="PanelHook" component={HookCard} width={PN_W} height={PN_H} defaultProps={{session: 'zawaya_law' as const, who: 'salwa', text: 'لقيت أن هناك مهارات يحتاجها المحامي… ما يكتفي فقط بالشهادة أو بالدراسة اللي خذيناها في الجامعات'}} />
       <Still id="PanelBadge" component={Badge} width={PN_W} height={PN_H} defaultProps={{part: 1, parts: 16}} />
       {/* فريق العلاقات العامة — فاطمة الهاشمية، نسخة رسمية */}
       <Composition id="PRTeam" component={PRTeam} durationInFrames={prFrames()} fps={PR_FPS} width={PR_W} height={PR_H} />

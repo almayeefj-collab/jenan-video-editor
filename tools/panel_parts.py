@@ -8,6 +8,8 @@
   cuts:      أوقات القطع بالثواني (بداية كل جزء بعد الأول) — على سكتة بين الجمل
   questions: [{at, dur, to, text}]  سؤال المحاورة، يظهر من at لمدة dur ثانية
   names:     [{at, who}]            اسم المتحدث تحت (يظهر 6 ثواني)
+  hooks:     {"رقم الجزء": {from, to, text}}  جملة قوية تطلع أول الفيديو كتشويق قبل بطاقة البداية
+  exact:     180                    طول كل فيديو بالضبط بالثواني (يتعدّل طول السكتات عشان يطابق)
   trims:     [[from, to]]           مقاطع تنشال (مجاملات وكلام تنظيمي) عشان كل جزء ما يتعدى 3 دقائق
 السكتات الطويلة تنضغط تلقائياً، وأوقات الأسئلة والأسماء تتحول لتوقيت الجزء بعد الاختصار.
 كل جزء = بطاقة بداية (Remotion) + المقطع الأصلي بصوته مع الصور الشفافة فوقه، والجزء الأخير ينتهي ببطاقة ختام.
@@ -78,11 +80,6 @@ def main():
         print(f'== الجزء {n}/{parts}: {start:.1f} → {end:.1f}', flush=True)
         tag = f'{n:02d}'
 
-        # المقاطع اللي تنحفظ (بتوقيت داخل الجزء): الجزء كامل ناقص الاختصارات وناقص السكتات الطويلة
-        keep = keep_segments(a.source, start, end, cfg.get('trims', []))
-        body_dur = sum(b - a_ for a_, b in keep)
-        tmap = lambda t: sum(max(0.0, min(t - start, b) - a_) for a_, b in keep)
-
         # خلفية بطاقة البداية: لقطة من وسط الجزء
         bg = f'bg{tag}.jpg'
         run(['ffmpeg', '-v', 'error', '-y', '-ss', start + min(60, (end - start) / 2), '-i', a.source, '-frames:v', 1, '-q:v', 3, os.path.join(pub, bg)])
@@ -92,6 +89,28 @@ def main():
         if n == parts:
             outro = os.path.join(work, 'outro.mp4')
             remotion('render', 'PanelOutro', outro, {**S, 'bg': f'{sdir}/{bg}'})
+        intro_d = duration(intro)
+        od = duration(outro) if outro else 0.0
+
+        # الهوك: جملة قوية من المقابلة تطلع أول الفيديو كتشويق، ونصها مكتوب عليها
+        hook = cfg.get('hooks', {}).get(str(n))
+        grid = lambda t: round(t * 25) / 25
+        hook_d = grid(hook['to'] - hook['from']) if hook else 0.0
+        hook_png = None
+        if hook:
+            hook_png = os.path.join(work, f'hook{tag}.png')
+            remotion('still', 'PanelHook', hook_png, {**S, 'text': hook['text'], 'who': hook.get('who', '')})
+
+        # المقاطع اللي تنحفظ (بتوقيت داخل الجزء): الجزء كامل ناقص الاختصارات وناقص السكتات الطويلة.
+        # مع "exact": طول السكتات يتعدّل لين يطلع الفيديو كامل بالطول المطلوب بالضبط
+        if cfg.get('exact'):
+            target = grid(cfg['exact'] - intro_d - od - hook_d)
+            keep, k = fit_segments(a.source, start, end, cfg.get('trims', []), target)
+            print(f'   طول السكتة المحفوظة {k:.2f}s → المقطع {target:.2f}s', flush=True)
+        else:
+            keep = keep_segments(a.source, start, end, cfg.get('trims', []))
+        body_dur = sum(b - a_ for a_, b in keep)
+        tmap = lambda t: sum(max(0.0, min(t - start, b) - a_) for a_, b in keep)
 
         # الصور الشفافة اللي تركب فوق المقطع: [(png, from, to)] بتوقيت المقطع بعد الاختصار
         layers = []
@@ -123,8 +142,9 @@ def main():
         cmd += ['-i', MUSIC]
         if outro:
             cmd += ['-i', outro, '-i', MUSIC]
-
-        intro_d = duration(intro)
+        hk = nxt + (3 if outro else 1)
+        if hook:
+            cmd += ['-ss', hook['from'], '-t', hook_d, '-i', a.source, '-loop', 1, '-t', hook_d, '-i', hook_png]
         sel = '+'.join(f'gte(t,{a_:.3f})*lt(t,{b:.3f})' for a_, b in keep)
         f = [f"[1:v]fps=25,scale=1920:1080:flags=lanczos,setsar=1,select='{sel}',setpts=N/(25*TB),format=yuv420p,fade=in:st=0:d=0.5,fade=out:st={body_dur - 0.6:.2f}:d=0.6[b0]"]
         cur = 'b0'
@@ -139,13 +159,19 @@ def main():
         f.append(f"[1:a]aformat=sample_rates=48000:channel_layouts=stereo,asetnsamples=n=48:p=0,aselect='{sel}',asetpts=N/SR/TB,afade=in:st=0:d=0.4,afade=out:st={body_dur - 0.6:.2f}:d=0.6[ba]")
         f.append('[0:v]fps=25,format=yuv420p,setsar=1[iv]')
         f.append(f'[{cur}]setsar=1[bv]')
+        if hook:
+            f.append(f'[{hk}:v]fps=25,scale=1920:1080:flags=lanczos,setsar=1,trim=duration={hook_d:.2f},setpts=PTS-STARTPTS,format=yuv420p[h0]')
+            f.append(f'[{hk + 1}:v]format=rgba,fade=in:st=0.2:d=0.4:alpha=1[hl]')
+            f.append(f'[h0][hl]overlay=0:0,fade=in:st=0:d=0.25,fade=out:st={hook_d - 0.35:.2f}:d=0.35,setsar=1[hv]')
+            f.append(f'[{hk}:a]aformat=sample_rates=48000:channel_layouts=stereo,atrim=duration={hook_d:.2f},asetpts=PTS-STARTPTS,afade=in:st=0:d=0.15,afade=out:st={hook_d - 0.35:.2f}:d=0.35[ha]')
+        H = '[hv][ha]' if hook else ''
+        nseg = 1 if hook else 0
         if outro:
-            od = duration(outro)
             f.append(f'[{nxt + 2}:a]atrim=start={intro_d:.2f}:duration={od:.2f},asetpts=PTS-STARTPTS,volume=0.35,afade=in:st=0:d=1,afade=out:st={od - 1.5:.2f}:d=1.5,aformat=sample_rates=48000:channel_layouts=stereo[oa]')
             f.append(f'[{nxt + 1}:v]fps=25,format=yuv420p,setsar=1[ov]')
-            f.append('[iv][ia][bv][ba][ov][oa]concat=n=3:v=1:a=1[v][a]')
+            f.append(f'{H}[iv][ia][bv][ba][ov][oa]concat=n={3 + nseg}:v=1:a=1[v][a]')
         else:
-            f.append('[iv][ia][bv][ba]concat=n=2:v=1:a=1[v][a]')
+            f.append(f'{H}[iv][ia][bv][ba]concat=n={2 + nseg}:v=1:a=1[v][a]')
 
         out = os.path.join(a.out, f'الجلسة-الحوارية-الجزء-{tag}.mp4')
         cmd += ['-filter_complex', ';'.join(f), '-map', '[v]', '-map', '[a]',
@@ -155,17 +181,28 @@ def main():
         cmd += ['-movflags', '+faststart', out]
         run(cmd)
         d = duration(out)
-        print(f'   ✓ {out}  ({d:.2f}s){"  ⚠ أطول من 3 دقائق" if d > MAX_LEN else ""}', flush=True)
+        print(f'   ✓ {out}  ({d:.2f}s){"  ⚠ أطول من 3 دقائق" if d > MAX_LEN + 0.01 else ""}', flush=True)
 
 
-def keep_segments(source, start, end, trims):
-    """الجزء [start,end] ناقص الاختصارات اليدوية، وكل سكتة 0.5s أو أكثر تنضغط لـ 0.3s.
+_SIL_CACHE = {}
+
+
+def silences(source, start, end, min_len):
+    """السكتات (بتوقيت داخل الجزء) اللي طولها min_len أو أكثر."""
+    key = (source, start, end, min_len)
+    if key not in _SIL_CACHE:
+        log = subprocess.run(['ffmpeg', '-v', 'info', '-ss', str(start), '-t', str(end - start), '-i', source, '-vn',
+                              '-af', f'silencedetect=n=-32dB:d={min_len}', '-f', 'null', '-'], capture_output=True, text=True).stderr
+        starts = [float(x) for x in re.findall(r'silence_start: ([\d.]+)', log)]
+        ends = [float(x) for x in re.findall(r'silence_end: ([\d.]+)', log)]
+        _SIL_CACHE[key] = list(zip(starts, ends))
+    return _SIL_CACHE[key]
+
+
+def keep_segments(source, start, end, trims, sil_min=SIL_MIN, sil_keep=SIL_KEEP):
+    """الجزء [start,end] ناقص الاختصارات اليدوية، وكل سكتة طولها sil_min أو أكثر تنضغط لـ sil_keep.
     الحدود على شبكة الفريمات (0.04s) عشان الصوت والصورة ينقصون بنفس المقدار."""
-    log = subprocess.run(['ffmpeg', '-v', 'info', '-ss', str(start), '-t', str(end - start), '-i', source, '-vn',
-                          '-af', f'silencedetect=n=-32dB:d={SIL_MIN}', '-f', 'null', '-'], capture_output=True, text=True).stderr
-    starts = [float(x) for x in re.findall(r'silence_start: ([\d.]+)', log)]
-    ends = [float(x) for x in re.findall(r'silence_end: ([\d.]+)', log)]
-    cut = [(s0 + SIL_KEEP / 2, s1 - SIL_KEEP / 2) for s0, s1 in zip(starts, ends)]
+    cut = [(s0 + sil_keep / 2, s1 - sil_keep / 2) for s0, s1 in silences(source, start, end, sil_min) if s1 - s0 > sil_keep]
     cut += [(max(0.0, t0 - start), min(end - start, t1 - start)) for t0, t1 in trims if t1 > start and t0 < end]
     grid = lambda t: round(t * 25) / 25
     cut = sorted((grid(a), grid(b)) for a, b in cut if grid(b) > grid(a))
@@ -178,6 +215,26 @@ def keep_segments(source, start, end, trims):
     if L > t:
         keep.append((t, L))
     return [(a, b) for a, b in keep if b - a >= 0.04]
+
+
+def fit_segments(source, start, end, trims, target):
+    """مقاطع طولها الكلي = target بالضبط (على شبكة الفريمات): نغيّر طول السكتة اللي تنحفظ لين يطابق،
+    والفرق الباقي (فريمات قليلة) ينضاف/ينقص من آخر مقطع."""
+    total = lambda k: sum(b - a for a, b in k)
+    lo, hi = 0.08, 30.0
+    if total(keep_segments(source, start, end, trims, 0.3, lo)) > target + 0.02:
+        raise SystemExit(f'   ✗ المحتوى أطول من المطلوب حتى بأقصى ضغط ({total(keep_segments(source, start, end, trims, 0.3, lo)):.1f}s > {target:.1f}s)')
+    for _ in range(40):
+        mid = (lo + hi) / 2
+        if total(keep_segments(source, start, end, trims, 0.3, mid)) > target:
+            hi = mid
+        else:
+            lo = mid
+    keep = keep_segments(source, start, end, trims, 0.3, lo)
+    diff = round((target - total(keep)) * 25)  # فريمات
+    a, b = keep[-1]
+    keep[-1] = (a, round((b + diff / 25) * 25) / 25)
+    return keep, lo
 
 
 if __name__ == '__main__':
