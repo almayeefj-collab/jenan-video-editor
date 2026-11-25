@@ -10,6 +10,7 @@
   names:     [{at, who}]            اسم المتحدث تحت (يظهر 6 ثواني)
   hooks:     {"رقم الجزء": {from, to, text, key, highlight, freeze?}}  جملة قوية أول الفيديو كتشويق:
              زوم وضربة على الكلمة المفتاحية (key = بدايتها)، وتجميد مع صدى بعدها، وانتقالات بووش وفلاش
+  next_card: true                   بطاقة «يتبع… الجزء التالي» (2s) آخر كل جزء غير الأخير
   exact:     180                    طول كل فيديو بالضبط بالثواني (يتعدّل طول السكتات عشان يطابق)
   trims:     [[from, to]]           مقاطع تنشال (مجاملات وكلام تنظيمي) عشان كل جزء ما يتعدى 3 دقائق
 السكتات الطويلة تنضغط تلقائياً، وأوقات الأسئلة والأسماء تتحول لتوقيت الجزء بعد الاختصار.
@@ -93,6 +94,10 @@ def main():
         if n == parts:
             outro = os.path.join(work, 'outro.mp4')
             remotion('render', 'PanelOutro', outro, {**S, 'bg': f'{sdir}/{bg}'})
+        elif cfg.get('next_card'):
+            # «يتبع… الجزء التالي» آخر كل جزء غير الأخير
+            outro = os.path.join(work, f'next{tag}.mp4')
+            remotion('render', 'PanelNext', outro, {**S, 'bg': f'{sdir}/{bg}', 'next': n + 1})
         intro_d = duration(intro)
         od = duration(outro) if outro else 0.0
 
@@ -173,7 +178,7 @@ def main():
         H = '[hv][ha]' if hook else ''
         nseg = 1 if hook else 0
         if outro:
-            f.append(f'[{nxt + 2}:a]atrim=start={intro_d:.2f}:duration={od:.2f},asetpts=PTS-STARTPTS,volume=0.35,afade=in:st=0:d=1,afade=out:st={od - 1.5:.2f}:d=1.5,aformat=sample_rates=48000:channel_layouts=stereo[oa]')
+            f.append(f'[{nxt + 2}:a]atrim=start={intro_d:.2f}:duration={od:.2f},asetpts=PTS-STARTPTS,volume=0.35,afade=in:st=0:d={min(1, od / 3):.2f},afade=out:st={od - min(1.5, od / 2):.2f}:d={min(1.5, od / 2):.2f},aformat=sample_rates=48000:channel_layouts=stereo[oa]')
             f.append(f'[{nxt + 1}:v]fps=25,format=yuv420p,setsar=1[ov]')
             f.append(f'{H}[iv][ia][bv][ba][ov][oa]concat=n={3 + nseg}:v=1:a=1[v][a]')
         else:

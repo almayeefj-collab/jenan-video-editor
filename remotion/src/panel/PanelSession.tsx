@@ -12,6 +12,7 @@ export const WIDTH = 1920;
 export const HEIGHT = 1080;
 export const INTRO_FRAMES = Math.round(3.5 * FPS);
 export const OUTRO_FRAMES = Math.round(6 * FPS);
+export const NEXT_FRAMES = Math.round(2 * FPS);
 
 const NAVY = '#0D1A3A';
 const GOLD = '#D4AF6A';
@@ -217,6 +218,23 @@ export const HookCard: React.FC<{text: string; who?: string; highlight?: string}
           </div>
         ) : null}
       </div>
+    </AbsoluteFill>
+  );
+};
+
+// بطاقة قصيرة آخر كل جزء (غير الأخير): «يتبع… الجزء التالي»
+export const PanelNext: React.FC<{bg: string; next: number} & S> = ({bg, next, session}) => {
+  const frame = useCurrentFrame();
+  const black = interpolate(frame, [NEXT_FRAMES - 10, NEXT_FRAMES], [0, 1], clamp);
+  return (
+    <AbsoluteFill style={{background: INK}}>
+      <Backdrop bg={bg} frames={NEXT_FRAMES} />
+      <AbsoluteFill style={{direction: 'rtl', justifyContent: 'center', alignItems: 'center', textAlign: 'center', fontFamily}}>
+        <div style={{...useReveal(0, 10), fontSize: 46, fontWeight: 600, color: CREAM, textShadow: shadow}}>يتبع…</div>
+        <div style={{...useReveal(4, 10), fontSize: 92, fontWeight: 800, color: GOLD, textShadow: shadow, marginTop: 6}}>الجزء {arabicDigits(next)}</div>
+        <div style={{...useReveal(8, 10), fontSize: 36, fontWeight: 500, color: '#fff', marginTop: 8, textShadow: shadow}}>{getSession(session).title}</div>
+      </AbsoluteFill>
+      <AbsoluteFill style={{background: 'black', opacity: black}} />
     </AbsoluteFill>
   );
 };
