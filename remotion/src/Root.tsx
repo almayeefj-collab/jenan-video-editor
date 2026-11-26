@@ -12,6 +12,7 @@ import {FPS as C46B_FPS, HEIGHT as C46B_H, Recommendations46V2, totalFrames as c
 import {Badge, HookCard, NEXT_FRAMES, PanelNext, FPS as PN_FPS, HEIGHT as PN_H, INTRO_FRAMES, LowerThird, OUTRO_FRAMES, PanelIntro, PanelOutro, QuestionCard, WIDTH as PN_W} from './panel/PanelSession';
 import {POST_H, POST_W, PostPeople, PostTitle} from './panel/PanelPosts';
 import {COVER_H, COVER_W, ReelCover} from './panel/ReelCover';
+import {LightCover, LightPostProfile, LightPostQuote} from './panel/LightSet';
 import {FPS as PR_FPS, HEIGHT as PR_H, PRTeam, totalFrames as prFrames, WIDTH as PR_W} from './pr/PRTeam';
 
 export const RemotionRoot: React.FC = () => {
@@ -28,6 +29,9 @@ export const RemotionRoot: React.FC = () => {
       <Still id="PostPeople" component={PostPeople} width={POST_W} height={POST_H} defaultProps={{logo: 'brand/kicd-2026-logo.png'}} />
       <Still id="ReelCover" component={ReelCover} width={COVER_W} height={COVER_H} defaultProps={{session: 'zawaya_law' as const, who: 'salwa', photo: 'footage/panel/zawaya/cover-law.jpg', accent: '#0D1A3A', layout: 'band' as const}} />
       <Still id="PanelHook" component={HookCard} width={PN_W} height={PN_H} defaultProps={{session: 'zawaya_law' as const, who: 'salwa', text: 'لقيت أن هناك مهارات يحتاجها المحامي… ما يكتفي فقط بالشهادة أو بالدراسة اللي خذيناها في الجامعات'}} />
+      <Still id="LightCover" component={LightCover} width={1080} height={1920} defaultProps={{session: 'zawaya_training' as const, who: 'salwa', photo: 'footage/panel/zawaya/cover-t1.jpg', palette: {bg: '#FBF5EE', bg2: '#F1E1DC', ink: '#3B1F24', accent: '#8E2F45'}}} />
+      <Still id="LightPostQuote" component={LightPostQuote} width={1080} height={1350} defaultProps={{session: 'zawaya_training' as const, who: 'salwa', photo: 'footage/panel/zawaya/cover-t1.jpg', palette: {bg: '#FBF5EE', bg2: '#F1E1DC', ink: '#3B1F24', accent: '#8E2F45'}}} />
+      <Still id="LightPostProfile" component={LightPostProfile} width={1080} height={1350} defaultProps={{session: 'zawaya_training' as const, who: 'salwa', photo: 'footage/panel/zawaya/cover-t1.jpg', palette: {bg: '#FBF5EE', bg2: '#F1E1DC', ink: '#3B1F24', accent: '#8E2F45'}}} />
       <Still id="PanelBadge" component={Badge} width={PN_W} height={PN_H} defaultProps={{part: 1, parts: 16}} />
       {/* فريق العلاقات العامة — فاطمة الهاشمية، نسخة رسمية */}
       <Composition id="PRTeam" component={PRTeam} durationInFrames={prFrames()} fps={PR_FPS} width={PR_W} height={PR_H} />
